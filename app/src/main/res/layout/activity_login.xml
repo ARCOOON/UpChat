@@ -1,0 +1,113 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/_coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Toolbar -->
+    <include
+        layout="@layout/toolbar_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:id="@+id/linear1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal|center_vertical"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <!-- Email Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="6dp"
+                android:hint="Email"
+                app:boxBackgroundColor="@color/white"
+                app:boxCornerRadiusBottomEnd="6dp"
+                app:boxCornerRadiusBottomStart="6dp"
+                app:boxCornerRadiusTopEnd="6dp"
+                app:boxCornerRadiusTopStart="6dp"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/email_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:inputType="textEmailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <!-- Password Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="6dp"
+                android:hint="Password"
+                app:boxBackgroundColor="@color/white"
+                app:boxCornerRadiusBottomEnd="6dp"
+                app:boxCornerRadiusBottomStart="6dp"
+                app:boxCornerRadiusTopEnd="6dp"
+                app:boxCornerRadiusTopStart="6dp"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                app:endIconMode="password_toggle">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/password_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/forgot_password_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|start"
+                android:padding="8dp"
+                android:text="Forgot your password?"
+                android:textColor="@color/white"
+                android:textStyle="italic" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/login_button"
+                style="@style/Widget.Material3.Button.ElevatedButton"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:backgroundTint="@color/white"
+                android:elevation="6dp"
+                android:text="Login"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                app:cornerRadius="6dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/register_button"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:elevation="6dp"
+                android:text="Register"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:cornerRadius="6dp"
+                app:strokeColor="@color/white" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

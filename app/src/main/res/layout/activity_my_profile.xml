@@ -1,0 +1,133 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/_coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Toolbar -->
+    <include
+        layout="@layout/toolbar_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:id="@+id/linear1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/textview1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="username"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textview2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="email"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textview3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="uid"
+                android:textColor="#757575"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textview4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="joined"
+                android:textColor="#757575"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:id="@+id/linear3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:gravity="center_horizontal|bottom"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/chats_button"
+                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:backgroundTint="@color/light_blue_600"
+                    android:elevation="6dp"
+                    android:text="Chats"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    app:cornerRadius="6dp"
+                    app:icon="@drawable/ic_chat_white"
+                    app:iconGravity="start"
+                    app:iconTint="@color/white" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/logout_button"
+                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:backgroundTint="@color/light_blue_600"
+                    android:elevation="6dp"
+                    android:text="Logout"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    app:cornerRadius="6dp"
+                    app:icon="@drawable/ic_logout_white"
+                    app:iconGravity="start"
+                    app:iconTint="@color/white" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/delete_button"
+                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:backgroundTint="@color/red_600"
+                    android:elevation="6dp"
+                    android:padding="8dp"
+                    android:text="Delete"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    app:cornerRadius="6dp"
+                    app:icon="@drawable/ic_delete_forever_white"
+                    app:iconGravity="start"
+                    app:iconTint="@color/white" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/view_users_button"
+        style="?attr/floatingActionButtonSmallStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="@null"
+        app:srcCompat="@drawable/ic_person_add_black" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,22 @@
+/users/
+    - $userId/
+        + deviceId
+        + username
+        + email
+        + uid
+        + joined
+        - conversations/
+            - $userId/
+                + conversationId
+
+/conversations/
+    - $conversationId/
+        - members/
+            + userId1
+            + userId2
+        - messages/
+            - $messageId/
+                + messageId
+                + content
+                + timestamp
+                + type (optional)
