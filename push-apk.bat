@@ -1,1 +1,0 @@
-adb push ./app/build/outputs/apk/debug/app-debug.apk /storage/emulated/0/
