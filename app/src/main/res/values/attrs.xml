@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="colorOnSecondaryContainer" format="color" />
+
+    <declare-styleable name="RoundedButton">
+        <attr name="cornerRadius" format="dimension" />
+        <attr name="elevation" format="dimension" />
+    </declare-styleable>
 </resources>

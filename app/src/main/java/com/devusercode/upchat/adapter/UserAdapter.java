@@ -6,8 +6,6 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -68,7 +66,7 @@ public class UserAdapter extends FirebaseRecyclerAdapter<User, UserAdapter.UserV
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.item_user, parent, false);
-        return new UserAdapter.UserViewHolder(view);
+        return new UserViewHolder(view);
     }
 
     static class UserViewHolder extends RecyclerView.ViewHolder {

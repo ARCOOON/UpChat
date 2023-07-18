@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.os.Process;
 import android.util.Log;
 
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
 public class SketchApplication extends Application {
+    private static final String TAG = SketchApplication.class.getSimpleName();
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
     @Override
@@ -21,13 +24,9 @@ public class SketchApplication extends Application {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.putExtra("error", Log.getStackTraceString(throwable));
 
-            PendingIntent pendingIntent =
-                    PendingIntent.getActivity(
-                            getApplicationContext(),
-                            11111,
-                            intent,
-                            PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE
-                    );
+            PendingIntent pendingIntent = PendingIntent.getActivity(
+                    getApplicationContext(), 11111, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE
+            );
 
             AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 1000, pendingIntent);
@@ -37,6 +36,15 @@ public class SketchApplication extends Application {
 
             uncaughtExceptionHandler.uncaughtException(thread, throwable);
         });
+
         super.onCreate();
+
+        final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
+        // fetch data from Firebase every 5 seconds, ideally 1min - 5min etc
+        remoteConfig.fetch(1).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                remoteConfig.activate();
+            }
+        });
     }
 }

@@ -117,7 +117,7 @@ public class MessageAdapter extends FirebaseRecyclerAdapter<Message, RecyclerVie
             Log.d(TAG, "senderId: you");
 
             message.setText(model.getMessage().trim());
-            time.setText(GetTimeAgo.getTimeAgo(model.getTimestamp()));
+            time.setText(GetTimeAgo.parse(model.getTimestamp()));
 
             cardview.setOnLongClickListener(view -> {
                 // showOptionsDialog(view.getContext(), model);
@@ -151,7 +151,7 @@ public class MessageAdapter extends FirebaseRecyclerAdapter<Message, RecyclerVie
             Log.d(TAG, "senderId: participant");
 
             message.setText(model.getMessage().trim());
-            time.setText(GetTimeAgo.getTimeAgo(model.getTimestamp()));
+            time.setText(GetTimeAgo.parse(model.getTimestamp()));
 
             // Create LayoutParams with desired gravity
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) cardview.getLayoutParams();

@@ -1,57 +1,48 @@
 package com.devusercode.upchat;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.net.Uri;
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.devusercode.upchat.utils.UserUtils;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class FirebaseNotificationService extends FirebaseMessagingService {
-    private final String TAG = this.getClass().getSimpleName();
+    private static final String TAG = "FirebaseNotificationService";
 
+    @SuppressLint("MissingPermission")
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
-        String title = remoteMessage.getNotification().getTitle();
-        String text = remoteMessage.getNotification().getBody();
-
-        final String CHANNEL_ID = "HEADS_UP_NOTIFICATION";
-
-        NotificationChannel channel = new NotificationChannel(
-                CHANNEL_ID,
-                "Heads Up Notification",
-                NotificationManager.IMPORTANCE_HIGH
-        );
-
-        Notification.Builder notification =
-                new Notification.Builder(this, CHANNEL_ID)
-                        .setContentTitle(title)
-                        .setContentText(text)
-                        .setSmallIcon(R.drawable.ic_launcher_background)
-                        .setAutoCancel(true);
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            Log.e(TAG, "No permission to post notifications!");
-            return;
-        }
-
-        NotificationManagerCompat.from(this).notify(1, notification.build());
-
+    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+
+        // Handle the incoming FCM message
+        if (remoteMessage.getNotification() != null) {
+            Log.d(TAG, "remote message: " + remoteMessage);
+            // Extract the notification message data
+            String title = remoteMessage.getNotification().getTitle();
+            String body = remoteMessage.getNotification().getBody();
+
+            // Customize the notification content and appearance
+            // You can use a notification builder to create and display the notification
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "channel_id")
+                    .setContentTitle(title)
+                    .setContentText(body)
+                    .setSmallIcon(R.drawable.app_icon);
+
+            // Display the notification
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            notificationManager.notify(1, builder.build());
+        }
     }
 
     @Override
     public void onNewToken(@NonNull String token) {
+        Log.d(TAG, "new token: " + token);
+        UserUtils.update(Constants.User.DEVICE_TOKEN, token);
         super.onNewToken(token);
-        Log.d(TAG, "onNewToken: " + token);
     }
 }

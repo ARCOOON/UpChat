@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -65,10 +66,12 @@ public class ConversationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FirebaseApp.initializeApp(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
 
-        FirebaseApp.initializeApp(this);
+        // FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         // intent for data
         Intent data_intent = getIntent();
@@ -77,8 +80,6 @@ public class ConversationActivity extends AppCompatActivity {
         if (data_intent != null && data_intent.getExtras() != null) {
             String uid = data_intent.getStringExtra("uid");
             getParticipant(uid);
-        } else {
-            onBackPressed();
         }
     }
 
@@ -92,6 +93,12 @@ public class ConversationActivity extends AppCompatActivity {
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     private void initialize() {
@@ -114,6 +121,12 @@ public class ConversationActivity extends AppCompatActivity {
 
         recyclerview.setLayoutManager(layoutManager);
         recyclerview.setItemAnimator(new DefaultItemAnimator());
+
+        recyclerview.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (bottom < oldBottom) {
+                recyclerview.scrollBy(0, oldBottom - bottom);
+            }
+        });
 
         back_button.setOnClickListener(view -> {
             super.onBackPressed();
@@ -146,17 +159,16 @@ public class ConversationActivity extends AppCompatActivity {
             currentConversationId = ConversationUtil.getConversationId(participant, user.getConversations());
         }
 
-        Log.d(TAG, "ConversationId: " + currentConversationId);
+        Query messages = conversations
+                .child(currentConversationId)
+                .child(Constants.Conversation.MESSAGES);
 
-        Query messages = conversations.child(currentConversationId).child("messages");
         FirebaseRecyclerOptions<Message> options = new FirebaseRecyclerOptions.Builder<Message>()
                 .setQuery(messages, Message.class)
                 .build();
 
         adapter = new MessageAdapter(getApplicationContext(), options);
         adapter.setConversationId(currentConversationId);
-        recyclerview.setAdapter(adapter);
-
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -165,23 +177,17 @@ public class ConversationActivity extends AppCompatActivity {
             }
         });
 
+        recyclerview.setAdapter(adapter);
         adapter.startListening();
-
-        message_input.setOnFocusChangeListener((view, hasFocus) -> {
-            if (hasFocus) {
-                int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
-                recyclerview.smoothScrollToPosition(lastVisiblePosition);
-            }
-        });
     }
 
     private void sendMessage(String message) {
         Map<String, String> data = new HashMap<>();
 
         DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference()
-                .child("conversations")
+                .child(Constants.CONVERSATIONS)
                 .child(currentConversationId)
-                .child("messages");
+                .child(Constants.Conversation.MESSAGES);
 
         String messageId = messagesRef.push().getKey();
 
@@ -227,8 +233,6 @@ public class ConversationActivity extends AppCompatActivity {
         super.onStart();
         if (adapter != null) {
             adapter.startListening();
-        } else {
-            Log.e(TAG, "onStart -> adapter is null");
         }
     }
 
@@ -241,7 +245,8 @@ public class ConversationActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        adapter.stopListening();
+        // Remove the following line to prevent stopping adapter listening in onPause()
+        // adapter.stopListening();
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -249,9 +254,8 @@ public class ConversationActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (adapter != null) {
+            adapter.startListening();
             adapter.notifyDataSetChanged();
-        } else {
-            Log.e(TAG, "onResume -> adapter is null");
         }
     }
 }

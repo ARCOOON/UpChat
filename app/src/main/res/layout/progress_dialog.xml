@@ -3,18 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <ProgressBar
+        android:id="@+id/progress"
+        style="@android:style/Widget.Material.ProgressBar.Large"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/splash_background_image"
-        android:backgroundTint="@color/transparent_black_40"
-        android:backgroundTintMode="src_over">
-
-        <ProgressBar
-            android:id="@+id/progress"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:indeterminate="true" />
 </FrameLayout>

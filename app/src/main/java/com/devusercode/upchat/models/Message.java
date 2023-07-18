@@ -2,6 +2,8 @@ package com.devusercode.upchat.models;
 
 import android.util.Log;
 
+import com.devusercode.upchat.utils.GetTimeAgo;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -55,16 +57,7 @@ public class Message {
     }
 
     public String getParsedTime() {
-        try {
-            Date date = new Date(Long.parseLong(this.timestamp));
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-
-            return sdf.format(date);
-        } catch (NumberFormatException e) {
-            Log.e("MessageModel", "Failed to parse timestamp: " + this.timestamp);
-
-            return "";
-        }
+        return GetTimeAgo.parse(this.timestamp);
     }
 
     public String getType() {

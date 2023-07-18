@@ -59,7 +59,7 @@ public class GetTimeAgo extends Application {
         }
     }
 
-    public static String getTimeAgo(String time) {
+    public static String parse(String time) {
         return getTimeAgo(Long.parseLong(time));
     }
 }

@@ -5,10 +5,14 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.devusercode.upchat.models.Conversation;
+import com.devusercode.upchat.models.Message;
 import com.devusercode.upchat.models.User;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +20,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class ConversationUtil {
-    private final String TAG = this.getClass().getSimpleName();
+    private static final String TAG = ConversationUtil.class.getSimpleName();
     private static final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private static final String STAG = "ConversationUtil";
     public static final String REF = "conversations";
@@ -149,4 +153,59 @@ public class ConversationUtil {
             }
         });
     }
+
+    public static void getLastMessageByTimestamp(String conversationId, Consumer<String> onFinish) {
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference()
+                .child("conversations")
+                .child(conversationId)
+                .child("messages");
+
+        Query lastMessageQuery = messagesRef.orderByChild("timestamp").limitToLast(1);
+
+        lastMessageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    DataSnapshot lastMessageSnapshot = dataSnapshot.getChildren().iterator().next();
+                    String lastMessage = lastMessageSnapshot.child("message").getValue(String.class);
+                    onFinish.accept(lastMessage);
+                } else {
+                    onFinish.accept(null);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+            }
+        });
+    }
+
+    public static void getLastMessage(String conversationId, Consumer<Message> onFinish) {
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference()
+                .child("conversations")
+                .child(conversationId)
+                .child("messages");
+
+        Query lastMessageQuery = messagesRef.orderByChild("timestamp").limitToLast(1);
+
+        lastMessageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    DataSnapshot lastMessageSnapshot = dataSnapshot.getChildren().iterator().next();
+                    Message lastMessage = lastMessageSnapshot.getValue(Message.class);
+                    onFinish.accept(lastMessage);
+                } else {
+                    onFinish.accept(null);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+            }
+        });
+    }
+
 }

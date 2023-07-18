@@ -75,13 +75,30 @@
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    android:backgroundTint="@color/light_blue_600"
+                    android:backgroundTint="@color/colorAccent"
                     android:elevation="6dp"
                     android:text="Chats"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
-                    app:cornerRadius="6dp"
+                    app:cornerRadius="@dimen/button_radius"
                     app:icon="@drawable/ic_chat_white"
+                    app:iconGravity="start"
+                    app:iconTint="@color/white" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/share_qrcode_button"
+                    style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:backgroundTint="@color/colorAccent"
+                    android:elevation="6dp"
+                    android:padding="8dp"
+                    android:text="Share QR Code"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    app:cornerRadius="@dimen/button_radius"
+                    app:icon="@drawable/ic_qr_code_white"
                     app:iconGravity="start"
                     app:iconTint="@color/white" />
 
@@ -91,12 +108,12 @@
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    android:backgroundTint="@color/light_blue_600"
+                    android:backgroundTint="@color/colorAccent"
                     android:elevation="6dp"
                     android:text="Logout"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
-                    app:cornerRadius="6dp"
+                    app:cornerRadius="@dimen/button_radius"
                     app:icon="@drawable/ic_logout_white"
                     app:iconGravity="start"
                     app:iconTint="@color/white" />
@@ -110,13 +127,22 @@
                     android:backgroundTint="@color/red_600"
                     android:elevation="6dp"
                     android:padding="8dp"
-                    android:text="Delete"
+                    android:text="Delete Profile"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
-                    app:cornerRadius="6dp"
+                    app:cornerRadius="@dimen/button_radius"
                     app:icon="@drawable/ic_delete_forever_white"
                     app:iconGravity="start"
                     app:iconTint="@color/white" />
+
+                <TextView
+                    android:id="@+id/app_version_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="version"
+                    android:textSize="10sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

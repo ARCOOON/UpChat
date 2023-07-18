@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 public class ListUsersActivity extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
@@ -34,6 +37,7 @@ public class ListUsersActivity extends AppCompatActivity {
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private final DatabaseReference users = firebaseDatabase.getReference("users");
 
+    private Button scann_qrcode_button;
     private RecyclerView recyclerview1;
     private SwipeRefreshLayout swiperefreshlayout1;
     private UserAdapter adapter;
@@ -47,8 +51,10 @@ public class ListUsersActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle _savedInstanceState) {
         FirebaseApp.initializeApp(this);
+
         super.onCreate(_savedInstanceState);
         setContentView(R.layout.activity_view_all_users);
+
         initialize(_savedInstanceState);
         initializeLogic();
     }
@@ -65,6 +71,22 @@ public class ListUsersActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
+        if (result != null && result.getContents() != null) {
+            String qrcode_data = result.getContents();
+
+            Intent intent = new Intent(this, ConversationActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("uid", qrcode_data);
+            startActivity(intent);
+        }
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private void initialize(Bundle savedInstanceState) {
         AppBarLayout app_bar = findViewById(R.id.app_bar);
@@ -72,21 +94,36 @@ public class ListUsersActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         SearchView searchView = findViewById(R.id.searchview);
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        Button toolbar_back_button = findViewById(R.id.back_button);
+        toolbar_back_button.setOnClickListener(view -> onBackPressed());
 
-        toolbar.setNavigationOnClickListener(view -> onBackPressed());
+        setSupportActionBar(toolbar);
+        /*
+         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+         getSupportActionBar().setHomeButtonEnabled(true);
+         toolbar.setNavigationOnClickListener(view -> onBackPressed());
+        */
 
         no_data_available_text = findViewById(R.id.no_data_available_text);
         swiperefreshlayout1 = findViewById(R.id.swiperefreshlayout1);
         recyclerview1 = findViewById(R.id.recyclerview1);
+        scann_qrcode_button = findViewById(R.id.scann_qrcode_button);
 
         recyclerview1.setLayoutManager(new WrapLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
 
         swiperefreshlayout1.setOnRefreshListener(() -> {
             adapter.notifyDataSetChanged();
             swiperefreshlayout1.setRefreshing(false);
+        });
+
+        scann_qrcode_button.setOnClickListener(view -> {
+            new IntentIntegrator(this)
+                    .setCaptureActivity(CaptureActivityPortrait.class)
+                    .setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
+                    .setPrompt("Scan a QR Code")
+                    .setBeepEnabled(false)
+                    .setOrientationLocked(true)
+                    .initiateScan();
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -103,7 +140,9 @@ public class ListUsersActivity extends AppCompatActivity {
             }
         });
 
-        FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>().setQuery(users, User.class).build();
+        FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>()
+                .setQuery(users, User.class)
+                .build();
 
         adapter = new UserAdapter(getApplicationContext(), options);
         recyclerview1.setAdapter(adapter);
@@ -133,9 +172,14 @@ public class ListUsersActivity extends AppCompatActivity {
     }
 
     private void filterUsers(String text) {
-        Query query = users.orderByChild(menu_filter).startAt(text).endAt(text + "\uf8ff");
+        Query query = users.orderByChild(menu_filter)
+                .startAt(text)
+                .endAt(text + "\uf8ff");
 
-        FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>().setQuery(query, User.class).setLifecycleOwner(this).build();
+        FirebaseRecyclerOptions<User> options = new FirebaseRecyclerOptions.Builder<User>()
+                .setQuery(query, User.class)
+                .setLifecycleOwner(this)
+                .build();
 
         adapter = new UserAdapter(getApplicationContext(), options);
         recyclerview1.setAdapter(adapter);
@@ -165,7 +209,6 @@ public class ListUsersActivity extends AppCompatActivity {
             case R.id.menu_username -> menu_filter = "username";
             case R.id.menu_email -> menu_filter = "email";
             case R.id.menu_uid -> menu_filter = "uid";
-            case R.id.menu_joined -> menu_filter = "joined";
         }
 
         // Update the checked state of the menu items
@@ -184,6 +227,7 @@ public class ListUsersActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        adapter.startListening();
         adapter.notifyDataSetChanged();
     }
 

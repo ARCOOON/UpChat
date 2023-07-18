@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
-    // id 'com.google.firebase.crashlytics'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -13,9 +13,8 @@ android {
         minSdkVersion 28
         targetSdkVersion 33
         versionCode 1
-        versionName "1.0"
+        versionName "1.1-alpha"
         signingConfig signingConfigs.debug
-        proguardFiles
     }
 
     buildTypes {
@@ -23,16 +22,17 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+            minifyEnabled false
+            debuggable true
+        }
     }
 
     compileOptions {
         // Java Version -> 17
-        sourceCompatibility JavaVersion.current()
-        targetCompatibility JavaVersion.current()
-    }
-
-    buildFeatures {
-        viewBinding true
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
@@ -45,19 +45,26 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-config'
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
 
     implementation 'com.firebaseui:firebase-ui-database:8.0.2'
     implementation 'com.firebaseui:firebase-ui-storage:8.0.2'
-    // implementation 'com.google.firebase:firebase-crashlytics'
-    // implementation 'com.google.firebase:firebase-analytics'
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
+    // For generating and scanning QR-Code
+    implementation 'com.google.zxing:core:3.5.1'
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.20'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20'
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
 }

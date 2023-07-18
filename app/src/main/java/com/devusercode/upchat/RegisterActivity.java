@@ -65,6 +65,7 @@ public class RegisterActivity extends AppCompatActivity {
     private String downloadUrl = "";
     private Uri imagePath = Uri.EMPTY;
     private Dialog progressDialog;
+    private String token;
 
     @Override
     protected void onCreate(Bundle _savedInstanceState) {
@@ -73,6 +74,17 @@ public class RegisterActivity extends AppCompatActivity {
         initialize(_savedInstanceState);
         FirebaseApp.initializeApp(this);
         initializeLogic();
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        token = task.getResult();
+                    }
+                })
+                .addOnFailureListener(error -> {
+                    token = null;
+                    Log.e(TAG, error.getMessage());
+                });
     }
 
     @Override
@@ -132,24 +144,32 @@ public class RegisterActivity extends AppCompatActivity {
 
             progressDialog.show();
 
-            auth.createUserWithEmailAndPassword(email_edit.getText().toString(), password_edit.getText().toString()).addOnCompleteListener(task -> {
-                uploadProfileImage();
-            }).addOnFailureListener(error -> {
-                Log.e(TAG, error.getMessage());
-                SketchwareUtil.showMessage(getApplicationContext(), error.getMessage());
-            });
+            auth.createUserWithEmailAndPassword(email_edit.getText().toString(), password_edit.getText().toString())
+                    .addOnCompleteListener(task -> {
+                        uploadProfileImage();
+                    }).addOnFailureListener(error -> {
+                        progressDialog.dismiss();
+                        Log.e(TAG, error.getMessage());
+                        SketchwareUtil.showMessage(getApplicationContext(), error.getMessage());
+                    });
         });
     }
 
     private void uploadProfileImage() {
-        if (imagePath != null) {
+        if (imagePath == null | imagePath == Uri.EMPTY) {
+            SketchwareUtil.showMessage(getApplicationContext(), "Continue without profile image");
+            // No image selected, continue with user profile update
+            updateUserProfile();
+        } else {
             StorageReference imageRef = profile_images.child(auth.getCurrentUser().getUid() + ".png");
+
+            Log.d(TAG, "imagePath: " + imagePath);
+            Log.d(TAG, "imageRef: " + imageRef);
 
             imageRef.putFile(imagePath).addOnSuccessListener(taskSnapshot -> {
                 // Get the download URL of the uploaded image
                 imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     SketchwareUtil.showMessage(getApplicationContext(), "Profile image successfully uploaded");
-                    // Save the download URL to the 'downloadUrl' variable
                     downloadUrl = uri.toString();
                     updateUserProfile();
                 }).addOnFailureListener(e -> {
@@ -158,10 +178,6 @@ public class RegisterActivity extends AppCompatActivity {
             }).addOnFailureListener(e -> {
                 Log.e(TAG, "Failed to upload image: " + e.getMessage());
             });
-        } else {
-            SketchwareUtil.showMessage(getApplicationContext(), "Continue without profile image");
-            // No image selected, continue with user profile update
-            updateUserProfile();
         }
     }
 
@@ -173,6 +189,7 @@ public class RegisterActivity extends AppCompatActivity {
                     createUserProfile(task);
                 })
                 .addOnFailureListener(error -> {
+                    progressDialog.dismiss();
                     Log.e(TAG, error.getMessage());
                     SketchwareUtil.showMessage(getApplicationContext(), error.getMessage());
                 });
@@ -185,15 +202,13 @@ public class RegisterActivity extends AppCompatActivity {
             HashMap<String, Object> userinfo = new HashMap<>();
             FirebaseUser user = auth.getCurrentUser();
 
-            String token = FirebaseMessaging.getInstance().getToken().getResult();
-
-            userinfo.put("deviceId", DeviceId.getId());
-            userinfo.put("deviceToken", token);
-            userinfo.put("username", user.getDisplayName());
-            userinfo.put("email", user.getEmail());
-            userinfo.put("uid", user.getUid());
-            userinfo.put("photoUrl", (!downloadUrl.isEmpty()) ? downloadUrl : "");
-            userinfo.put("joined", String.valueOf(System.currentTimeMillis()));
+            userinfo.put(Constants.User.DEVICE_ID, DeviceId.getId());
+            userinfo.put(Constants.User.DEVICE_TOKEN, (token != null ? token : ""));
+            userinfo.put(Constants.User.USERNAME, user.getDisplayName());
+            userinfo.put(Constants.User.EMAIL, user.getEmail());
+            userinfo.put(Constants.User.UID, user.getUid());
+            userinfo.put(Constants.User.PHOTO_URL, (!downloadUrl.isEmpty()) ? downloadUrl : "");
+            userinfo.put(Constants.User.JOINED, String.valueOf(System.currentTimeMillis()));
 
             users.child(user.getUid()).updateChildren(userinfo);
 
@@ -203,6 +218,7 @@ public class RegisterActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
+            progressDialog.dismiss();
             Log.e(TAG, errorMessage);
             SketchwareUtil.showMessage(getApplicationContext(), errorMessage);
         }

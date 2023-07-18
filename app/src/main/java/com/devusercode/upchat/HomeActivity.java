@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.devusercode.upchat.adapter.HomeAdapter;
 import com.devusercode.upchat.models.User;
+import com.devusercode.upchat.models.UserPair;
 import com.devusercode.upchat.utils.ConversationUtil;
 import com.devusercode.upchat.utils.UserUtils;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,30 +22,40 @@ public class HomeActivity extends AppCompatActivity {
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
 
     private User user;
-    private List<User> open_conversations;
+    private List<UserPair> open_conversations;
 
     private RecyclerView recyclerview;
-    private DatabaseReference conversationsRef;
     private HomeAdapter adapter;
+
+    private int conversationsCounter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        getUser();
 
-        /*
-         * Get current user
-         * then get conversation ids from user
-         * then get both users from conversation id
-         * then from there show the chat on the home
-         * activity with the participant user.
-         * */
+        UserUtils.getUserByUid(auth.getCurrentUser().getUid(), result -> {
+            if (result.getUser() != null) {
+                user = result.getUser();
+                initialize();
+            } else {
+                user = null;
+                Log.e(TAG, result.getError().getMessage());
+            }
+        });
     }
 
     private void initialize() {
         recyclerview = findViewById(R.id.recyclerview);
         recyclerview.setLayoutManager(new LinearLayoutManager(this));
+
+        loadOpenConversations();
+    }
+
+    private void loadOpenConversations() {
+        if (user == null || user.getConversations() == null) {
+            return;
+        }
 
         open_conversations = new ArrayList<>();
 
@@ -59,39 +69,26 @@ public class HomeActivity extends AppCompatActivity {
                 task.getConversation().getParticipant(result -> {
                     if (!result.isSuccessful()) {
                         Log.e(TAG, result.getError().getMessage());
-                        return;
-                    }
+                    } else {
+                        open_conversations.add(new UserPair(result.getUser(), cid));
+                        conversationsCounter++;
 
-                    open_conversations.add(result.getUser());
-                    adapter.notifyDataSetChanged();
+                        if (conversationsCounter == user.getConversationIds().size()) {
+                            adapter = new HomeAdapter(open_conversations);
+                            recyclerview.setAdapter(adapter);
+                        }
+                    }
                 });
             });
         }
-
-        adapter = new HomeAdapter(open_conversations);
-        recyclerview.setAdapter(adapter);
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-    }
+    protected void onPostResume() {
+        super.onPostResume();
 
-    private void getUser() {
-        UserUtils.getUserByUid(auth.getCurrentUser().getUid(), result -> {
-            if (result.getUser() != null) {
-                user = result.getUser();
-                initialize();
-            } else {
-                user = null;
-                Log.e(TAG, result.getError().getMessage());
-            }
-        });
+        if (user != null) {
+            loadOpenConversations();
+        }
     }
 }

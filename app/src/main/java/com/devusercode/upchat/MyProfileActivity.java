@@ -1,12 +1,20 @@
 package com.devusercode.upchat;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,6 +24,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.devusercode.upchat.models.User;
+import com.devusercode.upchat.utils.QRCode;
 import com.devusercode.upchat.utils.SketchwareUtil;
 import com.devusercode.upchat.utils.UserUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +41,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+@SuppressLint("SetTextI18n")
 public class MyProfileActivity extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
 
@@ -39,20 +49,20 @@ public class MyProfileActivity extends AppCompatActivity {
     private final FirebaseDatabase db = FirebaseDatabase.getInstance();
     private final StorageReference profile_images = FirebaseStorage.getInstance().getReference("profile_images");
 
-    private String current_uid = "";
-    private User user;
-
     private LinearLayout linear1;
-    private TextView textview1;
-    private TextView textview2;
-    private TextView textview3;
-    private TextView textview4;
+    private TextView username;
+    private TextView email;
+    private TextView uid;
+    private TextView joined;
     private LinearLayout linear3;
+    private TextView app_version_text;
 
     private OnCompleteListener<Void> auth_deleteUserListener;
 
     private final Intent intent = new Intent();
     private final DatabaseReference users = db.getReference("users");
+
+    private User current_user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,32 +96,44 @@ public class MyProfileActivity extends AppCompatActivity {
         linear1 = findViewById(R.id.linear1);
         linear3 = findViewById(R.id.linear3);
 
-        textview1 = findViewById(R.id.textview1);
-        textview2 = findViewById(R.id.textview2);
-        textview3 = findViewById(R.id.textview3);
-        textview4 = findViewById(R.id.textview4);
+        username = findViewById(R.id.textview1);
+        email = findViewById(R.id.textview2);
+        uid = findViewById(R.id.textview3);
+        joined = findViewById(R.id.textview4);
+        app_version_text = findViewById(R.id.app_version_text);
+
+        try {
+            String app_version = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
+            app_version_text.setText("v" + app_version);
+        } catch (PackageManager.NameNotFoundException e) {
+            app_version_text.setText("null");
+            throw new RuntimeException(e);
+        }
 
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-        textview1.setOnLongClickListener(view -> {
-            ClipData clip = ClipData.newPlainText("Username", textview1.getText());
-            clipboard.setPrimaryClip(clip);
-            return false;
-        });
-        textview2.setOnLongClickListener(view -> {
-            ClipData clip = ClipData.newPlainText("Email", textview2.getText());
-            clipboard.setPrimaryClip(clip);
-            return false;
-        });
-        textview3.setOnLongClickListener(view -> {
-            ClipData clip = ClipData.newPlainText("Uid", textview3.getText());
+        username.setOnLongClickListener(view -> {
+            ClipData clip = ClipData.newPlainText("Username", username.getText());
             clipboard.setPrimaryClip(clip);
             return false;
         });
 
+        email.setOnLongClickListener(view -> {
+            ClipData clip = ClipData.newPlainText("Email", email.getText());
+            clipboard.setPrimaryClip(clip);
+            return false;
+        });
+
+        uid.setOnLongClickListener(view -> {
+            ClipData clip = ClipData.newPlainText("Uid", uid.getText());
+            clipboard.setPrimaryClip(clip);
+            return false;
+        });
+
+        Button chats_button = findViewById(R.id.chats_button);
         Button logout_button = findViewById(R.id.logout_button);
         Button delete_button = findViewById(R.id.delete_button);
-        Button chats_button = findViewById(R.id.chats_button);
+        Button share_qrcode_button = findViewById(R.id.share_qrcode_button);
 
         FloatingActionButton view_users_button = findViewById(R.id.view_users_button);
 
@@ -122,10 +144,18 @@ public class MyProfileActivity extends AppCompatActivity {
             finish();
         });
 
+        chats_button.setOnClickListener(view -> {
+            intent.setClass(getApplicationContext(), HomeActivity.class);
+            startActivity(intent);
+        });
+
         delete_button.setOnClickListener(_view -> {
             if (auth.getCurrentUser() != null) {
-                current_uid = auth.getCurrentUser().getUid();
-                auth.getCurrentUser().delete().addOnCompleteListener(auth_deleteUserListener);
+                auth.getCurrentUser().delete()
+                        .addOnCompleteListener(auth_deleteUserListener)
+                        .addOnFailureListener(error -> {
+                            Log.e(TAG, error.getMessage());
+                        });
             }
         });
 
@@ -134,21 +164,35 @@ public class MyProfileActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        chats_button.setOnClickListener(view -> {
-            intent.setClass(getApplicationContext(), HomeActivity.class);
-            startActivity(intent);
+        share_qrcode_button.setOnClickListener(_view -> {
+            Bitmap qrCodeBitmap = QRCode.create(auth.getCurrentUser().getUid(), 400, 400);
+
+            // Create dialog with custom layout
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_qr_code, null);
+
+            ImageView qrCodeImageView = dialogView.findViewById(R.id.qr_code_image);
+
+            qrCodeImageView.setImageBitmap(qrCodeBitmap);
+
+            builder.setView(dialogView);
+            builder.setCancelable(true);
+
+            // Create and show the dialog
+            Dialog qrCodeDialog = builder.create();
+            qrCodeDialog.show();
         });
 
         ChildEventListener _users_child_listener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String childKey) {
-                user = dataSnapshot.getValue(User.class);
+                current_user = dataSnapshot.getValue(User.class);
 
-                if (auth.getCurrentUser().getUid().equals(user.getUid())) {
-                    textview1.setText(user.getUsername());
-                    textview2.setText(user.getEmail());
-                    textview3.setText(user.getUid());
-                    textview4.setText(user.getFormattedJoined());
+                if (auth.getCurrentUser().getUid().equals(current_user.getUid())) {
+                    username.setText(current_user.getUsername());
+                    email.setText(current_user.getEmail());
+                    uid.setText(current_user.getUid());
+                    joined.setText(current_user.getFormattedJoined());
 
                     getFCMToken();
                 }
@@ -177,13 +221,11 @@ public class MyProfileActivity extends AppCompatActivity {
             final String errorMessage = task.getException() != null ? task.getException().getMessage() : "";
 
             if (task.isSuccessful()) {
-                users.child(current_uid).removeValue().addOnFailureListener(e -> {
-                    // Failed to delete the user from the database
+                users.child(current_user.getUid()).removeValue().addOnFailureListener(e -> {
                     Log.e(TAG, "Failed to delete user: " + e.getMessage());
                 });
 
-                profile_images.child(current_uid + ".png").delete().addOnFailureListener(e -> {
-                    // Failed to delete the image
+                profile_images.child(current_user.getUid() + ".png").delete().addOnFailureListener(e -> {
                     Log.e(TAG, "Failed to delete profile image: " + e.getMessage());
                 });
 
@@ -211,8 +253,8 @@ public class MyProfileActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 String token = task.getResult();
 
-                if (user.getDeviceToken() == null) {
-                    UserUtils.update("deviceToken", token);
+                if (current_user.getDeviceToken() == null) {
+                    UserUtils.update(Constants.User.DEVICE_TOKEN, token);
                 }
             }
         });
