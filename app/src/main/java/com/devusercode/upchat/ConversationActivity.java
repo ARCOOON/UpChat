@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,7 +22,6 @@ import com.devusercode.upchat.adapter.WrapLayoutManager;
 import com.devusercode.upchat.models.Message;
 import com.devusercode.upchat.models.User;
 import com.devusercode.upchat.utils.ConversationUtil;
-import com.devusercode.upchat.utils.SketchwareUtil;
 import com.devusercode.upchat.utils.UserUtils;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.appbar.AppBarLayout;
@@ -33,11 +31,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ConversationActivity extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
@@ -161,7 +157,7 @@ public class ConversationActivity extends AppCompatActivity {
 
         Query messages = conversations
                 .child(currentConversationId)
-                .child(Constants.Conversation.MESSAGES);
+                .child(Key.Conversation.MESSAGES);
 
         FirebaseRecyclerOptions<Message> options = new FirebaseRecyclerOptions.Builder<Message>()
                 .setQuery(messages, Message.class)
@@ -185,9 +181,9 @@ public class ConversationActivity extends AppCompatActivity {
         Map<String, String> data = new HashMap<>();
 
         DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference()
-                .child(Constants.CONVERSATIONS)
+                .child(Key.Conversation.CONVERSATIONS)
                 .child(currentConversationId)
-                .child(Constants.Conversation.MESSAGES);
+                .child(Key.Conversation.MESSAGES);
 
         String messageId = messagesRef.push().getKey();
 
@@ -196,11 +192,11 @@ public class ConversationActivity extends AppCompatActivity {
         }
 
         // Save the message data
-        data.put("message", message.trim());
-        data.put("messageId", messageId);
-        data.put("type", "text");
-        data.put("senderId", user.getUid());
-        data.put("timestamp", String.valueOf(System.currentTimeMillis()));
+        data.put(Key.Message.MESSAGE, message.trim());
+        data.put(Key.Message.ID, messageId);
+        data.put(Key.Message.TYPE, "text");
+        data.put(Key.Message.SENDER_ID, user.getUid());
+        data.put(Key.Message.TIMESTAMP, String.valueOf(System.currentTimeMillis()));
 
         messagesRef.child(messageId).setValue(data);
     }

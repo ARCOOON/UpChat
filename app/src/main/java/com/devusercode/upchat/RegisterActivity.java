@@ -202,13 +202,13 @@ public class RegisterActivity extends AppCompatActivity {
             HashMap<String, Object> userinfo = new HashMap<>();
             FirebaseUser user = auth.getCurrentUser();
 
-            userinfo.put(Constants.User.DEVICE_ID, DeviceId.getId());
-            userinfo.put(Constants.User.DEVICE_TOKEN, (token != null ? token : ""));
-            userinfo.put(Constants.User.USERNAME, user.getDisplayName());
-            userinfo.put(Constants.User.EMAIL, user.getEmail());
-            userinfo.put(Constants.User.UID, user.getUid());
-            userinfo.put(Constants.User.PHOTO_URL, (!downloadUrl.isEmpty()) ? downloadUrl : "");
-            userinfo.put(Constants.User.JOINED, String.valueOf(System.currentTimeMillis()));
+            userinfo.put(Key.User.DEVICE_ID, DeviceId.getId());
+            userinfo.put(Key.User.DEVICE_TOKEN, (token != null ? token : ""));
+            userinfo.put(Key.User.USERNAME, user.getDisplayName());
+            userinfo.put(Key.User.EMAIL, user.getEmail());
+            userinfo.put(Key.User.UID, user.getUid());
+            userinfo.put(Key.User.PHOTO_URL, (!downloadUrl.isEmpty()) ? downloadUrl : "");
+            userinfo.put(Key.User.JOINED, String.valueOf(System.currentTimeMillis()));
 
             users.child(user.getUid()).updateChildren(userinfo);
 

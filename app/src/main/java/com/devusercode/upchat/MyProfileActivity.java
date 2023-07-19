@@ -254,7 +254,7 @@ public class MyProfileActivity extends AppCompatActivity {
                 String token = task.getResult();
 
                 if (current_user.getDeviceToken() == null) {
-                    UserUtils.update(Constants.User.DEVICE_TOKEN, token);
+                    UserUtils.update(Key.User.DEVICE_TOKEN, token);
                 }
             }
         });

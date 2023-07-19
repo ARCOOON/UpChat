@@ -1,20 +1,17 @@
 package com.devusercode.upchat;
 
-public class Constants {
-    public static String CONVERSATIONS = "conversations";
-    public static String CONVERSATION_ID = "conversationId";
-    public static String MESSAGES = "messages";
-    public static String MEMBERS = "members";
+public class Key {
 
     public static class Conversation {
+        public static String CONVERSATIONS = "conversations";
         public static String CONVERSATION_ID = "conversationId";
         public static String MESSAGES = "messages";
         public static String MEMBERS = "members";
     }
 
     public static class Message {
+        public static final String ID = "messageId";
         public static String MESSAGE = "message";
-        public static String MESSAGE_ID = "messageId";
         public static String TYPE = "type";
         public static String SENDER_ID = "senderId";
         public static String TIMESTAMP = "timestamp";

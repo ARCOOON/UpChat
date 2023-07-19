@@ -42,7 +42,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String token) {
         Log.d(TAG, "new token: " + token);
-        UserUtils.update(Constants.User.DEVICE_TOKEN, token);
+        UserUtils.update(Key.User.DEVICE_TOKEN, token);
         super.onNewToken(token);
     }
 }
