@@ -31,11 +31,16 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/attach_button"
             style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_weight="0"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
             app:backgroundTint="@color/dark_purple_A200"
             app:icon="@drawable/ic_add_white"
+            app:iconPadding="0dp"
             app:iconTint="@color/white" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -44,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="Message"
-            android:padding="1dp"
+            android:padding="4dp"
             app:boxBackgroundColor="#E9E7E8"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
@@ -58,18 +63,22 @@
                 android:inputType="textMultiLine"
                 android:lines="3"
                 android:minLines="1"
-                android:scrollbars="vertical"
-                android:textColorLink="@color/light_green_500" />
+                android:scrollbars="vertical|horizontal" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/send_button"
             style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_weight="0"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
             app:backgroundTint="@color/dark_purple_A200"
             app:icon="@drawable/ic_send_white"
+            app:iconPadding="0dp"
             app:iconTint="@color/white" />
     </LinearLayout>
 </LinearLayout>

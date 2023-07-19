@@ -84,12 +84,10 @@ public class MessageAdapter extends FirebaseRecyclerAdapter<Message, RecyclerVie
 
     @Override
     protected void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull Message model) {
-        if (holder instanceof SentMessageViewHolder) {
-            SentMessageViewHolder sentViewHolder = (SentMessageViewHolder) holder;
+        if (holder instanceof SentMessageViewHolder sentViewHolder) {
             sentViewHolder.bind(model);
 
-        } else if (holder instanceof ReceivedMessageViewHolder) {
-            ReceivedMessageViewHolder receivedViewHolder = (ReceivedMessageViewHolder) holder;
+        } else if (holder instanceof ReceivedMessageViewHolder receivedViewHolder) {
             receivedViewHolder.bind(model);
         }
     }
@@ -163,7 +161,7 @@ public class MessageAdapter extends FirebaseRecyclerAdapter<Message, RecyclerVie
 
     private static void showTooltipOverlay(View anchorView, Message model) {
         // Inflate the tooltip overlay layout
-        View tooltipView = LayoutInflater.from(anchorView.getContext()).inflate(R.layout.conversation_bottom_sheet, null);
+        View tooltipView = LayoutInflater.from(anchorView.getContext()).inflate(R.layout.item_conversation_popup, null);
         LinearLayout root_layout = tooltipView.findViewById(R.id.root_layout);
 
         Util.setCornerRadius(root_layout, 50);
@@ -210,41 +208,5 @@ public class MessageAdapter extends FirebaseRecyclerAdapter<Message, RecyclerVie
 
         popupWindow.showAsDropDown(anchorView);
         popupWindow.setAnimationStyle(R.style.ConversationPopupWindow);
-    }
-
-    private void showBottomSheetDialog(Context context, Message model) {
-        View bottomSheetView = LayoutInflater.from(context).inflate(R.layout.conversation_bottom_sheet, null);
-        BottomSheetDialog dialog = new BottomSheetDialog(context);
-
-        bottomSheetView.findViewById(R.id.delete_button).setOnClickListener(v -> {
-            if (model.getSenderId().equals(fuser.getUid())) {
-                String messageId = model.getMessageId();
-
-                DatabaseReference messageRef = FirebaseDatabase.getInstance().getReference()
-                        .child("conversations")
-                        .child(conversationId)
-                        .child("messages")
-                        .child(messageId);
-
-                messageRef.removeValue()
-                        .addOnCompleteListener(task -> {
-                            dialog.cancel();
-                        })
-                        .addOnFailureListener(error -> {
-                            // Failed to delete the message
-                            Log.e(TAG, error.getMessage());
-                        });
-            } else {
-                Log.d(TAG, "No permission to delete the message");
-            }
-        });
-
-        dialog.setContentView(bottomSheetView);
-        dialog.show();
-
-        // Optional: Customize bottom sheet behavior if needed
-        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from((View) bottomSheetView.getParent());
-        behavior.setPeekHeight(300); // Set desired peek height
-        behavior.setState(BottomSheetBehavior.STATE_EXPANDED); // Set initial state
     }
 }

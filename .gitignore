@@ -33,4 +33,7 @@ google-services.json
 *.hprof
 
 # Windows batch scripts
-*.bat
+push-apk.bat
+
+# All text files
+*.txt
