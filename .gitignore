@@ -37,3 +37,7 @@ push-apk.bat
 
 # All text files
 *.txt
+
+# Ignore all .md files except README.md
+*.md
+!README.md

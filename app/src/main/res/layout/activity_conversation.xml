@@ -25,20 +25,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical|center_horizontal"
+        android:gravity="center"
         android:paddingBottom="8dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/attach_button"
             style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_weight="0"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
-            app:backgroundTint="@color/dark_purple_A200"
+            app:backgroundTint="@color/colorAccent"
             app:icon="@drawable/ic_add_white"
             app:iconPadding="0dp"
             app:iconTint="@color/white" />
@@ -69,14 +69,14 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/send_button"
             style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_weight="0"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
-            app:backgroundTint="@color/dark_purple_A200"
+            app:backgroundTint="@color/colorAccent"
             app:icon="@drawable/ic_send_white"
             app:iconPadding="0dp"
             app:iconTint="@color/white" />

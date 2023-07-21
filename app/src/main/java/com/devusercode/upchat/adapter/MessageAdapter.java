@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.devusercode.upchat.R;
 import com.devusercode.upchat.models.Message;
+import com.devusercode.upchat.models.User;
 import com.devusercode.upchat.utils.GetTimeAgo;
 import com.devusercode.upchat.utils.Util;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -35,13 +36,15 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class MessageAdapter extends FirebaseRecyclerAdapter<Message, RecyclerView.ViewHolder> {
     private static final String TAG = MessageAdapter.class.getSimpleName();
-    private static final int VIEW_TYPE_MESSAGE_SENT = 1;
-    private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
+    private static final int VIEW_TYPE_MESSAGE_SENT = 0;
+    private static final int VIEW_TYPE_MESSAGE_RECEIVED = 1;
+    private static final int VIEW_TYPE_SYSTEM_MESSAGE = 2;
 
     private final Context currentContext;
     private static final FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
 
     private static String conversationId;
+    private User participant;
 
     public MessageAdapter(@NonNull Context context, @NonNull FirebaseRecyclerOptions<Message> options) {
         super(options);
@@ -52,12 +55,18 @@ public class MessageAdapter extends FirebaseRecyclerAdapter<Message, RecyclerVie
         this.conversationId = conversationId;
     }
 
+    public void setParticipant(User user) {
+        this.participant = user;
+    }
+
     @Override
     public int getItemViewType(int position) {
         Message message = getSnapshots().get(position);
 
         if (message.getSenderId().equals(fuser.getUid())) {
             return VIEW_TYPE_MESSAGE_SENT;
+        } else if (message.getSenderId().equals("system")) {
+            return VIEW_TYPE_SYSTEM_MESSAGE;
         } else {
             return VIEW_TYPE_MESSAGE_RECEIVED;
         }
@@ -77,6 +86,11 @@ public class MessageAdapter extends FirebaseRecyclerAdapter<Message, RecyclerVie
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             view = inflater.inflate(R.layout.item_conversation_received, parent, false);
             return new ReceivedMessageViewHolder(view);
+
+        } else if (viewType == VIEW_TYPE_SYSTEM_MESSAGE) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            view = inflater.inflate(R.layout.item_conversation_system, parent, false);
+            return new SystemViewHolder(view);
         }
 
         return null;
@@ -89,6 +103,27 @@ public class MessageAdapter extends FirebaseRecyclerAdapter<Message, RecyclerVie
 
         } else if (holder instanceof ReceivedMessageViewHolder receivedViewHolder) {
             receivedViewHolder.bind(model);
+
+        } else if (holder instanceof SystemViewHolder systemViewHolder) {
+            systemViewHolder.bind(model);
+        }
+    }
+
+    static class SystemViewHolder extends RecyclerView.ViewHolder {
+        TextView message;
+        MaterialCardView cardview;
+        LinearLayout root_layout;
+
+        public SystemViewHolder(@NonNull View view) {
+            super(view);
+            root_layout = view.findViewById(R.id.root_layout);
+            cardview = view.findViewById(R.id.materialcardview1);
+            message = view.findViewById(R.id.message_content);
+        }
+
+        public void bind(@NonNull Message model) {
+            Log.d(TAG, "senderId: system");
+            message.setText(model.getMessage().trim());
         }
     }
 

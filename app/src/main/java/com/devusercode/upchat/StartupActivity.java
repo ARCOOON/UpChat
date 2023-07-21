@@ -54,9 +54,13 @@ public class StartupActivity extends AppCompatActivity implements UpdateHelper.O
     public void onUpdateAvailable(String urlApp) {
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle("New App Version Available")
-                .setMessage("Please update to use all the latest features and bug fixes")
+                .setMessage("Please update to the latest build,\nfor the latest features and bug fixes")
                 .setPositiveButton("Update", (dialogInterface, which) -> redirectStore(urlApp))
                 .setNegativeButton("Close", (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
+                    initialize();
+                })
+                .setOnCancelListener((dialogInterface) -> {
                     dialogInterface.dismiss();
                     initialize();
                 })
@@ -69,7 +73,7 @@ public class StartupActivity extends AppCompatActivity implements UpdateHelper.O
     public void onUpdateRequired(String urlApp) {
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle("New App Version Required")
-                .setMessage("An app update is required!")
+                .setMessage("An app update is required, to run this app!")
                 .setPositiveButton("Update", (dialogInterface, which) -> redirectStore(urlApp))
                 .setCancelable(false)
                 .create();

@@ -134,21 +134,15 @@ public class ConversationUtil {
                     if (conversation != null) {
                         onFinish.accept(new ConversationResult(conversation));
                     } else {
-                        Error error = new Error("Unknown error: error while retrieving the conversation!");
-                        Log.e(STAG, error.getMessage());
-
+                        Error error = new Error("Unknown error while retrieving the conversation!");
                         onFinish.accept(new ConversationResult(null, error));
                     }
                 } else {
-                    Error error = new Error("ConversationNotFound");
-                    Log.e(STAG, error.getMessage());
-
+                    Error error = new Error("ConversationNotFound (" + cid + ")");
                     onFinish.accept(new ConversationResult(null, error));
                 }
             } else {
                 Error error = new Error(task.getException().getMessage());
-                Log.e(STAG, error.getMessage());
-
                 onFinish.accept(new ConversationResult(null, error));
             }
         });

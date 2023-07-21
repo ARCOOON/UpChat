@@ -95,13 +95,13 @@ public class UserUtils {
                     if (user != null) {
                         onFinish.accept(new Result(user));
                     } else {
-                        Error error = new Error("Unknown error: error while retrieving the user!");
+                        Error error = new Error("Unknown error while retrieving, User (" + uid + ")");
                         Log.e(STAG, error.getMessage());
 
                         onFinish.accept(new Result(null, error));
                     }
                 } else {
-                    Error error = new Error("UserNotFound");
+                    Error error = new Error("UserNotFound (" + uid + ")");
                     Log.e(STAG, error.getMessage());
 
                     onFinish.accept(new Result(null, error));

@@ -17,12 +17,15 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
+
+import androidx.exifinterface.media.ExifInterface;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,11 +34,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class FileUtil {
+    private final static String TAG = FileUtil.class.getSimpleName();
 
     private static void createNewFile(String path) {
         int lastSep = path.lastIndexOf(File.separator);
@@ -47,7 +53,9 @@ public class FileUtil {
         File file = new File(path);
 
         try {
-            if (!file.exists()) file.createNewFile();
+            if (!file.exists()) {
+                file.createNewFile();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -59,7 +67,7 @@ public class FileUtil {
         StringBuilder sb = new StringBuilder();
         FileReader fr = null;
         try {
-            fr = new FileReader(new File(path));
+            fr = new FileReader(path);
 
             char[] buff = new char[1024];
             int length = 0;
@@ -87,7 +95,7 @@ public class FileUtil {
         FileWriter fileWriter = null;
 
         try {
-            fileWriter = new FileWriter(new File(path), false);
+            fileWriter = new FileWriter(path, false);
             fileWriter.write(str);
             fileWriter.flush();
         } catch (IOException e) {
@@ -144,8 +152,13 @@ public class FileUtil {
         File[] files = oldFile.listFiles();
         File newFile = new File(newPath);
         if (!newFile.exists()) {
-            newFile.mkdirs();
+            boolean f = newFile.mkdirs();
         }
+
+        if (files == null) {
+            return;
+        }
+
         for (File file : files) {
             if (file.isFile()) {
                 copyFile(file.getPath(), newPath + "/" + file.getName());
@@ -293,7 +306,9 @@ public class FileUtil {
 
         if (path != null) {
             try {
-                return URLDecoder.decode(path, "UTF-8");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    return URLDecoder.decode(path, StandardCharsets.UTF_8);
+                }
             } catch (Exception e) {
                 return null;
             }
@@ -313,7 +328,7 @@ public class FileUtil {
                 return cursor.getString(column_index);
             }
         } catch (Exception e) {
-
+            Log.e(TAG, e.getMessage());
         }
         return null;
     }
@@ -415,8 +430,7 @@ public class FileUtil {
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(color);
-        canvas.drawCircle(src.getWidth() / 2, src.getHeight() / 2,
-                src.getWidth() / 2, paint);
+        canvas.drawCircle(src.getWidth() / 2, src.getHeight() / 2, src.getWidth() / 2, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(src, rect, rect, paint);
 
@@ -568,17 +582,9 @@ public class FileUtil {
             int iOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1);
 
             switch (iOrientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    rotate = 90;
-                    break;
-
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    rotate = 180;
-                    break;
-
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    rotate = 270;
-                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90 -> rotate = 90;
+                case ExifInterface.ORIENTATION_ROTATE_180 -> rotate = 180;
+                case ExifInterface.ORIENTATION_ROTATE_270 -> rotate = 270;
             }
         } catch (IOException e) {
             return 0;
@@ -588,7 +594,7 @@ public class FileUtil {
     }
 
     public static File createNewPictureFile(Context context) {
-        SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
         String fileName = date.format(new Date()) + ".jpg";
         return new File(context.getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath() + File.separator + fileName);
     }

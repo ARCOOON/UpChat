@@ -18,7 +18,7 @@ import java.util.Locale;
 public class Util {
     private static final String TAG = "Util";
 
-    public static String FormatJoined(String joined, String _format) {
+    public static String FormatTime(String joined, String _format) {
         Date date = new Date(Long.parseLong(joined));
         return new SimpleDateFormat(_format, Locale.getDefault()).format(date);
     }
@@ -31,7 +31,7 @@ public class Util {
     }
 
     public static String parseTime(String joined) {
-        return FormatJoined(joined, "dd/MM/yyyy HH:mm");
+        return FormatTime(joined, "dd/MM/yyyy HH:mm");
     }
 
     public static void setCornerRadius(View view, float cornerRadius) {

@@ -1,20 +1,23 @@
 package com.devusercode.upchat;
 
 public class Key {
+    public static final String API_KEY = "AIzaSyBhEaPNNyzZjZryMITa9yhhhALfUoBUWwg";
+    public static final String APP_ID = "upchat-ca3dd";
 
     public static class Conversation {
-        public static String CONVERSATIONS = "conversations";
-        public static String CONVERSATION_ID = "conversationId";
-        public static String MESSAGES = "messages";
-        public static String MEMBERS = "members";
+        public static final String CONVERSATIONS = "conversations";
+        public static final String CONVERSATION_ID = "conversationId";
+        public static final String MESSAGES = "messages";
+        public static final String MEMBERS = "members";
     }
 
     public static class Message {
         public static final String ID = "messageId";
-        public static String MESSAGE = "message";
-        public static String TYPE = "type";
-        public static String SENDER_ID = "senderId";
-        public static String TIMESTAMP = "timestamp";
+        public static final String MESSAGE = "message";
+        public static final String TYPE = "type";
+        public static final String SENDER_ID = "senderId";
+        public static final String TIMESTAMP = "timestamp";
+        public static final String SEEN = "seen";
     }
 
     public static class User {

@@ -84,6 +84,11 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
                 if (last_msg == null) {
                     last_message_text.setText("No messages available.");
                     last_message_time.setVisibility(View.GONE);
+
+                } else if (last_msg.getSenderId().equals("system")) {
+                    last_message_text.setVisibility(View.GONE);
+                    last_message_time.setVisibility(View.GONE);
+
                 } else {
                     last_message_text.setText(last_msg.getMessage());
                     last_message_time.setText(last_msg.getParsedTime());

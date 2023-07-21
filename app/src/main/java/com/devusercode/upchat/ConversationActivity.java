@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -32,8 +33,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ConversationActivity extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
@@ -59,6 +72,7 @@ public class ConversationActivity extends AppCompatActivity {
     private User participant;
     private User user;
     private String currentConversationId;
+    private boolean chatExists = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +143,12 @@ public class ConversationActivity extends AppCompatActivity {
         });
 
         send_button.setOnClickListener(view -> {
+            if (!chatExists) {
+                currentConversationId = ConversationUtil.newConversation(user, participant);
+                Log.d(TAG, "Conversation (" + currentConversationId + ") created");
+                loadConversation(currentConversationId);
+            }
+
             if (!message_input.getText().toString().isEmpty()) {
                 sendMessage(message_input.getText().toString());
                 message_input.setText("");
@@ -147,14 +167,15 @@ public class ConversationActivity extends AppCompatActivity {
             profile_image.setImageResource(R.drawable.ic_account_circle_black);
         }
 
-        boolean chatExists = ConversationUtil.conversationExistsForBoth(user, participant);
+        chatExists = ConversationUtil.conversationExistsForBoth(user, participant);
 
-        if (!chatExists) {
-            currentConversationId = ConversationUtil.newConversation(user, participant);
-        } else {
+        if (chatExists) {
             currentConversationId = ConversationUtil.getConversationId(participant, user.getConversations());
+            loadConversation(currentConversationId);
         }
+    }
 
+    private void loadConversation(String cid) {
         Query messages = conversations
                 .child(currentConversationId)
                 .child(Key.Conversation.MESSAGES);
@@ -164,7 +185,8 @@ public class ConversationActivity extends AppCompatActivity {
                 .build();
 
         adapter = new MessageAdapter(getApplicationContext(), options);
-        adapter.setConversationId(currentConversationId);
+        adapter.setConversationId(cid);
+        adapter.setParticipant(participant);
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -199,6 +221,48 @@ public class ConversationActivity extends AppCompatActivity {
         data.put(Key.Message.TIMESTAMP, String.valueOf(System.currentTimeMillis()));
 
         messagesRef.child(messageId).setValue(data);
+
+        try {
+            sendNotification(message);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    private void sendNotification(String message) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+
+        JSONObject notificationObj = new JSONObject();
+        notificationObj.put("title", user.getUsername());
+        notificationObj.put("body", message);
+
+        JSONObject dataObj = new JSONObject();
+        dataObj.put("userId", user.getUid());
+
+        jsonObject.put("notification", notificationObj);
+        jsonObject.put("data", dataObj);
+        jsonObject.put("to", participant.getDeviceToken());
+
+        MediaType JSON = MediaType.get("application/json; charset=utf-8");
+        OkHttpClient client = new OkHttpClient();
+        String url = "https://fcm.googleapis.com/fcm/send";
+        RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .header("Authorization", "Bearer AIzaSyBhEaPNNyzZjZryMITa9yhhhALfUoBUWwg")
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+            }
+        });
     }
 
     private void getParticipant(String uid) {

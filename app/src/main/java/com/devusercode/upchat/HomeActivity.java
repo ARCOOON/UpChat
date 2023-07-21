@@ -58,11 +58,22 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         open_conversations = new ArrayList<>();
+        conversationsCounter = 0; // Reset the conversations counter
 
         for (String cid : user.getConversationIds()) {
             ConversationUtil.getConversationById(cid, task -> {
                 if (!task.isSuccessful()) {
                     Log.e(TAG, task.getError().getMessage());
+                    // Increment the conversationsCounter even for invalid conversations
+                    // so that we can still check when all iterations are completed.
+                    conversationsCounter++;
+
+                    // Check if we have processed all conversations
+                    if (conversationsCounter == user.getConversationIds().size()) {
+                        // Create the adapter with the valid conversations
+                        adapter = new HomeAdapter(open_conversations);
+                        recyclerview.setAdapter(adapter);
+                    }
                     return;
                 }
 
@@ -71,12 +82,16 @@ public class HomeActivity extends AppCompatActivity {
                         Log.e(TAG, result.getError().getMessage());
                     } else {
                         open_conversations.add(new UserPair(result.getUser(), cid));
-                        conversationsCounter++;
+                    }
 
-                        if (conversationsCounter == user.getConversationIds().size()) {
-                            adapter = new HomeAdapter(open_conversations);
-                            recyclerview.setAdapter(adapter);
-                        }
+                    // Increment the conversationsCounter after each iteration
+                    conversationsCounter++;
+
+                    // Check if we have processed all conversations
+                    if (conversationsCounter == user.getConversationIds().size()) {
+                        // Create the adapter with the valid conversations
+                        adapter = new HomeAdapter(open_conversations);
+                        recyclerview.setAdapter(adapter);
                     }
                 });
             });

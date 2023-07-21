@@ -20,8 +20,3 @@
                 + content
                 + timestamp
                 + type (optional)
-
--- HOME --
-open_conversations:
-    [uid, cid],
-    [uid, cid]
