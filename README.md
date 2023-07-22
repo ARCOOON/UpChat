@@ -20,12 +20,12 @@ UpChat is an open source messenger for android.
 - [x] Home
 	- [x] View all you chats
 	- [ ] Delete chats
-	- [ ] Main Activity
+	- [ ] Main Activity *(in prog)*
 
 - [x] View All Users (in Future: Add user)
 	- [x] View all users
 	- [ ] Block users
-	- [ ] View user profile
+	- [ ] View user profile *(in prog)*
 
 - [ ] Preferences
 	- [ ] Customise message design
