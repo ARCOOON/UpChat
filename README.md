@@ -4,11 +4,11 @@ UpChat is an open source messenger for android.
 
 # Status
 
-> **prog -> Work is in progress.**
+> **progrees** -> Work is in progress.
 
-> **dev -> Under development to enhance its appearance and functionality.**
+> **dev** -> Under development to enhance its appearance and functionality.
 
-> **curr -> Currently working on it.**
+> **current** -> Currently working on it.
 
 - [x] Conversation
 	- [x] Send Messages
@@ -16,18 +16,18 @@ UpChat is an open source messenger for android.
 	- [ ] Send Photos / Videos
 	- [ ] Send Audio
 	- [ ] Highlight Links
-	- [ ] Message Actions Delete, Reply and Edit *(prog)*
+	- [ ] Message Actions Delete, Reply and Edit *(progress)*
 	- [x] Messages design *(dev)*
 
 - [x] Home
 	- [x] View all you chats
 	- [ ] Delete chats
-	- [ ] Main Activity *(prog)*
+	- [ ] Main Activity *(progress)*
 
 - [x] View All Users (in Future: Add user)
 	- [x] View all users
 	- [ ] Block users
-	- [ ] View user profile *(curr)*
+	- [ ] View user profile *(current)*
 
 - [ ] Preferences
 	- [ ] Customise message design
