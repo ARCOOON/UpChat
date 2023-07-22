@@ -22,7 +22,7 @@ UpChat is an open source messenger for android.
 - [x] Home
 	- [x] View all you chats
 	- [ ] Delete chats
-	- [ ] Main Activity *(progress)*
+	- [ ] Replace Main Activity *(progress)*
 
 - [x] View All Users (in Future: Add user)
 	- [x] View all users
