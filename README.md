@@ -11,7 +11,7 @@ UpChat is an open source messenger for android.
 > **current** -> Currently working on it.
 
 - [x] Conversation
-	- [x] Send Messages
+	- [x] Send Message
 	- [ ] Send Files
 	- [ ] Send Photos / Videos
 	- [ ] Send Audio
@@ -22,7 +22,7 @@ UpChat is an open source messenger for android.
 - [x] Home
 	- [x] View all you chats
 	- [x] Delete a single message
-	- [ ] Delete conversation 
+	- [ ] Delete a conversation 
 	- [x] Is the Main Activity
 
 - [x] View All Users (in Future: Add user)
