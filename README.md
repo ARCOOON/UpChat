@@ -4,7 +4,7 @@ UpChat is an open source messenger for android.
 
 # Status
 
-> **progrees** -> Work is in progress.
+> **progress** -> Work is in progress.
 
 > **dev** -> Under development to enhance its appearance and functionality.
 
