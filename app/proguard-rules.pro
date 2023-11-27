@@ -1,1 +1,1 @@
-
+android.enableR8.fullMode=false
