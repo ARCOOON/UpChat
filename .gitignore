@@ -2,6 +2,13 @@
 .gradle/
 build/
 
+# Gradlew scripts
+gradlew
+gradlew.bat
+
+# Custom scripts
+push-github.bat
+
 # Local configuration file (sdk path, etc)
 local.properties
 
