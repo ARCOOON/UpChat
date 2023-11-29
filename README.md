@@ -15,11 +15,11 @@ UpChat is an open source messenger for android.
 - [x] Conversation
 	- [x] Send Message
 	- [ ] Send Files
-	- [ ] Send Photos / Videos
+	- [ ] Send Photos / Videos (Photos supported)
 	- [ ] Send Audio
 	- [ ] Highlight Links
-	- [ ] Message Actions Delete, Reply and Edit *(progress)*
-	- [x] Messages design *(dev)*
+	- [ ] Message Actions: Delete, Reply and Edit
+	- [x] Messages design
 
 - [x] Home
 	- [x] View all you chats
