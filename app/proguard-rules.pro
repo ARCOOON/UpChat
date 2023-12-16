@@ -19,9 +19,3 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-
-# Retrofit does reflection on generic parameters and InnerClass is required to use Signature.
-#-keepattributes Signature, InnerClasses
-
-android.enableR8=false
-android.enableR8.fullMode=false

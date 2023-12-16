@@ -11,7 +11,7 @@
     </item>
     <item>
         <shape>
-            <solid android:color="#80121212" />
+            <solid android:color="#66121212" />
         </shape>
     </item>
 </layer-list>

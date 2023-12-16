@@ -8,7 +8,7 @@ if "%commit_message%"=="" (
 )
 
 git commit -m "%commit_message%"
-git push -f origin main 2> error.log
+git push -f origin master 2> github-push-error.log
 
 if %errorlevel% equ 0 (
     echo Push successful. Closing in 5 seconds...

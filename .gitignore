@@ -6,9 +6,6 @@ build/
 gradlew
 gradlew.bat
 
-# Custom scripts
-push-github.bat
-
 # Local configuration file (sdk path, etc)
 local.properties
 
@@ -40,6 +37,7 @@ google-services.json
 *.hprof
 
 # Windows batch scripts
+push-github.bat
 push-apk.bat
 
 # All text files
@@ -48,3 +46,6 @@ push-apk.bat
 # Ignore all .md files except README.md
 *.md
 !README.md
+
+# macOS Desktop Services Store
+.DS_Store

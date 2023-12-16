@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/splash_background_image"
-    android:backgroundTintMode="screen"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ConversationActivity">
 
-    <!-- Top Bar -->
+    <!-- Tool Bar -->
     <include
         layout="@layout/toolbar_chat"
         android:layout_width="match_parent"
@@ -25,14 +26,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:gravity="center"
         android:paddingBottom="8dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/attach_button"
             style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_weight="0"
             android:insetLeft="0dp"
             android:insetTop="0dp"
@@ -44,16 +46,14 @@
             app:iconTint="@color/white" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="Message"
             android:padding="4dp"
-            app:boxBackgroundColor="#E9E7E8"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
-            app:hintTextColor="@android:color/transparent"
             app:shapeAppearanceOverlay="@style/TextInputLayout.Rounded">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -69,8 +69,8 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/send_button"
             style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_weight="0"
             android:insetLeft="0dp"
             android:insetTop="0dp"

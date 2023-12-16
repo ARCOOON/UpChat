@@ -1,7 +1,12 @@
 <resources>
+    <color name="colorAccentLight">#C397FF</color>
+    <color name="colorAccentLightTint">#B57DFF</color>
+    <color name="colorAccent">#8900FF</color>
+    <color name="colorAccentDarkTint">#7B00CC</color>
+    <color name="colorAccentDark">#5900A0</color>
+
     <color name="colorPrimary">#8d67f8</color>
     <color name="colorPrimaryDark">#7657CD</color>
-    <color name="colorAccent">#7342FD</color>
     <color name="colorControlHighlight">#7342FD</color>
     <color name="colorControlNormal">#A98FF3</color>
 

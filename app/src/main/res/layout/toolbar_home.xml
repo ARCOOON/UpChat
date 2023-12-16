@@ -6,38 +6,29 @@
     android:layout_height="wrap_content"
     android:theme="@style/AppTheme.AppBarOverlay">
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:navigationIcon="@null"
-        app:title="@string/app_name">
+        android:background="?attr/colorPrimary"
+        app:menu="@menu/home_menu"
+        app:popupTheme="@style/AppTheme.PopupOverlay">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_horizontal|center_vertical"
+            android:gravity="start|center_vertical"
             android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/toolbar_icon"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@null"
-                android:padding="4dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_launcher" />
-
             <TextView
-                android:id="@+id/toolbar_title"
+                android:id="@+id/toolbar_profile_name"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="@string/app_name"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
+                android:textColor="#DDD1FF"
+                android:textSize="20sp" />
         </LinearLayout>
 
-    </com.google.android.material.appbar.MaterialToolbar>
+    </androidx.appcompat.widget.Toolbar>
 </com.google.android.material.appbar.AppBarLayout>

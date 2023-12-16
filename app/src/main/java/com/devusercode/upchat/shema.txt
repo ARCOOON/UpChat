@@ -20,3 +20,33 @@
                 + content
                 + timestamp
                 + type (optional)
+
+User Object
+    + deviceId
+    + deviceToken
+    + username
+    + email
+    + uid
+    + joined
+    + online
+    + conversation List<UserPair>
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Delete message:
+    delete -> /conversations/$cid/$mid
+
+Delete User:
+    for uid, room in user.conversations:
+        + delete /conversations/$room
+        + delete /users/$uid/conversation/$auth.uid
+
+    delete -> /users/$auth.uid
+    delete -> auth
+
+END-TO-END:
+    Generate Keys: Each user generates their public-private key pair.
+    Key Exchange: Users exchange public keys with each other through a secure channel (e.g., HTTPS or a QR code scan).
+    Encrypt Messages: When sending a message, the sender encrypts the message using the recipient's public key.
+    Decrypt Messages: The recipient decrypts the received message using their private key.
+    Secure Key Management: Keep the private keys securely stored on the user's device, and never share them with others.
