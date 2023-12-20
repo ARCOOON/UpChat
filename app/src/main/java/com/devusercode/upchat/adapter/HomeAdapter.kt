@@ -18,8 +18,8 @@ import com.devusercode.upchat.models.UserPair
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.utils.ConversationUtil
 import com.google.android.material.card.MaterialCardView
-import java.lang.RuntimeException
 
+@RequiresApi(Build.VERSION_CODES.O)
 class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeAdapter.HomeViewHolder>() {
     private val TAG = "HomeAdapter"
 
@@ -46,19 +46,19 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
 
     class HomeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var username: TextView
-        var last_message_text: TextView
-        var last_message_time: TextView
-        var materialcardview1: MaterialCardView
-        var profile_image: ImageView
-        var online_status: ImageView
+        var lastMessageText: TextView
+        var lastMessageTime: TextView
+        var materialCardView: MaterialCardView
+        var profileImage: ImageView
+        var onlineStatus: ImageView
 
         init {
-            materialcardview1 = view.findViewById(R.id.materialcardview1)
-            profile_image = view.findViewById(R.id.profile_image)
-            online_status = view.findViewById(R.id.online_status)
+            materialCardView = view.findViewById(R.id.materialcardview1)
+            profileImage = view.findViewById(R.id.profile_image)
+            onlineStatus = view.findViewById(R.id.online_status)
             username = view.findViewById(R.id.username)
-            last_message_text = view.findViewById(R.id.last_message_text)
-            last_message_time = view.findViewById(R.id.last_message_time)
+            lastMessageText = view.findViewById(R.id.last_message_text)
+            lastMessageTime = view.findViewById(R.id.last_message_time)
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
@@ -69,36 +69,36 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
             username.text = user.username
 
             if (user.online.toBoolean()) {
-                online_status.setImageResource(R.drawable.ic_status_online)
+                onlineStatus.setImageResource(R.drawable.ic_status_online)
             } else {
-                online_status.setImageResource(R.drawable.ic_status_offline)
+                onlineStatus.setImageResource(R.drawable.ic_status_offline)
             }
 
             if (user.photoUrl!!.isNotEmpty()) {
-                Glide.with(profile_image.context).load(Uri.parse(user.photoUrl))
+                Glide.with(profileImage.context).load(Uri.parse(user.photoUrl))
                     .placeholder(R.drawable.ic_account_circle_black).circleCrop()
-                    .into(profile_image)
+                    .into(profileImage)
             } else {
-                profile_image.setImageResource(R.drawable.ic_account_circle_black)
+                profileImage.setImageResource(R.drawable.ic_account_circle_black)
             }
 
-            ConversationUtil.getLastMessage(cid) { last_msg ->
-                if (last_msg == null) {
-                    last_message_text.visibility = View.GONE
-                    last_message_time.visibility = View.GONE
+            ConversationUtil.getLastMessage(cid) { lastMsg ->
+                if (lastMsg == null) {
+                    lastMessageText.visibility = View.GONE
+                    lastMessageTime.visibility = View.GONE
 
-                } else if (last_msg.senderId.equals("system")) {
-                    last_message_text.visibility = View.GONE
-                    last_message_time.visibility = View.GONE
+                } else if (lastMsg.senderId.equals("system")) {
+                    lastMessageText.visibility = View.GONE
+                    lastMessageTime.visibility = View.GONE
 
                 } else {
                     val aes = AES(user.uid!!)
-                    last_message_text.text = aes.decrypt(last_msg.message!!)
-                    last_message_time.text = last_msg.parsedTime
+                    lastMessageText.text = aes.decrypt(lastMsg.message!!)
+                    lastMessageTime.text = lastMsg.parsedTime
                 }
             }
 
-            materialcardview1.setOnClickListener { view: View ->
+            materialCardView.setOnClickListener { view: View ->
                 val intent = Intent(view.context, ConversationActivity::class.java)
                 intent.putExtra("uid", user.uid)
                 view.context.startActivity(intent)

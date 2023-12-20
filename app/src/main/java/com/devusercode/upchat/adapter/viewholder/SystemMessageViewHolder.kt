@@ -1,6 +1,5 @@
 package com.devusercode.upchat.adapter.viewholder
 
-import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -13,10 +12,10 @@ class SystemMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val TAG = "MessageAdapter@SystemMessageViewHolder"
     var message: TextView
     var cardview: MaterialCardView
-    var root_layout: LinearLayout
+    var rootLayout: LinearLayout
 
     init {
-        root_layout = view.findViewById(R.id.root_layout)
+        rootLayout = view.findViewById(R.id.root_layout)
         cardview = view.findViewById(R.id.materialcardview1)
         message = view.findViewById(R.id.message_content)
     }

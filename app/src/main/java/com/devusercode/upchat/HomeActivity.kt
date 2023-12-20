@@ -1,12 +1,14 @@
 package com.devusercode.upchat
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +27,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
+@RequiresApi(Build.VERSION_CODES.O)
 class HomeActivity : AppCompatActivity() {
     private val TAG = this.javaClass.simpleName
     private val auth = FirebaseAuth.getInstance()
@@ -52,6 +55,11 @@ class HomeActivity : AppCompatActivity() {
 
             R.id.menu_item_logout -> {
                 auth.signOut()
+
+                storageController["save_login_info"] = false
+                storageController.remove("email")
+                storageController.remove("password")
+
                 startActivity(Intent(this, LoginActivity::class.java))
             }
         }

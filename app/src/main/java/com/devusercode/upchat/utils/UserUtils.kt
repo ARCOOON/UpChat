@@ -55,6 +55,7 @@ class UserUtils {
 
                     if (dataSnapshot.exists()) {
                         val user = dataSnapshot.getValue(User::class.java)
+
                         if (user != null) {
                             withContext(Dispatchers.Main) {
                                 onFinish?.accept(Result(user, ErrorCodes.SUCCESS))
@@ -82,12 +83,7 @@ class UserUtils {
 
 
         fun update(field: String?, value: Any?) {
-            val user = FirebaseAuth.getInstance().currentUser
-
-            if (user == null) {
-                Log.d(TAG, "User is null")
-                return
-            }
+            val user = FirebaseAuth.getInstance().currentUser ?: return
 
             val uid = user.uid
             val ref = FirebaseDatabase.getInstance().reference.child("users").child(uid)

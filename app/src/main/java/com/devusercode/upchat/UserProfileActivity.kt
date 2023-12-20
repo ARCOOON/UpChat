@@ -19,8 +19,6 @@ class UserProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
 
-        val dataIntent = intent
-
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val backButton = toolbar.findViewById<Button>(R.id.back_button)
 
@@ -28,8 +26,8 @@ class UserProfileActivity : AppCompatActivity() {
 
         backButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
-        if (dataIntent != null && dataIntent.extras != null) {
-            val userid = dataIntent.getStringExtra("uid")!!
+        if (intent != null && intent.extras != null) {
+            val userid = intent.getStringExtra("uid")!!
 
             UserUtils.getUserByUid(userid) { result ->
                 if (result.code == ErrorCodes.SUCCESS) {

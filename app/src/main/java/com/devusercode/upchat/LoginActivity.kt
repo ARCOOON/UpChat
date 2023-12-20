@@ -1,12 +1,14 @@
 package com.devusercode.upchat
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.devusercode.upchat.utils.StorageController
 import com.devusercode.upchat.utils.Util
@@ -17,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 
+@RequiresApi(Build.VERSION_CODES.O)
 class LoginActivity : AppCompatActivity() {
     private val TAG = this.javaClass.simpleName
     private val auth = FirebaseAuth.getInstance()

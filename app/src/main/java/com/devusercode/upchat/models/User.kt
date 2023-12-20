@@ -43,18 +43,18 @@ class User() {
 
     val info: HashMap<String, Any?>
         get() {
-            val _userinfo = HashMap<String, Any?>()
+            val userInfo = HashMap<String, Any?>()
 
-            _userinfo["deviceId"] = deviceId
-            _userinfo["deviceToken"] = deviceToken
-            _userinfo["username"] = username
-            _userinfo["email"] = email
-            _userinfo["uid"] = uid
-            _userinfo["photoUrl"] = photoUrl
-            _userinfo["joined"] = joined
-            _userinfo["online"] = online
-            _userinfo["conversations"] = conversations
+            userInfo["deviceId"] = deviceId
+            userInfo["deviceToken"] = deviceToken
+            userInfo["username"] = username
+            userInfo["email"] = email
+            userInfo["uid"] = uid
+            userInfo["photoUrl"] = photoUrl
+            userInfo["joined"] = joined
+            userInfo["online"] = online
+            userInfo["conversations"] = conversations
 
-            return _userinfo
+            return userInfo
         }
 }

@@ -13,7 +13,6 @@ import com.bumptech.glide.Glide
 import com.devusercode.upchat.R
 import com.devusercode.upchat.adapter.MessageAdapter
 import com.devusercode.upchat.models.Message
-import com.devusercode.upchat.models.User
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.security.MAC
 import com.devusercode.upchat.utils.GetTimeAgo
@@ -21,11 +20,11 @@ import com.devusercode.upchat.utils.GetTimeAgo
 class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view) {
     private val TAG = "MessageAdapter@SentImageViewHolder"
 
-    private var message: TextView = view.findViewById(R.id.message_content)
-    private var image_view: ImageView = view.findViewById(R.id.image_view)
-    private var time: TextView = view.findViewById(R.id.message_time)
-    private var cardview: LinearLayout = view.findViewById(R.id.materialcardview1)
-    private var root_layout: LinearLayout = view.findViewById(R.id.root_layout)
+    private var messageView: TextView = view.findViewById(R.id.message_content)
+    private var imageView: ImageView = view.findViewById(R.id.image_view)
+    private var timeView: TextView = view.findViewById(R.id.message_time)
+    private var cardView: LinearLayout = view.findViewById(R.id.materialcardview1)
+    private var rootLayout: LinearLayout = view.findViewById(R.id.root_layout)
     private var verified: ImageView = view.findViewById(R.id.message_verified)
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -33,15 +32,15 @@ class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view
         val aes = AES(uid)
         val mac = MAC(cid)
 
-        var _message = model.message
+        var message = model.message
 
         if (model.message != null) {
-            _message = aes.decrypt(model.message!!)
+            message = aes.decrypt(model.message!!)
         }
 
         if (model.mac != null) {
-            val mac_generated = mac.generate(_message!!)
-            val verify = mac.verifyMAC(model.mac!!, mac_generated)
+            val messageMac = mac.generate(message!!)
+            val verify = mac.verifyMAC(model.mac!!, messageMac)
 
             if (verify) {
                 verified.visibility = View.VISIBLE
@@ -50,14 +49,14 @@ class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view
             }
         }
 
-        message.text = _message
-        time.text = GetTimeAgo.parse(model.timestamp!!)
+        messageView.text = message
+        timeView.text = GetTimeAgo.parse(model.timestamp!!)
 
         Log.d(TAG, "Url: ${model.url} | Uri: ${Uri.parse(model.url)}")
 
-        Glide.with(view.context).load(Uri.parse(model.url)).into(image_view)
+        Glide.with(view.context).load(Uri.parse(model.url)).into(imageView)
 
-        cardview.setOnLongClickListener { view: View ->
+        cardView.setOnLongClickListener { view: View ->
             MessageAdapter.showTooltipOverlay(view, model)
             true
         }

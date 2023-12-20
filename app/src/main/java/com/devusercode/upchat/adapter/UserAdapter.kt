@@ -26,13 +26,14 @@ import com.google.firebase.auth.FirebaseAuth
 class UserAdapter(app: AppCompatActivity, options: FirebaseRecyclerOptions<User?>) :
     FirebaseRecyclerAdapter<User, UserAdapter.UserViewHolder>(options) {
     private val TAG = this.javaClass.simpleName
-    private val fuser = FirebaseAuth.getInstance().currentUser
+
+    private val firebaseUser = FirebaseAuth.getInstance().currentUser
     private val context = app.applicationContext
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: UserViewHolder, position: Int, user: User) {
         // Exclude yourself from the list
-        if (fuser != null && user.uid == fuser.uid) {
+        if (firebaseUser != null && user.uid == firebaseUser.uid) {
             holder.root.visibility = View.GONE
             return
         }
@@ -45,21 +46,21 @@ class UserAdapter(app: AppCompatActivity, options: FirebaseRecyclerOptions<User?
         if (user.photoUrl!!.isNotEmpty()) {
             Glide.with(context).load(Uri.parse(user.photoUrl))
                 .placeholder(R.drawable.ic_account_circle_black).circleCrop()
-                .into(holder.profile_image)
+                .into(holder.profileImage)
         } else {
-            holder.profile_image.setImageResource(R.drawable.ic_account_circle_black)
+            holder.profileImage.setImageResource(R.drawable.ic_account_circle_black)
         }
 
 
         // Handle add user button click
-        holder.add_user_button.setOnClickListener {
+        holder.addUserButton.setOnClickListener {
             val intent = Intent(context, ConversationActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.putExtra("uid", user.uid)
             context.startActivity(intent)
         }
 
-        holder.materialcardview1.setOnClickListener {
+        holder.materialCardView.setOnClickListener {
             val intent = Intent(context, UserProfileActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.putExtra("uid", user.uid)
@@ -76,18 +77,18 @@ class UserAdapter(app: AppCompatActivity, options: FirebaseRecyclerOptions<User?
     class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var username: TextView
         var email: TextView
-        var profile_image: ImageView
+        var profileImage: ImageView
         var root: LinearLayout
-        var materialcardview1: MaterialCardView
-        var add_user_button: Button
+        var materialCardView: MaterialCardView
+        var addUserButton: Button
 
         init {
             root = view.findViewById(R.id.linear1)
-            materialcardview1 = view.findViewById(R.id.materialcardview1)
-            profile_image = view.findViewById(R.id.profile_image)
+            materialCardView = view.findViewById(R.id.materialcardview1)
+            profileImage = view.findViewById(R.id.profile_image)
             username = view.findViewById(R.id.username)
             email = view.findViewById(R.id.email)
-            add_user_button = view.findViewById(R.id.add_user_button)
+            addUserButton = view.findViewById(R.id.add_user_button)
         }
     }
 }

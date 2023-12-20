@@ -27,6 +27,7 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
+@RequiresApi(Build.VERSION_CODES.O)
 class MessageAdapter(
     private val currentContext: Context, options: FirebaseRecyclerOptions<Message?>
 ) : FirebaseRecyclerAdapter<Message, RecyclerView.ViewHolder>(options) {
@@ -67,7 +68,7 @@ class MessageAdapter(
         val message = snapshots[position]
 
         return when (message.senderId) {
-            fuser!!.uid -> {
+            firebase_user!!.uid -> {
                 if (message.type == MessageType.IMAGE) {
                     MessageSender.MESSAGE_SENT_IMAGE
                 } else {
@@ -124,7 +125,6 @@ class MessageAdapter(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, model: Message) {
         when (holder) {
             is SentMessageViewHolder -> {
@@ -136,7 +136,7 @@ class MessageAdapter(
             }
 
             is ReceivedMessageViewHolder -> {
-                holder.bind(model, conversationId!!, fuser!!.uid)
+                holder.bind(model, conversationId!!, firebase_user!!.uid)
             }
 
             is SystemMessageViewHolder -> {
@@ -147,7 +147,7 @@ class MessageAdapter(
 
     companion object {
         private val TAG = MessageAdapter::class.java.simpleName
-        private val fuser = FirebaseAuth.getInstance().currentUser
+        private val firebase_user = FirebaseAuth.getInstance().currentUser
         private val conversationId: String? = null
 
         @SuppressLint("InflateParams")
@@ -155,9 +155,9 @@ class MessageAdapter(
             // Inflate the tooltip overlay layout
             val tooltipView = LayoutInflater.from(anchorView.context)
                 .inflate(R.layout.item_conversation_popup, null)
-            val root_layout = tooltipView.findViewById<LinearLayout>(R.id.root_layout)
+            val rootLayout = tooltipView.findViewById<LinearLayout>(R.id.root_layout)
 
-            setCornerRadius(root_layout, 50f)
+            setCornerRadius(rootLayout, 50f)
 
             // Create a PopupWindow to display the tooltip overlay
             val popupWindow = PopupWindow(
@@ -173,10 +173,10 @@ class MessageAdapter(
             popupWindow.elevation = 10f
 
             // Handle button clicks inside the tooltip overlay
-            val delete_button = tooltipView.findViewById<Button>(R.id.delete_button)
-            val reply_button = tooltipView.findViewById<Button>(R.id.reply_button)
+            val deleteButton = tooltipView.findViewById<Button>(R.id.delete_button)
+            val replyButton = tooltipView.findViewById<Button>(R.id.reply_button)
 
-            delete_button.setOnClickListener {
+            deleteButton.setOnClickListener {
                 val messageId = model.messageId
                 val messageRef = FirebaseDatabase.getInstance().reference.child("conversations")
                     .child(conversationId!!).child("messages").child(messageId!!)
@@ -188,7 +188,7 @@ class MessageAdapter(
                     }
             }
 
-            reply_button.setOnClickListener {
+            replyButton.setOnClickListener {
                 Util.showMessage(anchorView.context, "Not implemented yet.")
                 popupWindow.dismiss() // Dismiss the tooltip overlay
             }

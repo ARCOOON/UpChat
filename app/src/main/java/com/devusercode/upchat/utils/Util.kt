@@ -2,7 +2,6 @@ package com.devusercode.upchat.utils
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -29,6 +28,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.Random
+
 
 object Util {
     private const val TAG = "Util"
@@ -71,6 +71,21 @@ object Util {
 
         return overlay
     }
+
+    fun restartApplication(requestContext: Context) {
+        val context = requestContext.applicationContext
+        val contextPackageManager = context.packageManager
+        val intent = contextPackageManager.getLaunchIntentForPackage(context.packageName)
+        val mainIntent = Intent.makeRestartActivityTask(intent!!.component)
+
+        context.startActivity(mainIntent)
+
+        Runtime.getRuntime().exit(0)
+    }
+
+    /*
+    * >>> Sketchware code <<<
+    * */
 
     fun isValidMimeType(mimeType: String): Boolean {
         // Define a list of valid MIME types or file extensions
@@ -167,7 +182,6 @@ object Util {
         return ""
     }
 
-    @Suppress("Deprecation")
     fun toggleKeyboard(context: Context, show: Boolean) {
         val inputMethodManager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

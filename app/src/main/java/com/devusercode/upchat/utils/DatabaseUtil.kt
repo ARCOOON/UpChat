@@ -2,7 +2,6 @@ package com.devusercode.upchat.utils
 
 import android.net.Uri
 import android.util.Log
-import com.devusercode.upchat.Key
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -18,8 +17,8 @@ class DatabaseUtil {
         private val database = FirebaseDatabase.getInstance()
 
         fun uploadProfileImage(path: Uri, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
-            val profile_images = FirebaseStorage.getInstance().getReference("profile_images")
-            val imageRef = profile_images.child("${auth.currentUser?.uid}.png")
+            val profileImages = FirebaseStorage.getInstance().getReference("profile_images")
+            val imageRef = profileImages.child("${auth.currentUser?.uid}.png")
 
             imageRef.putFile(path).addOnSuccessListener {
                 imageRef.downloadUrl.addOnSuccessListener { uri ->
@@ -33,8 +32,8 @@ class DatabaseUtil {
         }
 
         fun deleteProfileImage(onFailure: (Exception) -> Unit) {
-            val profile_images = FirebaseStorage.getInstance().getReference("profile_images")
-            profile_images.child("${auth.currentUser?.uid}.png").delete()
+            val profileImages = FirebaseStorage.getInstance().getReference("profile_images")
+            profileImages.child("${auth.currentUser?.uid}.png").delete()
                 .addOnFailureListener { error -> onFailure(error) }
         }
 

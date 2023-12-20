@@ -161,7 +161,8 @@ class ConversationActivity : AppCompatActivity() {
         recyclerview.itemAnimator = DefaultItemAnimator()
 
         recyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {})
-        recyclerview.addOnLayoutChangeListener { view: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int ->
+        // view: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int
+        recyclerview.addOnLayoutChangeListener { _: View?, _: Int, _: Int, _: Int, bottom: Int, _: Int, _: Int, _: Int, oldBottom: Int ->
             if (bottom < oldBottom) {
                 recyclerview.scrollBy(0, oldBottom - bottom)
             }
@@ -225,7 +226,7 @@ class ConversationActivity : AppCompatActivity() {
             }
         })
 
-        chatExists = ConversationUtil.conversationExistsForBoth(user!!, participant!!)
+        chatExists = ConversationUtil.conversationExists(user!!, participant!!)
 
         if (chatExists) {
             currentConversationId =

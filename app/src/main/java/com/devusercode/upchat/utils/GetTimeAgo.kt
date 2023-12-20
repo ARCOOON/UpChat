@@ -13,8 +13,8 @@ object GetTimeAgo : Application() {
     private const val WEEK_MILLIS = 7 * DAY_MILLIS
     private const val MONTH_MILLIS = 30 * DAY_MILLIS
 
-    fun getTimeAgo(_time: Long): String? {
-        var time = _time
+    fun getTimeAgo(givenTime: Long): String? {
+        var time = givenTime
 
         if (time < 1000000000000L) {
             // if timestamp given in seconds, convert to millis

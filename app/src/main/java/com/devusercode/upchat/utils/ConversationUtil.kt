@@ -1,19 +1,16 @@
 package com.devusercode.upchat.utils
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.core.net.toFile
 import com.devusercode.upchat.Key
 import com.devusercode.upchat.models.Conversation
 import com.devusercode.upchat.models.Message
 import com.devusercode.upchat.models.User
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.security.MAC
-import com.devusercode.upchat.security.SHA512
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -22,14 +19,13 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.File
-import java.util.UUID
 import java.util.function.Consumer
 
 class ConversationUtil(
     private var context: Context,
     private var cid: String,
     private var user: User,
-    private var participant: User
+    participant: User
 ) {
     private var mac: MAC = MAC(cid)
     private var aes: AES = AES(participant.uid!!)
@@ -73,7 +69,7 @@ class ConversationUtil(
             return null
         }
 
-        fun conversationExistsForBoth(user: User, participant: User): Boolean {
+        fun conversationExists(user: User, participant: User): Boolean {
             return if (user.conversations != null && participant.conversations != null) {
                 val chatExists = participant.conversations!!.containsKey(user.uid)
                 val chatExists2 = user.conversations!!.containsKey(participant.uid)
@@ -89,7 +85,7 @@ class ConversationUtil(
             }
         }
 
-        fun conversationExists(uid: String?, conversations: Map<String?, String?>): Boolean {
+        fun conversationExistsIn(uid: String?, conversations: Map<String?, String?>): Boolean {
             return conversations.containsKey(uid)
         }
 

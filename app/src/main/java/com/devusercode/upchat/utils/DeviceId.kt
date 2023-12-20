@@ -2,21 +2,23 @@ package com.devusercode.upchat.utils
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresPermission
-import java.util.Objects
 import java.util.UUID
 
 object DeviceId {
     private const val TAG = "DeviceId"
 
     @RequiresApi(Build.VERSION_CODES.O)
-    @Suppress("DEPRECATION")
+
     fun getId(): String {
+        /*
         val cpuABI: Int = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             Build.CPU_ABI.length % 10
         } else {
             getCpuAbi()
         }
+        */
+
+        val cpuABI: Int = getCpuAbi()
 
         val devIdShort =
             "35${Build.BOARD.length % 10}${Build.BRAND.length % 10}${cpuABI}${Build.DEVICE.length % 10}${Build.MANUFACTURER.length % 10}${Build.MODEL.length % 10}${Build.PRODUCT.length % 10}"

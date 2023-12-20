@@ -186,7 +186,7 @@ class MyProfileActivity : AppCompatActivity() {
             qrCodeDialog.show()
         }
 
-        val _users_child_listener: ChildEventListener = object : ChildEventListener {
+        val usersChildListener: ChildEventListener = object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, childKey: String?) {
                 currentUser = dataSnapshot.getValue(User::class.java)
 
@@ -206,7 +206,7 @@ class MyProfileActivity : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {}
         }
 
-        users.addChildEventListener(_users_child_listener)
+        users.addChildEventListener(usersChildListener)
 
         authDeleteUserListener = OnCompleteListener<Void> { task ->
             val errorMessage = task.exception?.message ?: ""

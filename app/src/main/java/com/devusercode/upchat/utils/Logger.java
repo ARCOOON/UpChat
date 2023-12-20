@@ -1,10 +1,12 @@
 package com.devusercode.upchat.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
+@SuppressLint("StaticFieldLeak")
 public class Logger {
     private static String TAG;
     private static Context context;
@@ -17,7 +19,7 @@ public class Logger {
         save = s;
     }
 
-    @Nullable
+    @NonNull
     public static Logger getInstance(String t, Context c, Boolean s) {
         if (instance == null) {
             instance = new Logger(t, c, s);

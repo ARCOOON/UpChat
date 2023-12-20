@@ -88,7 +88,7 @@ class ListUsersActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val toolbarBackButton = findViewById<Button>(R.id.back_button)
 
-        toolbarBackButton.setOnClickListener { onBackPressed() }
+        toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         setSupportActionBar(toolbar)
 
         searchView = findViewById(R.id.searchview)

@@ -25,8 +25,8 @@ class UpdateHelper private constructor(
     }
 
     interface OnUpdateCheckListener {
-        fun onUpdateAvailable(urlApp: String)
-        fun onUpdateRequired(urlApp: String)
+        fun onUpdateAvailable(filename: String, url: String)
+        fun onUpdateRequired(filename: String, url: String)
         fun onNoUpdateAvailable()
     }
 
@@ -45,10 +45,11 @@ class UpdateHelper private constructor(
                 // download: repo + releases/download/$appVersion/$filename.apk
 
                 val newUpdateUrl = "$appRepo/releases/download/$appVersion/$baseFilename-$appVersion.apk"
+                val filename = "$baseFilename-$appVersion.apk"
 
                 Log.d(TAG, "installed version: $installedVersion")
-                Log.d(TAG, "latest version: $appVersion")
-                Log.d(TAG, "update url: $newUpdateUrl")
+                // Log.d(TAG, "latest version: $appVersion")
+                // Log.d(TAG, "update url: $newUpdateUrl")
 
                 if (appVersion.isEmpty()) {
                     onUpdateCheckListener.onNoUpdateAvailable()
@@ -57,9 +58,9 @@ class UpdateHelper private constructor(
 
                 if (!compareVersions(installedVersion!!, appVersion)) {
                     if (remoteConfig.getBoolean(KEY_UPDATE_REQUIRED)) {
-                        onUpdateCheckListener.onUpdateRequired(newUpdateUrl)
+                        onUpdateCheckListener.onUpdateRequired(filename, newUpdateUrl)
                     } else {
-                        onUpdateCheckListener.onUpdateAvailable(newUpdateUrl)
+                        onUpdateCheckListener.onUpdateAvailable(filename, newUpdateUrl)
                     }
                 } else {
                     onUpdateCheckListener.onNoUpdateAvailable()
@@ -75,7 +76,6 @@ class UpdateHelper private constructor(
         return installedVersion.split("-")[0] == appVersion.split("-")[0]
     }
 
-    @Suppress("Deprecation")
     private fun getAppVersion(context: Context): String? {
         return try {
             val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

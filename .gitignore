@@ -41,6 +41,9 @@ google-services.json
 push-github.bat
 push-apk.bat
 
+# Debug Keystore
+debug-keystore.jks
+
 # All text files
 *.txt
 
