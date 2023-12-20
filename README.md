@@ -38,3 +38,7 @@ UpChat is an open source messenger for android.
 	- [ ] Privacy
 		- [ ] Who can message you (everyone / no one)
 		- [ ] Blocked users
+
+- [x] App
+	- [x] Signing Config
+ 	- [x] Auto Update (download and install)
