@@ -53,3 +53,6 @@ debug-keystore.jks
 
 # macOS Desktop Services Store
 .DS_Store
+
+# Some info files
+firebase-rl-db-rules.json
