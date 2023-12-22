@@ -1,6 +1,5 @@
 package com.devusercode.upchat
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
@@ -95,7 +94,6 @@ class RegisterActivity : AppCompatActivity() {
         overridePendingTransition(R.anim.left_in, R.anim.right_out)
     }
 
-    @SuppressLint("SetTextI18n")
     private fun initialize() {
         val coordinator = findViewById<CoordinatorLayout>(R.id._coordinator)
         val appBar = findViewById<AppBarLayout>(R.id.app_bar)
@@ -103,7 +101,7 @@ class RegisterActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar)
         toolbarTitle = toolbar.findViewById(R.id.toolbar_title)
-        toolbarTitle.text = "Register"
+        toolbarTitle.text = getString(R.string.register__toolbar_title)
 
         progressDialog = Dialog(this)
         progressDialog.setContentView(R.layout.progress_dialog)

@@ -15,7 +15,7 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:padding="4dp"
-        android:text="Delete Message"
+        android:text="@string/layout_item_conversation_popup__delete"
         android:textColor="@color/white"
         android:textSize="12sp"
         app:backgroundTint="@color/red_A700" />
@@ -26,7 +26,7 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:padding="4dp"
-        android:text="Reply"
+        android:text="@string/layout_item_conversation_popup__reply"
         android:textColor="@color/white"
         android:textSize="12sp"
         app:backgroundTint="@color/colorAccent" />

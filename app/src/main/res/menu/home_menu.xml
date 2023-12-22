@@ -3,9 +3,9 @@
     <item
         android:id="@+id/menu_item_profile"
         android:icon="@drawable/ic_account_circle_white"
-        android:title="Profile" />
+        android:title="@string/layout_home_menu__profile" />
     <item
         android:id="@+id/menu_item_logout"
         android:icon="@drawable/ic_account_circle_white"
-        android:title="Logout" />
+        android:title="@string/layout_home_menu__logout" />
 </menu>

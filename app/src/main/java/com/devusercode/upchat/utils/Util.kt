@@ -1,6 +1,7 @@
 package com.devusercode.upchat.utils
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -81,6 +82,21 @@ object Util {
         context.startActivity(mainIntent)
 
         Runtime.getRuntime().exit(0)
+    }
+
+    fun alert(context: Context, title: String, message: String, onClick: (() -> Unit)?) {
+        AlertDialog.Builder(context).apply {
+            setTitle(title)
+            setMessage(message)
+            setIcon(android.R.drawable.ic_dialog_alert)
+            setPositiveButton(android.R.string.ok) { dialog, _ ->
+                dialog.dismiss()
+                if (onClick != null) {
+                    onClick()
+                }
+            }
+            show()
+        }
     }
 
     /*

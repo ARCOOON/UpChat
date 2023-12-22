@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat
 import com.devusercode.upchat.utils.UpdateHelper
 import com.devusercode.upchat.utils.UpdateInstaller
 import com.devusercode.upchat.utils.UserUtils
+import com.devusercode.upchat.utils.Util
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.koushikdutta.ion.Ion
@@ -52,7 +53,11 @@ class StartActivity : AppCompatActivity(), UpdateHelper.OnUpdateCheckListener {
 
     private fun initialize() {
         val redirectClass: Class<*> =
-            if (auth.currentUser != null) HomeActivity::class.java else LoginActivity::class.java
+            if (auth.currentUser != null) {
+                HomeActivity::class.java
+            } else {
+                LoginActivity::class.java
+            }
         intent!!.setClass(applicationContext, redirectClass)
         startActivity(intent)
         finish()
@@ -62,7 +67,7 @@ class StartActivity : AppCompatActivity(), UpdateHelper.OnUpdateCheckListener {
         val alertDialog = AlertDialog.Builder(this)
             .setTitle("New App Version Available")
             .setMessage("Please update to the latest build,\nfor the latest features and bug fixes.")
-            .setPositiveButton("Update") { dialogInterface: DialogInterface, _: Int ->
+            .setPositiveButton("Download Update") { dialogInterface: DialogInterface, _: Int ->
                 downloadUpdate(url, filename)
                 dialogInterface.dismiss()
             }
@@ -82,7 +87,7 @@ class StartActivity : AppCompatActivity(), UpdateHelper.OnUpdateCheckListener {
         val alertDialog = AlertDialog.Builder(this)
             .setTitle("New App Version Required")
             .setMessage("An app update is required, to run this app!")
-            .setPositiveButton("Update") { dialogInterface: DialogInterface, _: Int ->
+            .setPositiveButton("Download Update") { dialogInterface: DialogInterface, _: Int ->
                 downloadUpdate(url, filename)
                 dialogInterface.dismiss()
             }
@@ -96,9 +101,12 @@ class StartActivity : AppCompatActivity(), UpdateHelper.OnUpdateCheckListener {
     }
 
     private fun downloadUpdate(url: String, filename: String) {
-        requestStoragePermissions()
+        if (!checkStoragePermissions()) {
+            requestStoragePermissions()
+        }
 
         val filePath = "${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_DOWNLOADS}/$filename"
+        val outputFile = File(filePath)
 
         val progressDialog = ProgressDialog(this)
         progressDialog.setTitle("New App Version")
@@ -108,20 +116,20 @@ class StartActivity : AppCompatActivity(), UpdateHelper.OnUpdateCheckListener {
         progressDialog.isIndeterminate = false
         progressDialog.show()
 
-        Ion.with(this)
-            .load(url)
-            // .progressBar(progressBar) for the progress bar
-            // .progress { downloaded, total -> /* Do something with the process */ }
-            .progressDialog(progressDialog)
-            .write(File(filePath))
-            .setCallback { error, file ->
+        val ion = Ion.with(this).load(url)
+        // progress { downloaded, total -> /* Do something with the process */ }
+        ion.progressDialog(progressDialog)
+        ion.setLogging(TAG, Log.DEBUG)
+        ion.write(outputFile)
+            .fail { error ->
                 progressDialog.dismiss()
-
-                if (error != null) {
-                    Log.e(TAG, error.message.toString())
-                    return@setCallback
-                }
-
+                val errorMessage = error.localizedMessage ?: error.message
+                Log.e(TAG, errorMessage.toString())
+                Util.alert(this, "Error downloading update!", errorMessage.toString(), null)
+                throw error
+            }
+            .success { file ->
+                progressDialog.dismiss()
                 val updateInstaller = UpdateInstaller(this)
                 updateInstaller.install(file.path)
             }
@@ -147,5 +155,20 @@ class StartActivity : AppCompatActivity(), UpdateHelper.OnUpdateCheckListener {
         }
 
         ActivityCompat.requestPermissions(this, permissions, PackageManager.PERMISSION_GRANTED)
+    }
+
+    private fun checkStoragePermissions(): Boolean {
+        val rw = ActivityCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+        val we = ActivityCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+
+        val me = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Android 11 (API 30) and higher
+            ActivityCompat.checkSelfPermission(this, MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+        } else {
+            // Android 10 (API 29) and lower
+            true
+        }
+
+        return rw && we && me
     }
 }

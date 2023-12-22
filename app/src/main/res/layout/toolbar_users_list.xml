@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        app:menu="@menu/view_all_users_filter_menu"
+        app:menu="@menu/all_users_filter"
         app:popupTheme="@style/AppTheme.PopupOverlay">
 
         <LinearLayout
@@ -49,7 +49,7 @@
                 app:queryHint="Username..." />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/scann_qrcode_button"
+                android:id="@+id/scan_qrcode_button"
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="40dp"
                 android:layout_height="40dp"

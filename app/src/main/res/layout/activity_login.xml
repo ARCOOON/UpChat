@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:text="Login"
+                android:text="@string/layout_activity_login__title"
                 android:textAlignment="center"
                 android:textColor="@color/colorAccent"
                 android:textSize="40sp"
@@ -42,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="6dp"
-                android:hint="Email"
+                android:hint="@string/layout_activity_login__email_hint"
                 android:textColorHint="@color/transparent_black_40"
                 app:boxBackgroundColor="@color/white"
                 app:boxCornerRadiusBottomEnd="6dp"
@@ -65,17 +65,13 @@
                     android:textColor="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="10dp" />
-
             <!-- Password Input -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="6dp"
-                android:hint="Password"
+                android:hint="@string/layout_activity_login__password_hint"
                 android:textColorHint="@color/transparent_black_40"
                 app:boxBackgroundColor="@color/white"
                 app:boxCornerRadiusBottomEnd="6dp"
@@ -104,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical|start"
                 android:padding="4dp"
-                android:text="Forgot your password?"
+                android:text="@string/layout_activity_login__forgot_password"
                 android:textColor="@color/black"
                 android:textStyle="italic" />
 
@@ -113,7 +109,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="35dp"
-                android:text="Remember me"
+                android:text="@string/layout_activity_login__remember_me"
                 android:textColor="@color/black"
                 app:buttonIconTint="@color/black"
                 app:buttonTint="@color/black"
@@ -126,7 +122,7 @@
                 android:layout_height="50dp"
                 android:backgroundTint="@color/colorAccent"
                 android:elevation="6dp"
-                android:text="Login"
+                android:text="@string/layout_activity_login__login_button"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:cornerRadius="6dp" />
@@ -137,7 +133,7 @@
                 android:layout_width="300dp"
                 android:layout_height="50dp"
                 android:elevation="6dp"
-                android:text="Register"
+                android:text="@string/layout_activity_login__register_button"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 app:backgroundTint="@color/white"

@@ -50,7 +50,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Message"
+            android:hint="@string/conversation_layout__message"
             android:padding="4dp"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"

@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">UpChat</string>
+    <string name="app_version" translatable="false">1.2.3-alpha</string>
     <string name="developer_name" translatable="false">DevUserCode</string>
 
     <!-- View all users activity -->
@@ -7,4 +8,49 @@
 
     <!-- Conversation activity -->
     <string name="conversation__status_online">online</string>
+    <string name="my_profile__toolbar_title">My Profile</string>
+    <string name="my_profile__app_version">v%1$s</string>
+    <string name="my_profile__unknown_version">Unknown Version</string>
+    <string name="register__toolbar_title">Register</string>
+    <string name="user_profile__email_label">Email: %1$s</string>
+    <string name="user_profile__uid_label">Uid: %1$s</string>
+    <string name="user_profile__joined_label">Joined: %1$s</string>
+    <string name="conversation_layout__message">Message</string>
+    <string name="layout_toolbar_chat__participant">Participant</string>
+    <string name="layout_toolbar_chat__online">online</string>
+    <string name="layout_item_home_user__username">Username</string>
+    <string name="layout_item_home_user__time">00:00</string>
+    <string name="layout_activity_login__title">Login</string>
+    <string name="layout_activity_login__email_hint">Email</string>
+    <string name="layout_activity_login__password_hint">Password</string>
+    <string name="layout_activity_login__forgot_password">Forgot your password?</string>
+    <string name="layout_activity_login__remember_me">Remember me</string>
+    <string name="layout_activity_login__login_button">Login</string>
+    <string name="layout_activity_login__register_button">Register</string>
+    <string name="layout_activity_my_profile__username">Username</string>
+    <string name="layout_activity_my_profile__email">Email</string>
+    <string name="layout_activity_my_profile__uid">Uid</string>
+    <string name="layout_activity_my_profile__joined">Joined</string>
+    <string name="layout_activity_my_profile__chats">Chats</string>
+    <string name="layout_activity_my_profile__share_qr_code">Share QR Code</string>
+    <string name="layout_activity_my_profile__logout">Logout</string>
+    <string name="layout_activity_my_profile__delete_profile">Delete Profile</string>
+    <string name="layout_activity_register__username">Username</string>
+    <string name="layout_activity_register__email">Email</string>
+    <string name="layout_activity_register__password">Password</string>
+    <string name="layout_activity_register__register">Register</string>
+    <string name="layout_activity_start__from">from</string>
+    <string name="layout_activity_user_profile__email">email</string>
+    <string name="layout_activity_user_profile__uid">uid</string>
+    <string name="layout_activity_user_profile__username">username</string>
+    <string name="layout_activity_user_profile__joined">joined</string>
+    <string name="layout_home_menu__profile">Profile</string>
+    <string name="layout_home_menu__logout">Logout</string>
+    <string name="layout_all_users_filter__username">Username</string>
+    <string name="layout_all_users_filter__email">Email</string>
+    <string name="layout_all_users_filter__user_id">User Id</string>
+    <string name="layout_item_conversation_popup__delete">Delete</string>
+    <string name="layout_item_conversation_popup__reply">Reply</string>
+    <string name="layout_item_user__username">Username</string>
+    <string name="layout_item_user__email">Email</string>
 </resources>

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import java.io.File
@@ -20,6 +21,8 @@ class UpdateInstaller(private val context: Context) {
             } else {
                 // Request install permissions
                 requestInstallPermissions()
+                // -> Install permissions granted
+                // -> Perform installation
             }
         } else {
             // Continue with the installation on older Android versions

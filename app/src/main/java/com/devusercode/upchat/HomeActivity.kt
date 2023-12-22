@@ -83,7 +83,21 @@ class HomeActivity : AppCompatActivity() {
 
         storageController = StorageController.getInstance(this)!!
 
-        init()
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val toolbarProfileName = toolbar.findViewById<TextView>(R.id.toolbar_profile_name)
+        toolbarProfileName.text = getString(R.string.app_name)
+
+        setSupportActionBar(toolbar)
+
+        val newConversationButton: FloatingActionButton = findViewById(R.id.new_conversation_button)
+
+        newConversationButton.setOnClickListener {
+            val intent = Intent(this, ListUsersActivity::class.java)
+            startActivity(intent)
+        }
+
+        recyclerview = findViewById(R.id.recyclerview)
+        recyclerview.layoutManager = LinearLayoutManager(this)
 
         if (storageController.contains("user")) {
             user = storageController.getUser("user")
@@ -106,25 +120,6 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun init() {
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        val toolbarProfileName = toolbar.findViewById<TextView>(R.id.toolbar_profile_name)
-        toolbarProfileName.text = getString(R.string.app_name)
-
-        setSupportActionBar(toolbar)
-
-        val newConversationButton: FloatingActionButton =
-            findViewById(R.id.new_conversation_button)
-
-        newConversationButton.setOnClickListener {
-            val intent = Intent(this, ListUsersActivity::class.java)
-            startActivity(intent)
-        }
-
-        recyclerview = findViewById(R.id.recyclerview)
-        recyclerview.layoutManager = LinearLayoutManager(this)
     }
 
     private fun loadOpenConversations() {
@@ -197,14 +192,14 @@ class HomeActivity : AppCompatActivity() {
         val listener: ValueEventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.child("online").exists()) {
-                    val isOnline = dataSnapshot.child("online").getValue(String::class.java)
-                        .toBoolean()
+                    val isOnline = dataSnapshot.child("online").getValue(String::class.java).toBoolean()
                     updateOnlineStatus(userId, isOnline)
                     adapter?.update(openConversations as ArrayList<UserPair>)
                 }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
+                Log.d(TAG, "setupUserOnlineStatusListener -> onCancelled: ${databaseError.message}")
                 // Handle the cancellation if needed
             }
         }
@@ -229,7 +224,7 @@ class HomeActivity : AppCompatActivity() {
         super.onStart()
 
         for (userPair in openConversations ?: emptyList()) {
-            Log.d(TAG, "setting OnlineStatusListener for: ${userPair.user.uid}")
+            Log.d(TAG, "creating OnlineStatusListener for: ${userPair.user.uid}")
             setupUserOnlineStatusListener(userPair.user.uid!!)
         }
     }

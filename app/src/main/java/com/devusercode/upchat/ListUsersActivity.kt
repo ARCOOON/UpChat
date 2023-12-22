@@ -28,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.zxing.integration.android.IntentIntegrator
 
+@RequiresApi(Build.VERSION_CODES.O)
 class ListUsersActivity : AppCompatActivity() {
     private val TAG = "ListUsersActivity"
 
@@ -93,9 +94,9 @@ class ListUsersActivity : AppCompatActivity() {
 
         searchView = findViewById(R.id.searchview)
         noDataAvailableText = findViewById(R.id.no_data_available_text)
-        swipeRefreshLayout = findViewById(R.id.swiperefreshlayout1)
+        swipeRefreshLayout = findViewById(R.id.swiperefreshlayout)
         recyclerview1 = findViewById(R.id.recyclerview1)
-        scanQrcodeButton = findViewById(R.id.scann_qrcode_button)
+        scanQrcodeButton = findViewById(R.id.scan_qrcode_button)
 
         recyclerview1.layoutManager = WrapLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
 
@@ -166,7 +167,7 @@ class ListUsersActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.view_all_users_filter_menu, menu)
+        menuInflater.inflate(R.menu.all_users_filter, menu)
         val defaultItem = menu.findItem(R.id.menu_username)
 
         defaultItem.isChecked = true // Set it as checked

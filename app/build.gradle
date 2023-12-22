@@ -91,6 +91,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
 
     implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.activity:activity-ktx:1.8.2'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.lifecycle:lifecycle-process:2.6.2'
     implementation 'androidx.security:security-crypto-ktx:1.1.0-alpha06'
@@ -99,6 +100,9 @@ dependencies {
 
     // Download with dialog
     implementation 'com.koushikdutta.ion:ion:3.1.0'
+
+    // custom progress dialog
+    // implementation 'io.github.tashilapathum:please-wait:0.4.0'
 
     // For generating and scanning QR-Code
     implementation 'com.google.zxing:core:3.5.2'

@@ -1,6 +1,5 @@
 package com.devusercode.upchat
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.ClipData
@@ -9,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,6 +17,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -39,7 +40,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 
-@SuppressLint("SetTextI18n")
+@RequiresApi(Build.VERSION_CODES.O)
 class MyProfileActivity : AppCompatActivity() {
     private val TAG = this.javaClass.simpleName
 
@@ -90,7 +91,7 @@ class MyProfileActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
 
         setSupportActionBar(toolbar)
-        toolbar.findViewById<TextView>(R.id.toolbar_title).text = "My Profile"
+        toolbar.findViewById<TextView>(R.id.toolbar_title).text = getString(R.string.my_profile__toolbar_title)
 
         linear1 = findViewById(R.id.linear1)
         linear3 = findViewById(R.id.linear3)
@@ -103,9 +104,9 @@ class MyProfileActivity : AppCompatActivity() {
 
         try {
             val appVersion = packageManager.getPackageInfo(packageName, 0).versionName
-            appVersionText.text = "v$appVersion"
+            appVersionText.text = getString(R.string.my_profile__app_version, appVersion)
         } catch (e: PackageManager.NameNotFoundException) {
-            appVersionText.text = "unknown version"
+            appVersionText.text = getString(R.string.my_profile__unknown_version)
             throw RuntimeException(e)
         }
 

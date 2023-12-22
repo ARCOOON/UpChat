@@ -58,7 +58,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
-                        android:text="username"
+                        android:text="@string/layout_activity_user_profile__username"
                         android:textAlignment="center"
                         android:textColor="@color/white"
                         android:textSize="24sp"
@@ -69,7 +69,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
-                        android:text="email"
+                        android:text="@string/layout_activity_user_profile__email"
                         android:textColor="@color/white"
                         android:textSize="18sp" />
 
@@ -78,7 +78,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
-                        android:text="uid"
+                        android:text="@string/layout_activity_user_profile__uid"
                         android:textColor="@color/white"
                         android:textSize="18sp" />
 
@@ -87,7 +87,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
-                        android:text="joined"
+                        android:text="@string/layout_activity_user_profile__joined"
                         android:textColor="@color/white"
                         android:textSize="18sp" />
                 </LinearLayout>

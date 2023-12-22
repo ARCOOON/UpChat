@@ -57,7 +57,7 @@
                             android:layout_weight="1"
                             android:focusable="false"
                             android:padding="2dp"
-                            android:text="Username"
+                            android:text="@string/layout_item_home_user__username"
                             android:textColor="@color/black"
                             android:textSize="18sp" />
 
@@ -96,7 +96,7 @@
                             android:layout_weight="0"
                             android:focusable="false"
                             android:padding="2dp"
-                            android:text="00:00"
+                            android:text="@string/layout_item_home_user__time"
                             android:textColor="@color/transparent_black_60"
                             android:textSize="14sp" />
                     </LinearLayout>

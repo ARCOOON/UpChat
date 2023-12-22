@@ -1,6 +1,5 @@
 package com.devusercode.upchat
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,8 +12,6 @@ import com.devusercode.upchat.utils.ErrorCodes
 import com.devusercode.upchat.utils.UserUtils
 
 class UserProfileActivity : AppCompatActivity() {
-
-    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
@@ -48,9 +45,9 @@ class UserProfileActivity : AppCompatActivity() {
                     }
 
                     usernameView.text = user.username
-                    emailView.text = "Email: ${user.email}"
-                    userIdView.text = "Uid: ${user.uid}"
-                    joinedView.text = "Joined: ${user.formattedJoined}"
+                    emailView.text = getString(R.string.user_profile__email_label, user.email)
+                    userIdView.text = getString(R.string.user_profile__uid_label, user.uid)
+                    joinedView.text = getString(R.string.user_profile__joined_label, user.formattedJoined)
                 }
             }
         }

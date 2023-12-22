@@ -29,7 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="username"
+                android:text="@string/layout_activity_my_profile__username"
                 android:textColor="#000000"
                 android:textSize="18sp" />
 
@@ -38,7 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="email"
+                android:text="@string/layout_activity_my_profile__email"
                 android:textColor="#000000"
                 android:textSize="18sp" />
 
@@ -47,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="uid"
+                android:text="@string/layout_activity_my_profile__uid"
                 android:textColor="#757575"
                 android:textSize="18sp" />
 
@@ -56,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="joined"
+                android:text="@string/layout_activity_my_profile__joined"
                 android:textColor="#757575"
                 android:textSize="18sp" />
 
@@ -77,7 +77,7 @@
                     android:layout_margin="4dp"
                     android:backgroundTint="@color/colorAccent"
                     android:elevation="6dp"
-                    android:text="Chats"
+                    android:text="@string/layout_activity_my_profile__chats"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
                     app:cornerRadius="@dimen/button_radius"
@@ -94,7 +94,7 @@
                     android:backgroundTint="@color/colorAccent"
                     android:elevation="6dp"
                     android:padding="8dp"
-                    android:text="Share QR Code"
+                    android:text="@string/layout_activity_my_profile__share_qr_code"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
                     app:cornerRadius="@dimen/button_radius"
@@ -110,7 +110,7 @@
                     android:layout_margin="4dp"
                     android:backgroundTint="@color/colorAccent"
                     android:elevation="6dp"
-                    android:text="Logout"
+                    android:text="@string/layout_activity_my_profile__logout"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
                     app:cornerRadius="@dimen/button_radius"
@@ -127,7 +127,7 @@
                     android:backgroundTint="@color/red_600"
                     android:elevation="6dp"
                     android:padding="8dp"
-                    android:text="Delete Profile"
+                    android:text="@string/layout_activity_my_profile__delete_profile"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
                     app:cornerRadius="@dimen/button_radius"
