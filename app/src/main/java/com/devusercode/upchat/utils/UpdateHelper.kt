@@ -41,14 +41,14 @@ class UpdateHelper private constructor(
                 val installedVersion = getAppVersion(context)
                 val baseFilename = "upchat"
 
-                // repo: https://github.com/ARCOOON/UpChat/
-                // download: repo + releases/download/$appVersion/$filename.apk
+                // repo: https://github.com/ARCOOON/UpChat
+                // download: repo + /releases/download/$appVersion/$filename.apk
 
                 val newUpdateUrl = "$appRepo/releases/download/$appVersion/$baseFilename-$appVersion.apk"
                 val filename = "$baseFilename-$appVersion.apk"
 
                 Log.d(TAG, "installed version: $installedVersion")
-                // Log.d(TAG, "latest version: $appVersion")
+                Log.d(TAG, "server version: $appVersion")
                 // Log.d(TAG, "update url: $newUpdateUrl")
 
                 if (appVersion.isEmpty()) {

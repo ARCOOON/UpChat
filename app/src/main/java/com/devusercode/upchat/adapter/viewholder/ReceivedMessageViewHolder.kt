@@ -42,9 +42,9 @@ class ReceivedMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val verify = mac.verifyMAC(model.mac!!, messageMac)
 
             if (verify) {
-                verified.visibility = View.VISIBLE
+                verified.setImageResource(R.drawable.ic_verified_white)
             } else {
-                verified.visibility = View.GONE
+                verified.setImageResource(R.drawable.ic_round_error_white)
             }
         }
 

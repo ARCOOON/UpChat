@@ -46,11 +46,11 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
 
     class HomeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var username: TextView
-        var lastMessageText: TextView
-        var lastMessageTime: TextView
-        var materialCardView: MaterialCardView
-        var profileImage: ImageView
-        var onlineStatus: ImageView
+        private var lastMessageText: TextView
+        private var lastMessageTime: TextView
+        private var materialCardView: MaterialCardView
+        private var profileImage: ImageView
+        private var onlineStatus: ImageView
 
         init {
             materialCardView = view.findViewById(R.id.materialcardview1)

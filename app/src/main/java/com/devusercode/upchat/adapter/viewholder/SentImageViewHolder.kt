@@ -3,6 +3,7 @@ package com.devusercode.upchat.adapter.viewholder
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.view.RoundedCorner
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -10,6 +11,8 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterInside
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.devusercode.upchat.R
 import com.devusercode.upchat.adapter.MessageAdapter
 import com.devusercode.upchat.models.Message
@@ -27,7 +30,7 @@ class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view
     private var rootLayout: LinearLayout = view.findViewById(R.id.root_layout)
     private var verified: ImageView = view.findViewById(R.id.message_verified)
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.S)
     fun bind(model: Message, cid: String, uid: String) {
         val aes = AES(uid)
         val mac = MAC(cid)
@@ -54,9 +57,16 @@ class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view
 
         Log.d(TAG, "Url: ${model.url} | Uri: ${Uri.parse(model.url)}")
 
-        Glide.with(view.context).load(Uri.parse(model.url)).into(imageView)
+        Glide.with(view.context)
+            .load(Uri.parse(model.url))
+            .override(700, 900)
+            .fitCenter()
+            .dontAnimate()
+            .transform(RoundedCorners(14))
+            .into(imageView)
 
         cardView.setOnLongClickListener { view: View ->
+            MessageAdapter.conversationId = cid
             MessageAdapter.showTooltipOverlay(view, model)
             true
         }

@@ -129,8 +129,8 @@ class ConversationActivity : AppCompatActivity() {
     }
 
     private fun initialize() {
-        val coordinator = findViewById<CoordinatorLayout>(R.id._coordinator)
-        val appBar = findViewById<AppBarLayout>(R.id.app_bar)
+        // val coordinator = findViewById<CoordinatorLayout>(R.id._coordinator)
+        // val appBar = findViewById<AppBarLayout>(R.id.app_bar)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
 
         setSupportActionBar(toolbar)
@@ -160,7 +160,7 @@ class ConversationActivity : AppCompatActivity() {
         recyclerview.layoutManager = layoutManager
         recyclerview.itemAnimator = DefaultItemAnimator()
 
-        recyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {})
+        // recyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {})
         // view: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int
         recyclerview.addOnLayoutChangeListener { _: View?, _: Int, _: Int, _: Int, bottom: Int, _: Int, _: Int, _: Int, oldBottom: Int ->
             if (bottom < oldBottom) {
@@ -201,8 +201,11 @@ class ConversationActivity : AppCompatActivity() {
         participantName.text = participant!!.username
 
         if (participant!!.photoUrl!!.isNotEmpty()) {
-            Glide.with(applicationContext).load(Uri.parse(participant!!.photoUrl))
-                .placeholder(R.drawable.ic_account_circle_white).circleCrop().into(profileImage)
+            Glide.with(applicationContext)
+                .load(Uri.parse(participant!!.photoUrl))
+                .placeholder(R.drawable.ic_account_circle_white)
+                .circleCrop()
+                .into(profileImage)
         } else {
             profileImage.setImageResource(R.drawable.ic_account_circle_white)
         }
@@ -261,13 +264,11 @@ class ConversationActivity : AppCompatActivity() {
     }
 
     override fun onStart() {
-        UserUtils.update("online", "true")
         adapter?.startListening()
         super.onStart()
     }
 
     override fun onStop() {
-        UserUtils.update("online", "false")
         adapter?.stopListening()
         super.onStop()
     }

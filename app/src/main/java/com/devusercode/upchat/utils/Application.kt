@@ -6,18 +6,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Process
 import android.util.Log
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ProcessLifecycleOwner
 import com.devusercode.upchat.DebugActivity
-import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import kotlin.system.exitProcess
 
 class Application : android.app.Application() {
+    private val TAG = "Application"
     private lateinit var uncaughtExceptionHandler: Thread.UncaughtExceptionHandler
 
     override fun onCreate() {
@@ -44,9 +39,10 @@ class Application : android.app.Application() {
             am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 1000, pendingIntent)
 
             Process.killProcess(Process.myPid())
-            System.exit(1)
 
             uncaughtExceptionHandler.uncaughtException(thread, throwable)
+
+            exitProcess(1)
         }
 
         // Fetch data from Firebase every 5 seconds (ideally, 1min - 5min, etc.)
@@ -55,6 +51,8 @@ class Application : android.app.Application() {
         remoteConfig.fetch(1).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 remoteConfig.activate()
+            } else {
+                Log.w(TAG, "Error fetching remote config.", task.exception)
             }
         }
     }

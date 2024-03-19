@@ -6,22 +6,26 @@ object Key {
     }
 
     object Conversation {
+        // For direct chat
         const val CONVERSATIONS = "conversations"
         const val CONVERSATION_ID = "conversationId"
         const val MESSAGES = "messages"
+        // For group chat
         const val MEMBERS = "members"
     }
 
     object Message {
         const val ID = "messageId"
         const val MESSAGE = "message"
-        const val TYPE = "type"
         const val SENDER_ID = "senderId"
         const val TIMESTAMP = "timestamp"
         const val MAC = "mac"
+        const val SEEN = "seen"
+        // Message type: File, Text, Image, Audio
+        const val TYPE = "type"
+        // For file transfer
         const val URL = "url"
         const val CHECKSUM = "checksum"
-        const val SEEN = "seen"
     }
 
     object User {

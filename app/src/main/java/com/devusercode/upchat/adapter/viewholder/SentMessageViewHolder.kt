@@ -1,6 +1,7 @@
 package com.devusercode.upchat.adapter.viewholder
 
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -16,11 +17,12 @@ import com.devusercode.upchat.utils.GetTimeAgo
 
 class SentMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val TAG = "MessageAdapter@SentMessageViewHolder"
-    var message: TextView
-    var time: TextView
-    var cardview: LinearLayout
-    var rootLayout: LinearLayout
-    var verified: ImageView
+
+    private var message: TextView
+    private var time: TextView
+    private var cardview: LinearLayout
+    private var rootLayout: LinearLayout
+    private var verified: ImageView
 
     init {
         rootLayout = view.findViewById(R.id.root_layout)
@@ -50,7 +52,9 @@ class SentMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         message.text = messageDecrypted
         time.text = GetTimeAgo.parse(model.timestamp!!)
+
         cardview.setOnLongClickListener { view: View ->
+            MessageAdapter.conversationId = cid
             MessageAdapter.showTooltipOverlay(view, model)
             true
         }

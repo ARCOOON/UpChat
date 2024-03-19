@@ -1,8 +1,8 @@
 package com.devusercode.upchat
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
+import android.os.Build
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -29,14 +29,11 @@ import com.google.firebase.database.ValueEventListener
 
 @RequiresApi(Build.VERSION_CODES.O)
 class HomeActivity : AppCompatActivity() {
-    private val TAG = this.javaClass.simpleName
+    private val TAG = HomeActivity::class.java.simpleName
     private val auth = FirebaseAuth.getInstance()
-
     private var user: User? = null
-    private lateinit var recyclerview: RecyclerView
+    private lateinit var recyclerView: RecyclerView
     private var adapter: HomeAdapter? = null
-    private var conversationsCounter = 0
-
     private var openConversations: MutableList<UserPair>? = null
     private val userListeners: MutableMap<String, ValueEventListener> = HashMap()
     private lateinit var storageController: StorageController
@@ -48,33 +45,20 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_item_profile -> {
-                val intent = Intent(this, MyProfileActivity::class.java)
-                startActivity(intent)
-            }
-
-            R.id.menu_item_logout -> {
-                auth.signOut()
-
-                storageController["save_login_info"] = false
-                storageController.remove("email")
-                storageController.remove("password")
-
-                startActivity(Intent(this, LoginActivity::class.java))
-            }
+            R.id.menu_item_profile -> startActivity(Intent(this, MyProfileActivity::class.java))
+            R.id.menu_item_logout -> logout()
         }
-
         return super.onOptionsItemSelected(item)
     }
 
-    override fun startActivity(intent: Intent) {
-        super.startActivity(intent)
-        overridePendingTransition(R.anim.right_in, R.anim.left_out)
-    }
-
-    override fun finish() {
-        super.finish()
-        overridePendingTransition(R.anim.left_in, R.anim.right_out)
+    private fun logout() {
+        auth.signOut()
+        storageController.apply {
+            set("save_login_info", false)
+            remove("email")
+            remove("password")
+        }
+        startActivity(Intent(this, LoginActivity::class.java))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,27 +67,33 @@ class HomeActivity : AppCompatActivity() {
 
         storageController = StorageController.getInstance(this)!!
 
+        setupToolbar()
+        setupViews()
+        loadUser()
+    }
+
+    private fun setupToolbar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        val toolbarProfileName = toolbar.findViewById<TextView>(R.id.toolbar_profile_name)
-        toolbarProfileName.text = getString(R.string.app_name)
-
         setSupportActionBar(toolbar)
+        toolbar.findViewById<TextView>(R.id.toolbar_profile_name).text =
+            getString(R.string.app_name)
+    }
 
-        val newConversationButton: FloatingActionButton = findViewById(R.id.new_conversation_button)
-
-        newConversationButton.setOnClickListener {
-            val intent = Intent(this, ListUsersActivity::class.java)
-            startActivity(intent)
+    private fun setupViews() {
+        findViewById<FloatingActionButton>(R.id.new_conversation_button).setOnClickListener {
+            startActivity(Intent(this, ListUsersActivity::class.java))
         }
 
-        recyclerview = findViewById(R.id.recyclerview)
-        recyclerview.layoutManager = LinearLayoutManager(this)
+        recyclerView = findViewById(R.id.recyclerview)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+    }
 
+    private fun loadUser() {
         if (storageController.contains("user")) {
             user = storageController.getUser("user")
-            Log.d(TAG, "User from Storage" + user?.info.toString())
-
-            loadOpenConversations()
+                .also {
+                    Log.d(TAG, "User from Storage: ${it?.info}")
+                }
         } else {
             UserUtils.getUserByUid(auth.currentUser!!.uid) { result ->
                 if (result.code == ErrorCodes.SUCCESS) {
@@ -112,70 +102,75 @@ class HomeActivity : AppCompatActivity() {
                 } else {
                     Log.e(TAG, result.error?.message!!)
                     Toast.makeText(this, "Error: ${result.code}", Toast.LENGTH_SHORT).show()
-
                     if (result.code == ErrorCodes.USER_NOT_FOUND) {
-                        val intent = Intent(this, LoginActivity::class.java)
-                        startActivity(intent)
+                        startActivity(Intent(this, LoginActivity::class.java))
+                    }
+                }
+            }
+        }
+
+        if (user != null) {
+            FirebaseDatabase.getInstance().getReference("users")
+                .child(user?.uid!!)
+                .child(Key.User.ONLINE)
+                .onDisconnect()
+                .setValue(false.toString())
+        }
+    }
+
+    private fun loadOpenConversations() {
+        if (user == null || user!!.conversations == null) return
+
+        openConversations = mutableListOf()
+        val conversationIds = user?.getConversationIds() ?: return
+
+        conversationIds.forEach { cid ->
+            ConversationUtil.getConversationById(cid) { task ->
+                if (!task!!.isSuccessful) {
+                    Log.e(TAG, task.error?.message!!)
+                } else {
+                    val conversation = task.getConversation()
+                    conversation?.getParticipant { result ->
+                        if (!result.isSuccessful) {
+                            Log.e(TAG, result.error?.message!!)
+                        } else {
+                            val userPair = UserPair(result.user!!, cid)
+                            openConversations?.add(userPair)
+                        }
+                        createAdapter()
                     }
                 }
             }
         }
     }
 
-    private fun loadOpenConversations() {
-        if (user == null || user!!.conversations == null) {
-            return
+    private fun createAdapter() {
+        if (openConversations.isNullOrEmpty()) return
+        adapter = HomeAdapter(openConversations!!)
+        recyclerView.adapter = adapter
+        openConversations?.forEach { userPair ->
+            setupUserOnlineStatusListener(userPair.user.uid!!)
         }
+    }
 
-        openConversations = ArrayList()
-        conversationsCounter = 0 // Reset the conversations counter
+    private fun setupUserOnlineStatusListener(userId: String) {
+        val userRef = FirebaseDatabase.getInstance().getReference("users").child(userId)
 
-        for (cid in user!!.getConversationIds()) {
-            ConversationUtil.getConversationById(cid) { task ->
-                if (!task!!.isSuccessful) {
-                    Log.e(TAG, task.error?.message!!)
-                    // Increment the conversationsCounter even for invalid conversations
-                    // so that we can still check when all iterations are completed.
-                    conversationsCounter++
-
-                    // Check if we have processed all conversations
-                    if (conversationsCounter == user!!.getConversationIds().size) {
-                        // Create the adapter with the valid conversations
-                        adapter = HomeAdapter(openConversations as ArrayList<UserPair>)
-                        recyclerview.adapter = adapter
-                    }
-                    return@getConversationById
-                }
-
-                task.getConversation()?.getParticipant { result ->
-                    if (!result.isSuccessful) {
-                        Log.e(TAG, result.error?.message!!)
-                    } else {
-                        (openConversations as ArrayList<UserPair>).add(
-                            UserPair(
-                                result.user!!,
-                                cid
-                            )
-                        )
-                    }
-
-                    // Increment the conversationsCounter after each iteration
-                    conversationsCounter++
-
-                    // Check if we have processed all conversations
-                    if (conversationsCounter == user!!.getConversationIds().size) {
-                        // Create the adapter with the valid conversations
-                        adapter = HomeAdapter(openConversations as ArrayList<UserPair>)
-                        recyclerview.adapter = adapter
-
-                        for (userPair in openConversations ?: emptyList()) {
-                            Log.d(TAG, "setting OnlineStatusListener for: ${userPair.user.uid}")
-                            setupUserOnlineStatusListener(userPair.user.uid!!)
-                        }
-                    }
+        val listener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.child("online").exists()) {
+                    val isOnline =
+                        dataSnapshot.child("online").getValue(String::class.java)?.toBoolean()
+                    isOnline?.let { updateOnlineStatus(userId, it) }
                 }
             }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.d(TAG, "setupUserOnlineStatusListener -> onCancelled: ${databaseError.message}")
+            }
         }
+        userRef.addValueEventListener(listener)
+        userListeners[userId] = listener
     }
 
     private fun updateOnlineStatus(userId: String, isOnline: Boolean) {
@@ -184,47 +179,22 @@ class HomeActivity : AppCompatActivity() {
                 userPair.user.online = isOnline.toString()
             }
         }
-    }
-
-    private fun setupUserOnlineStatusListener(userId: String) {
-        val userRef = FirebaseDatabase.getInstance().getReference("users").child(userId)
-
-        val listener: ValueEventListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.child("online").exists()) {
-                    val isOnline = dataSnapshot.child("online").getValue(String::class.java).toBoolean()
-                    updateOnlineStatus(userId, isOnline)
-                    adapter?.update(openConversations as ArrayList<UserPair>)
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.d(TAG, "setupUserOnlineStatusListener -> onCancelled: ${databaseError.message}")
-                // Handle the cancellation if needed
-            }
-        }
-
-        userRef.addValueEventListener(listener)
-        userListeners[userId] = listener
+        adapter?.update(openConversations!!)
     }
 
     override fun onStop() {
         super.onStop()
-
-        for (pair in openConversations ?: emptyList()) {
-            val uid = pair.user.uid!!
+        openConversations?.forEach { userPair ->
+            val uid = userPair.user.uid!!
             val userRef = FirebaseDatabase.getInstance().getReference("users").child(uid)
-
-            Log.d(TAG, "removing OnlineStatusListener for: $uid")
-            userRef.removeEventListener(userListeners[uid]!!)
+            userListeners[uid]?.let { userRef.removeEventListener(it) }
         }
     }
 
     override fun onStart() {
         super.onStart()
-
-        for (userPair in openConversations ?: emptyList()) {
-            Log.d(TAG, "creating OnlineStatusListener for: ${userPair.user.uid}")
+        UserUtils.update("online", "true")
+        openConversations?.forEach { userPair ->
             setupUserOnlineStatusListener(userPair.user.uid!!)
         }
     }

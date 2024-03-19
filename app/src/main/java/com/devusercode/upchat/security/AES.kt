@@ -6,6 +6,7 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import android.util.Base64
 import android.util.Log
+import javax.crypto.IllegalBlockSizeException
 
 class AES(private val secretKey: String) {
     private val TAG = "AES"
@@ -38,11 +39,11 @@ class AES(private val secretKey: String) {
 
             String(decryptedBytes, StandardCharsets.UTF_8)
         } catch (e: Exception) {
-            if (e !is IllegalArgumentException) {
-                Log.e(TAG, "${e.javaClass.name} | ${e.message}")
-                Log.i(TAG, "text -> $encryptedText")
+            if (e !is IllegalArgumentException && e !is javax.crypto.BadPaddingException && e !is IllegalBlockSizeException) {
+                throw e
+            } else {
+                return encryptedText
             }
-            encryptedText
         }
     }
 }

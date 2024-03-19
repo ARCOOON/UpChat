@@ -45,8 +45,10 @@ class ListUsersActivity : AppCompatActivity() {
 
     private var selectedItem: MenuItem? = null
 
+    enum class MenuFilter { USERNAME, EMAIL, UID }
+
     private val intent = Intent()
-    private var menuFilter: String = "username"
+    private var selectedFilter: MenuFilter = MenuFilter.USERNAME
 
     override fun onCreate(savedInstanceState: Bundle?) {
         FirebaseApp.initializeApp(this)
@@ -158,7 +160,7 @@ class ListUsersActivity : AppCompatActivity() {
     }
 
     private fun filterUsers(text: String) {
-        val query = users.orderByChild(menuFilter).startAt(text).endAt(text + "\uf8ff")
+        val query = users.orderByChild(selectedFilter.toString().lowercase()).startAt(text).endAt(text + "\uf8ff")
         val options = FirebaseRecyclerOptions.Builder<User>().setQuery(query, User::class.java)
             .setLifecycleOwner(this).build()
 
@@ -188,17 +190,17 @@ class ListUsersActivity : AppCompatActivity() {
         when (itemId) {
             R.id.menu_username -> {
                 searchView.queryHint = "Username..."
-                menuFilter = "username"
+                selectedFilter = MenuFilter.USERNAME
             }
 
             R.id.menu_email -> {
                 searchView.queryHint = "Email..."
-                menuFilter = "email"
+                selectedFilter = MenuFilter.EMAIL
             }
 
             R.id.menu_uid -> {
                 searchView.queryHint = "User Id..."
-                menuFilter = "uid"
+                selectedFilter = MenuFilter.UID
             }
         }
 

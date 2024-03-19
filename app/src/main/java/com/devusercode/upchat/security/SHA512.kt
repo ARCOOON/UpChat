@@ -1,14 +1,15 @@
 package com.devusercode.upchat.security
 
+import android.net.Uri
 import java.io.File
 import java.io.FileInputStream
 import java.security.MessageDigest
 
 class SHA512 {
     companion object {
-        fun generate(file: File): String {
+        fun generate(fileUri: Uri): String {
             val digest = MessageDigest.getInstance("SHA-512")
-            val fis = FileInputStream(file)
+            val fis = FileInputStream(fileUri.path)
             val byteArray = ByteArray(8192)
             var bytesRead: Int
 

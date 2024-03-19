@@ -92,7 +92,7 @@ class MessageAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view: View
-        val model = snapshots[viewType]
+        // val model = snapshots[viewType]
 
         return when (viewType) {
             MessageSender.MESSAGE_SENT_TEXT -> {
@@ -148,16 +148,14 @@ class MessageAdapter(
     companion object {
         private val TAG = MessageAdapter::class.java.simpleName
         private val firebase_user = FirebaseAuth.getInstance().currentUser
-        private val conversationId: String? = null
+        public var conversationId: String? = null
 
-        @SuppressLint("InflateParams")
         fun showTooltipOverlay(anchorView: View, model: Message) {
             // Inflate the tooltip overlay layout
-            val tooltipView = LayoutInflater.from(anchorView.context)
-                .inflate(R.layout.item_conversation_popup, null)
+            val tooltipView = LayoutInflater.from(anchorView.context).inflate(R.layout.item_conversation_popup, null)
             val rootLayout = tooltipView.findViewById<LinearLayout>(R.id.root_layout)
 
-            setCornerRadius(rootLayout, 50f)
+            setCornerRadius(rootLayout, 25f)
 
             // Create a PopupWindow to display the tooltip overlay
             val popupWindow = PopupWindow(
@@ -177,11 +175,22 @@ class MessageAdapter(
             val replyButton = tooltipView.findViewById<Button>(R.id.reply_button)
 
             deleteButton.setOnClickListener {
+                if (conversationId == null) {
+                    popupWindow.dismiss()
+                    return@setOnClickListener
+                }
+
                 val messageId = model.messageId
                 val messageRef = FirebaseDatabase.getInstance().reference.child("conversations")
-                    .child(conversationId!!).child("messages").child(messageId!!)
+                    .child(conversationId!!)
+                    .child("messages")
+                    .child(messageId!!)
 
-                messageRef.removeValue().addOnCompleteListener { popupWindow.dismiss() }
+                messageRef.removeValue()
+                    .addOnCompleteListener { result ->
+                        Log.d(TAG, "Delete success: " + result.isSuccessful.toString())
+                        popupWindow.dismiss()
+                    }
                     .addOnFailureListener { error: Exception ->
                         Log.e(TAG, error.message!!)
                         popupWindow.dismiss()

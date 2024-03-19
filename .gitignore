@@ -30,6 +30,9 @@ render.experimental.xml
 *.jks
 *.keystore
 
+# Json files (Experimental)
+*.json
+
 # Google Services (e.g. APIs or Firebase)
 /app/google-services.json
 google-services.json

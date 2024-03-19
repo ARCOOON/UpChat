@@ -22,6 +22,7 @@ import com.devusercode.upchat.utils.UserUtils
 import com.devusercode.upchat.utils.Util
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.koushikdutta.ion.Ion
 import java.io.File
 

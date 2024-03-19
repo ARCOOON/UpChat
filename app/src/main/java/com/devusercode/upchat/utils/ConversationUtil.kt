@@ -5,12 +5,14 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
 import com.devusercode.upchat.Key
 import com.devusercode.upchat.models.Conversation
 import com.devusercode.upchat.models.Message
 import com.devusercode.upchat.models.User
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.security.MAC
+import com.devusercode.upchat.security.SHA512
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -160,8 +162,7 @@ class ConversationUtil(
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
                         val lastMessageSnapshot = dataSnapshot.children.iterator().next()
-                        val lastMessage: Message? =
-                            lastMessageSnapshot.getValue(Message::class.java)
+                        val lastMessage: Message? = lastMessageSnapshot.getValue(Message::class.java)
 
                         onFinish.accept(lastMessage)
                     } else {
@@ -226,13 +227,14 @@ class ConversationUtil(
         data[Key.Message.ID] = messageId
         data[Key.Message.TYPE] = mime
         data[Key.Message.URL] = ""
-        // data[Key.Message.CHECKSUM] = SHA512.generate(File(file))
+        data[Key.Message.CHECKSUM] = SHA512.generate(file)
         data[Key.Message.SENDER_ID] = user.uid
         data[Key.Message.TIMESTAMP] = System.currentTimeMillis().toString()
 
         return null
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun sendImage(file: Uri, msg: String?) {
         val data: MutableMap<String, String?> = HashMap()
 
@@ -246,6 +248,8 @@ class ConversationUtil(
         if (messageId.startsWith("-")) {
             messageId = messageId.substring(1)
         }
+
+        val message = msg?.trim { it <= ' ' }
 
         val imageRef: StorageReference = imagesRef.child(cid).child("$messageId.png")
 
@@ -263,13 +267,16 @@ class ConversationUtil(
 
             imageRef.putFile(fileUri).addOnSuccessListener {
                 imageRef.downloadUrl.addOnSuccessListener { uri ->
-                    data[Key.Message.MESSAGE] = msg ?: ""
+                    val checksum = SHA512.generate(uri)
+
+                    data[Key.Message.MESSAGE] = message ?: ""
                     data[Key.Message.ID] = messageId
                     data[Key.Message.TYPE] = "image"
                     data[Key.Message.URL] = uri.toString()
-                    // data[Key.Message.CHECKSUM] = SHA512.generate(tempFile)
+                    data[Key.Message.CHECKSUM] = checksum
                     data[Key.Message.SENDER_ID] = user.uid
                     data[Key.Message.TIMESTAMP] = System.currentTimeMillis().toString()
+                    data[Key.Message.MAC] = mac.generate(checksum)
 
                     Log.d(TAG, "Data: $data")
 
@@ -286,5 +293,4 @@ class ConversationUtil(
 
         inputStream?.close()
     }
-
 }

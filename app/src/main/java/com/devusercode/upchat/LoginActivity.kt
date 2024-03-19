@@ -90,10 +90,7 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            auth.signInWithEmailAndPassword(
-                emailEdit.text.toString(),
-                passwordEdit.text.toString()
-            )
+            auth.signInWithEmailAndPassword(emailEdit.text.toString(), passwordEdit.text.toString())
                 .addOnCompleteListener(authSignInListener)
         }
 
@@ -134,10 +131,10 @@ class LoginActivity : AppCompatActivity() {
 
                 if (task.exception is FirebaseAuthInvalidCredentialsException) {
                     Util.showMessage(applicationContext, "Invalid credentials!")
-                } else {
-                    Log.e(TAG, task.exception?.javaClass?.name ?: "")
-                    Log.e(TAG, task.exception?.message ?: "")
                 }
+
+                Log.e(TAG, task.exception?.javaClass?.name ?: "")
+                Log.e(TAG, task.exception?.message ?: "")
             }
         }
 
