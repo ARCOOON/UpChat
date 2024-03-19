@@ -42,6 +42,7 @@
             android:insetBottom="0dp"
             app:backgroundTint="@color/colorAccent"
             app:icon="@drawable/ic_add_white"
+            app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconTint="@color/white" />
 
@@ -78,6 +79,7 @@
             android:insetBottom="0dp"
             app:backgroundTint="@color/colorAccent"
             app:icon="@drawable/ic_send_white"
+            app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconTint="@color/white" />
     </LinearLayout>
