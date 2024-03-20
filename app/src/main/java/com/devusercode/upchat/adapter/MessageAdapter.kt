@@ -1,6 +1,5 @@
 package com.devusercode.upchat.adapter
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.Log
@@ -19,6 +18,7 @@ import com.devusercode.upchat.adapter.viewholder.SentImageViewHolder
 import com.devusercode.upchat.adapter.viewholder.SentMessageViewHolder
 import com.devusercode.upchat.adapter.viewholder.SystemMessageViewHolder
 import com.devusercode.upchat.models.Message
+import com.devusercode.upchat.models.MessageTypes
 import com.devusercode.upchat.models.User
 import com.devusercode.upchat.utils.Util
 import com.devusercode.upchat.utils.Util.setCornerRadius
@@ -49,13 +49,6 @@ class MessageAdapter(
         const val SYSTEM_MESSAGE = 8
     }
 
-    private object MessageType {
-        const val TEXT = "text"
-        const val IMAGE = "image"
-        const val AUDIO = "audio"
-        const val FILE = "file"
-    }
-
     fun setConversationId(cid: String) {
         conversationId = cid
     }
@@ -68,23 +61,20 @@ class MessageAdapter(
         val message = snapshots[position]
 
         return when (message.senderId) {
+            "system" -> MessageSender.SYSTEM_MESSAGE
+
             firebase_user!!.uid -> {
-                if (message.type == MessageType.IMAGE) {
+                if (MessageTypes.parse(message.type) == MessageTypes.IMAGE) {
                     MessageSender.MESSAGE_SENT_IMAGE
                 } else {
                     MessageSender.MESSAGE_SENT_TEXT
                 }
             }
 
-            "system" -> {
-                MessageSender.SYSTEM_MESSAGE
-            }
-
-            participant!!.uid -> {
-                MessageSender.MESSAGE_RECEIVED_TEXT
-            }
+            participant!!.uid -> MessageSender.MESSAGE_RECEIVED_TEXT
 
             else -> {
+                Log.e(TAG, "Unknown view type")
                 throw IllegalStateException("Unknown view type")
             }
         }
@@ -125,6 +115,7 @@ class MessageAdapter(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, model: Message) {
         when (holder) {
             is SentMessageViewHolder -> {
@@ -152,7 +143,8 @@ class MessageAdapter(
 
         fun showTooltipOverlay(anchorView: View, model: Message) {
             // Inflate the tooltip overlay layout
-            val tooltipView = LayoutInflater.from(anchorView.context).inflate(R.layout.item_conversation_popup, null)
+            val tooltipView = LayoutInflater.from(anchorView.context)
+                .inflate(R.layout.item_conversation_popup, null)
             val rootLayout = tooltipView.findViewById<LinearLayout>(R.id.root_layout)
 
             setCornerRadius(rootLayout, 25f)
@@ -188,7 +180,7 @@ class MessageAdapter(
 
                 messageRef.removeValue()
                     .addOnCompleteListener { result ->
-                        Log.d(TAG, "Delete success: " + result.isSuccessful.toString())
+                        Log.d(TAG, "Delete success?: " + result.isSuccessful.toString())
                         popupWindow.dismiss()
                     }
                     .addOnFailureListener { error: Exception ->

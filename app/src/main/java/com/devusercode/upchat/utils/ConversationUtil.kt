@@ -9,6 +9,7 @@ import androidx.core.net.toUri
 import com.devusercode.upchat.Key
 import com.devusercode.upchat.models.Conversation
 import com.devusercode.upchat.models.Message
+import com.devusercode.upchat.models.MessageTypes
 import com.devusercode.upchat.models.User
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.security.MAC
@@ -162,7 +163,8 @@ class ConversationUtil(
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
                         val lastMessageSnapshot = dataSnapshot.children.iterator().next()
-                        val lastMessage: Message? = lastMessageSnapshot.getValue(Message::class.java)
+                        val lastMessage: Message? =
+                            lastMessageSnapshot.getValue(Message::class.java)
 
                         onFinish.accept(lastMessage)
                     } else {
@@ -196,7 +198,7 @@ class ConversationUtil(
         // Save the message data
         data[Key.Message.MESSAGE] = aes.encrypt(message)
         data[Key.Message.ID] = messageId
-        data[Key.Message.TYPE] = "text"
+        data[Key.Message.TYPE] = MessageTypes.TEXT.toString()
         data[Key.Message.MAC] = mac.generate(message)
         data[Key.Message.SENDER_ID] = user.uid
         data[Key.Message.TIMESTAMP] = System.currentTimeMillis().toString()
@@ -225,7 +227,8 @@ class ConversationUtil(
 
         data[Key.Message.MESSAGE] = msg ?: ""
         data[Key.Message.ID] = messageId
-        data[Key.Message.TYPE] = mime
+        data[Key.Message.TYPE] = MessageTypes.FILE.toString()
+        data[Key.Message.MIME] = mime
         data[Key.Message.URL] = ""
         data[Key.Message.CHECKSUM] = SHA512.generate(file)
         data[Key.Message.SENDER_ID] = user.uid
@@ -236,61 +239,60 @@ class ConversationUtil(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun sendImage(file: Uri, msg: String?) {
-        val data: MutableMap<String, String?> = HashMap()
-
-        val imagesRef = FirebaseStorage.getInstance().reference.child(Key.Document.DOCUMENTS)
         val messagesRef = FirebaseDatabase.getInstance().reference
             .child(Key.Conversation.CONVERSATIONS)
             .child(cid)
             .child(Key.Conversation.MESSAGES)
 
-        var messageId = messagesRef.push().key!!
-        if (messageId.startsWith("-")) {
-            messageId = messageId.substring(1)
-        }
+        val messageId = messagesRef.push().key?.removePrefix("-") ?: return
 
-        val message = msg?.trim { it <= ' ' }
-
-        val imageRef: StorageReference = imagesRef.child(cid).child("$messageId.png")
+        val imageRef = FirebaseStorage.getInstance().reference
+            .child(Key.Document.DOCUMENTS)
+            .child(cid)
+            .child("$messageId.png")
 
         val contentResolver = context.contentResolver
         val inputStream = contentResolver.openInputStream(file)
-        val tempFile = File.createTempFile("temp_image", ".png")
-        tempFile.deleteOnExit()
 
-        if (inputStream != null) {
-            tempFile.outputStream().use { outputStream ->
-                inputStream.copyTo(outputStream)
+        inputStream?.use { input ->
+            val tempFile = File.createTempFile("temp_image", ".png").apply { deleteOnExit() }
+
+            tempFile.outputStream().use { output ->
+                input.copyTo(output)
             }
 
             val fileUri = Uri.fromFile(tempFile)
 
-            imageRef.putFile(fileUri).addOnSuccessListener {
-                imageRef.downloadUrl.addOnSuccessListener { uri ->
-                    val checksum = SHA512.generate(uri)
+            imageRef.putFile(fileUri)
+                .addOnSuccessListener { _ ->
+                    imageRef.downloadUrl
+                        .addOnSuccessListener { uri ->
+                            val checksum = SHA512.generate(uri)
+                            val message = msg?.trim() ?: ""
 
-                    data[Key.Message.MESSAGE] = message ?: ""
-                    data[Key.Message.ID] = messageId
-                    data[Key.Message.TYPE] = "image"
-                    data[Key.Message.URL] = uri.toString()
-                    data[Key.Message.CHECKSUM] = checksum
-                    data[Key.Message.SENDER_ID] = user.uid
-                    data[Key.Message.TIMESTAMP] = System.currentTimeMillis().toString()
-                    data[Key.Message.MAC] = mac.generate(checksum)
+                            val data = mapOf(
+                                Key.Message.MESSAGE to message,
+                                Key.Message.ID to messageId,
+                                Key.Message.TYPE to MessageTypes.IMAGE.toString(),
+                                Key.Message.URL to uri.toString(),
+                                Key.Message.CHECKSUM to checksum,
+                                Key.Message.SENDER_ID to user.uid,
+                                Key.Message.TIMESTAMP to System.currentTimeMillis().toString(),
+                                Key.Message.MAC to mac.generate(checksum)
+                            )
 
-                    Log.d(TAG, "Data: $data")
+                            Log.d(TAG, "Data: $data")
 
-                    messagesRef.child(messageId).setValue(data)
-                }.addOnFailureListener { error ->
+                            messagesRef.child(messageId).setValue(data)
+                        }
+                        .addOnFailureListener { error ->
+                            Log.e(TAG, error.message!!)
+                        }
+                }
+                .addOnFailureListener { error ->
                     Log.e(TAG, error.message!!)
                 }
-            }.addOnFailureListener { error ->
-                Log.e(TAG, error.message!!)
-            }
-        } else {
-            Log.e(TAG, "Failed to open input stream for the selected file")
-        }
-
-        inputStream?.close()
+        } ?: Log.e(TAG, "Failed to open input stream for the selected file")
     }
+
 }

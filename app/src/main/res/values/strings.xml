@@ -14,7 +14,7 @@
     <string name="register__toolbar_title">Register</string>
     <string name="user_profile__email_label">Email: %1$s</string>
     <string name="user_profile__uid_label">Uid: %1$s</string>
-    <string name="user_profile__joined_label">Joined: %1$s</string>
+    <string name="user_profile__joined_label">Joined on: %1$s</string>
     <string name="conversation_layout__message">Message</string>
     <string name="layout_toolbar_chat__participant">Participant</string>
     <string name="layout_toolbar_chat__online">online</string>

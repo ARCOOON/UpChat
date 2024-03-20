@@ -23,6 +23,7 @@ object Key {
         const val SEEN = "seen"
         // Message type: File, Text, Image, Audio
         const val TYPE = "type"
+        const val MIME = "mimetype"
         // For file transfer
         const val URL = "url"
         const val CHECKSUM = "checksum"
