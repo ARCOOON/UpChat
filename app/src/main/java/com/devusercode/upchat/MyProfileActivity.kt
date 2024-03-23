@@ -20,7 +20,6 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.devusercode.upchat.models.User
 import com.devusercode.upchat.utils.DatabaseUtil
 import com.devusercode.upchat.utils.QRCode
@@ -28,7 +27,6 @@ import com.devusercode.upchat.utils.StorageController
 import com.devusercode.upchat.utils.UserUtils
 import com.devusercode.upchat.utils.Util
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth

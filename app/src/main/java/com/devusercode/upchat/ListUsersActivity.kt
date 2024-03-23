@@ -13,7 +13,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
@@ -22,7 +21,6 @@ import com.devusercode.upchat.adapter.UserAdapter
 import com.devusercode.upchat.adapter.WrapLayoutManager
 import com.devusercode.upchat.models.User
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.google.android.material.appbar.AppBarLayout
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase

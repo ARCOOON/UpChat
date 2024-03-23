@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.core.net.toUri
 import com.devusercode.upchat.Key
 import com.devusercode.upchat.models.Conversation
 import com.devusercode.upchat.models.Message
@@ -20,7 +19,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import java.io.File
 import java.util.function.Consumer
 
@@ -35,8 +33,8 @@ class ConversationUtil(
 
     companion object {
         private const val TAG = "ConversationUtil"
-        private val firebaseDatabase = FirebaseDatabase.getInstance()
-        const val REF = "conversations"
+        // private val firebaseDatabase = FirebaseDatabase.getInstance()
+        // const val REF = "conversations"
 
         class ConversationResult {
             private var conversation: Conversation?

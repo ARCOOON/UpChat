@@ -18,12 +18,10 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.devusercode.upchat.utils.DatabaseUtil
 import com.devusercode.upchat.utils.DeviceId
 import com.devusercode.upchat.utils.Util
 import com.google.android.gms.tasks.Task
-import com.google.android.material.appbar.AppBarLayout
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -37,7 +35,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private val auth = FirebaseAuth.getInstance()
     private val users = FirebaseDatabase.getInstance().getReference("users")
-    private val profileImages = FirebaseStorage.getInstance().getReference("profile_images")
+    // private val profileImages = FirebaseStorage.getInstance().getReference("profile_images")
 
     private lateinit var linear1: LinearLayout
     private lateinit var usernameEdit: EditText

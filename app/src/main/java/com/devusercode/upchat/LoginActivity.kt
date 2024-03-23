@@ -29,16 +29,16 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var saveLoginInfoCheckbox: CheckBox
     private lateinit var forgotPasswordText: TextView
 
-    private lateinit var authCreateUserListener: OnCompleteListener<AuthResult>
+    // private lateinit var authCreateUserListener: OnCompleteListener<AuthResult>
     private lateinit var authSignInListener: OnCompleteListener<AuthResult>
     private lateinit var authResetPasswordListener: OnCompleteListener<Void>
-    private lateinit var authUpdateEmailListener: OnCompleteListener<Void>
-    private lateinit var authUpdatePasswordListener: OnCompleteListener<Void>
-    private lateinit var authEmailVerificationSentListener: OnCompleteListener<Void>
-    private lateinit var authDeleteUserListener: OnCompleteListener<Void>
-    private lateinit var authUpdateProfileListener: OnCompleteListener<Void>
-    private lateinit var authPhoneAuthListener: OnCompleteListener<AuthResult>
-    private lateinit var authGoogleSignInListener: OnCompleteListener<AuthResult>
+    // private lateinit var authUpdateEmailListener: OnCompleteListener<Void>
+    // private lateinit var authUpdatePasswordListener: OnCompleteListener<Void>
+    // private lateinit var authEmailVerificationSentListener: OnCompleteListener<Void>
+    // private lateinit var authDeleteUserListener: OnCompleteListener<Void>
+    // private lateinit var authUpdateProfileListener: OnCompleteListener<Void>
+    // private lateinit var authPhoneAuthListener: OnCompleteListener<AuthResult>
+    // private lateinit var authGoogleSignInListener: OnCompleteListener<AuthResult>
 
     private val intent = Intent()
     private lateinit var storageController: StorageController

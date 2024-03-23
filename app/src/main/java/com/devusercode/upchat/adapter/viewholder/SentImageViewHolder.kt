@@ -3,7 +3,6 @@ package com.devusercode.upchat.adapter.viewholder
 import android.net.Uri
 import android.os.Build
 import android.util.Log
-import android.view.RoundedCorner
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -11,7 +10,6 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterInside
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.devusercode.upchat.R
 import com.devusercode.upchat.adapter.MessageAdapter
@@ -27,7 +25,7 @@ class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view
     private var imageView: ImageView = view.findViewById(R.id.image_view)
     private var timeView: TextView = view.findViewById(R.id.message_time)
     private var cardView: LinearLayout = view.findViewById(R.id.materialcardview1)
-    private var rootLayout: LinearLayout = view.findViewById(R.id.root_layout)
+    // private var rootLayout: LinearLayout = view.findViewById(R.id.root_layout)
     private var verified: ImageView = view.findViewById(R.id.message_verified)
 
     @RequiresApi(Build.VERSION_CODES.S)
