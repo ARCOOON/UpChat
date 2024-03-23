@@ -101,15 +101,16 @@ class LoginActivity : AppCompatActivity() {
 
         /* *** LISTENERS *** */
 
+        /*
         authEmailVerificationSentListener = OnCompleteListener { task ->
             val success = task.isSuccessful
             val errorMessage = task.exception?.message ?: ""
         }
-
         authGoogleSignInListener = OnCompleteListener { task ->
             val success = task.isSuccessful
             val errorMessage = task.exception?.message ?: ""
         }
+         */
 
         authSignInListener = OnCompleteListener { task ->
             if (task.isSuccessful) {

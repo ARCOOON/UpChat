@@ -255,7 +255,11 @@ class ConversationUtil(
         val inputStream = contentResolver.openInputStream(file)
 
         inputStream?.use { input ->
-            val tempFile = File.createTempFile("temp_image", ".png").apply { deleteOnExit() }
+            var checksum = "null"
+            val tempFile = File.createTempFile("temp_image", ".png")//.apply { deleteOnExit() }
+
+            Log.d(TAG, "260 - Temp file path -> ${tempFile.absoluteFile}")
+            Log.d(TAG, "261 - Temp file exists -> ${tempFile.exists()}")
 
             tempFile.outputStream().use { output ->
                 input.copyTo(output)
@@ -263,11 +267,18 @@ class ConversationUtil(
 
             val fileUri = Uri.fromFile(tempFile)
 
+            Log.d(TAG, "269 - Temp file path -> ${tempFile.absoluteFile}")
+            Log.d(TAG, "270 - Temp file exists -> ${tempFile.exists()}")
+
             imageRef.putFile(fileUri)
                 .addOnSuccessListener { _ ->
                     imageRef.downloadUrl
                         .addOnSuccessListener { uri ->
-                            val checksum = SHA512.generate(uri)
+                            Log.d(TAG, "276 - Temp file path -> ${tempFile.absoluteFile}")
+                            Log.d(TAG, "277 - Temp file exists -> ${tempFile.exists()}")
+
+                            if (tempFile.exists())
+                                checksum = SHA512.generate(uri)
                             val message = msg?.trim() ?: ""
 
                             val data = mapOf(
@@ -292,6 +303,7 @@ class ConversationUtil(
                 .addOnFailureListener { error ->
                     Log.e(TAG, error.message!!)
                 }
+            tempFile.delete()
         } ?: Log.e(TAG, "Failed to open input stream for the selected file")
     }
 

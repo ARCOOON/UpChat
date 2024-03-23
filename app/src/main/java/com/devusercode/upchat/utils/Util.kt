@@ -199,8 +199,7 @@ object Util {
     }
 
     fun toggleKeyboard(context: Context, show: Boolean) {
-        val inputMethodManager =
-            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         val currentFocus = (context as Activity).currentFocus
         if (show) {
             inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)

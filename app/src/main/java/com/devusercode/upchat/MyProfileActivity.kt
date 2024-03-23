@@ -86,8 +86,8 @@ class MyProfileActivity : AppCompatActivity() {
     }
 
     private fun initialize(savedInstanceState: Bundle?) {
-        val coordinator: CoordinatorLayout = findViewById(R.id._coordinator)
-        val appBar: AppBarLayout = findViewById(R.id.app_bar)
+        // val coordinator: CoordinatorLayout = findViewById(R.id._coordinator)
+        // val appBar: AppBarLayout = findViewById(R.id.app_bar)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
 
         setSupportActionBar(toolbar)

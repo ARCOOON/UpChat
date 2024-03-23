@@ -95,8 +95,8 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun initialize() {
-        val coordinator = findViewById<CoordinatorLayout>(R.id._coordinator)
-        val appBar = findViewById<AppBarLayout>(R.id.app_bar)
+        // val coordinator = findViewById<CoordinatorLayout>(R.id._coordinator)
+        // val appBar = findViewById<AppBarLayout>(R.id.app_bar)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
 
         setSupportActionBar(toolbar)

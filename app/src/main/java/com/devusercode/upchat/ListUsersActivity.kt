@@ -86,8 +86,8 @@ class ListUsersActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initialize() {
-        val appBar = findViewById<AppBarLayout>(R.id.app_bar)
-        val coordinator = findViewById<CoordinatorLayout>(R.id.coordinator)
+        // val appBar = findViewById<AppBarLayout>(R.id.app_bar)
+        // val coordinator = findViewById<CoordinatorLayout>(R.id.coordinator)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val toolbarBackButton = findViewById<Button>(R.id.back_button)
 

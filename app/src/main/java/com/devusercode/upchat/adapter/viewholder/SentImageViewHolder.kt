@@ -55,7 +55,7 @@ class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view
         messageView.text = message
         timeView.text = GetTimeAgo.parse(model.timestamp!!)
 
-        Log.d(TAG, "Url: ${model.url} | Uri: ${Uri.parse(model.url)}")
+        Log.d(TAG, "Url: ${model.url}")
 
         Glide.with(view.context)
             .load(Uri.parse(model.url))
