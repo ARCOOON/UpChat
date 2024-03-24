@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -16,6 +17,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.size
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +31,7 @@ import com.devusercode.upchat.utils.ConversationUtil
 import com.devusercode.upchat.utils.ErrorCodes
 import com.devusercode.upchat.utils.StorageController
 import com.devusercode.upchat.utils.UserUtils
+import com.devusercode.upchat.utils.Util
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.textfield.TextInputEditText
@@ -70,6 +73,7 @@ class ConversationActivity : AppCompatActivity() {
     private var file: Uri? = null
     private var filePickerLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.GetContent()) { result ->
+            Util.showMessage(this, "Image selected...")
             file = result
         }
 
@@ -166,14 +170,19 @@ class ConversationActivity : AppCompatActivity() {
             if (bottom < oldBottom) {
                 recyclerview.scrollBy(0, oldBottom - bottom)
             }
+            if (bottom > oldBottom)
+                recyclerview.scrollBy(0, bottom - oldBottom)
         }
+
+        // recyclerview.smoothScrollToPosition(recyclerview.adapter!!.itemCount - 1);
 
         backButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         sendButton.setOnClickListener {
             if (!chatExists) {
                 currentConversationId = ConversationUtil.newConversation(user!!, participant!!)
-                conversationUtil = ConversationUtil(this, currentConversationId, user!!, participant!!)
+                conversationUtil =
+                    ConversationUtil(this, currentConversationId, user!!, participant!!)
 
                 Log.d(TAG, "Conversation ($currentConversationId) created")
 
@@ -189,6 +198,7 @@ class ConversationActivity : AppCompatActivity() {
                 } else {
                     conversationUtil.sendImage(file!!, null)
                 }
+                file = null
                 return@setOnClickListener
             }
 
