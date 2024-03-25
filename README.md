@@ -4,13 +4,7 @@ UpChat is an open source messenger for android.
 
 [![Android CI](https://github.com/ARCOOON/UpChat/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/ARCOOON/UpChat/actions/workflows/android.yml)
 
-# Status
-
-> **progress** -> Work is in progress.
-
-> **dev** -> Under development to enhance its appearance and functionality.
-
-> **current** -> Currently working on it.
+# Development Status
 
 - [x] Conversation
 	- [x] Send Message
