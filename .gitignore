@@ -31,7 +31,7 @@ render.experimental.xml
 *.keystore
 
 # Debug Keystore (will be removed in the future)
-!debug-keystore.jks
+debug-keystore.jks
 
 # Json files (Experimental)
 *.json
@@ -44,8 +44,7 @@ google-services.json
 *.hprof
 
 # Windows batch scripts
-push-github.bat
-push-apk.bat
+*.bat
 
 # All text files
 *.txt
