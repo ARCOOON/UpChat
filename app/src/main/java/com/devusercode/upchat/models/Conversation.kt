@@ -33,8 +33,8 @@ class Conversation {
                 get() = error == null && (user != null) or (participant != null)
 
             override fun toString(): String {
-                val user: HashMap<String, Any?>? = user?.info
-                val participant: HashMap<String, Any?>? = participant?.info
+                val user: Map<String, Any?>? = user?.info
+                val participant: Map<String, Any?>? = participant?.info
                 val error = if (error != null) error!!.message else null
 
                 return "Result($user, $participant, $error)"

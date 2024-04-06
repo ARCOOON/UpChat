@@ -1,6 +1,8 @@
 package com.devusercode.upchat.adapter
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.util.Log
 import android.view.Gravity
@@ -24,6 +26,7 @@ import com.devusercode.upchat.utils.Util
 import com.devusercode.upchat.utils.Util.setCornerRadius
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
@@ -139,17 +142,15 @@ class MessageAdapter(
     companion object {
         private val TAG = MessageAdapter::class.java.simpleName
         private val firebase_user = FirebaseAuth.getInstance().currentUser
-        public var conversationId: String? = null
+        var conversationId: String? = null
 
         fun showTooltipOverlay(anchorView: View, model: Message) {
-            // Inflate the tooltip overlay layout
-            val tooltipView = LayoutInflater.from(anchorView.context)
-                .inflate(R.layout.item_conversation_popup, null)
-            val rootLayout = tooltipView.findViewById<LinearLayout>(R.id.root_layout)
+            if (model.senderId != firebase_user?.uid) return
 
-            setCornerRadius(rootLayout, 25f)
+            val inflater = LayoutInflater.from(anchorView.context)
+            val tooltipView = inflater.inflate(R.layout.item_conversation_popup, null)
 
-            // Create a PopupWindow to display the tooltip overlay
+            // Create a PopupWindow with WRAP_CONTENT size
             val popupWindow = PopupWindow(
                 tooltipView,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -157,45 +158,72 @@ class MessageAdapter(
                 true
             )
 
-            // Set the location of the popup window relative to the anchor view
-            // popupWindow.showAsDropDown(anchorView)
-            // popupWindow.showAtLocation(anchorView, Gravity.CENTER, 0, 0)
-            popupWindow.elevation = 10f
+            // Darken the background by setting a semi-transparent black color
+            val darkBackground = ColorDrawable(Color.parseColor("#50000000"))
+            popupWindow.setBackgroundDrawable(darkBackground)
 
-            // Handle button clicks inside the tooltip overlay
-            val deleteButton = tooltipView.findViewById<Button>(R.id.delete_button)
+            // Set animation style
+            popupWindow.animationStyle = R.style.ConversationPopupWindow
+            // Show the PopupWindow centered relative to anchorView
+            popupWindow.showAtLocation(anchorView, Gravity.CENTER, 0, 0)
+
+            // Dismiss the popup when clicked outside of it
+            popupWindow.isOutsideTouchable = true
+            popupWindow.isFocusable = true
+            popupWindow.update()
+
+            val infoButton = tooltipView.findViewById<Button>(R.id.info_button)
             val replyButton = tooltipView.findViewById<Button>(R.id.reply_button)
+            val deleteButton = tooltipView.findViewById<Button>(R.id.delete_button)
+
+            infoButton.setOnClickListener {
+                val messageInfo = ""
+                messageInfo.plus("Id: ${model.messageId}")
+                messageInfo.plus("Status: ${model.seen}")
+                messageInfo.plus("Type: ${model.type}")
+                messageInfo.plus("Reply Id: ${model.replyId}")
+                messageInfo.plus("Mac: ${model.mac}")
+                messageInfo.plus("Timestamp: ${model.timestamp}")
+
+                MaterialAlertDialogBuilder(anchorView.context)
+                    .setTitle("Message Info")
+                    .setMessage(messageInfo)
+                    .setPositiveButton("Close") { dialog, _ ->
+                        dialog.dismiss()
+                        popupWindow.dismiss()
+                    }
+                    .show()
+            }
 
             deleteButton.setOnClickListener {
-                if (conversationId == null) {
-                    popupWindow.dismiss()
-                    return@setOnClickListener
+                conversationId?.let { cid ->
+                    model.messageId?.let { messageId ->
+                        val messageRef = FirebaseDatabase.getInstance().reference
+                            .child("conversations")
+                            .child(cid)
+                            .child("messages")
+                            .child(messageId)
+
+                        messageRef.removeValue()
+                            .addOnCompleteListener { result ->
+                                if (result.isSuccessful) {
+                                    popupWindow.dismiss()
+                                } else {
+                                    Log.e(TAG, "Delete unsuccessful")
+                                }
+                            }
+                            .addOnFailureListener { error ->
+                                Log.e(TAG, error.message ?: "Delete failed")
+                            }
+                    }
                 }
-
-                val messageId = model.messageId
-                val messageRef = FirebaseDatabase.getInstance().reference.child("conversations")
-                    .child(conversationId!!)
-                    .child("messages")
-                    .child(messageId!!)
-
-                messageRef.removeValue()
-                    .addOnCompleteListener { result ->
-                        Log.d(TAG, "Delete success?: " + result.isSuccessful.toString())
-                        popupWindow.dismiss()
-                    }
-                    .addOnFailureListener { error: Exception ->
-                        Log.e(TAG, error.message!!)
-                        popupWindow.dismiss()
-                    }
             }
 
             replyButton.setOnClickListener {
                 Util.showMessage(anchorView.context, "Not implemented yet.")
-                popupWindow.dismiss() // Dismiss the tooltip overlay
+                popupWindow.dismiss()
             }
-
-            popupWindow.showAtLocation(anchorView, Gravity.CENTER, 0, 0)
-            popupWindow.animationStyle = R.style.ConversationPopupWindow
         }
+
     }
 }

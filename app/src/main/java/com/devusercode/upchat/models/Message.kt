@@ -10,7 +10,9 @@ class Message {
     var messageId: String? = null
     var mac: String? = null
     var url: String? = null
-    var seen: Int = 0
+    var checksum: String? = null
+    var seen: MessageStatus = MessageStatus.UNKNOWN
+    var replyId: String = ""
 
     constructor()
 

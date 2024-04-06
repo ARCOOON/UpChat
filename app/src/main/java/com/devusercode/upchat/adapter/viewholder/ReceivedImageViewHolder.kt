@@ -19,7 +19,7 @@ import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.security.MAC
 import com.devusercode.upchat.utils.GetTimeAgo
 
-class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view) {
+class ReceivedImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view) {
     private val TAG = "MessageAdapter@${this.javaClass.simpleName}"
 
     private var messageView: TextView = view.findViewById(R.id.message_content)

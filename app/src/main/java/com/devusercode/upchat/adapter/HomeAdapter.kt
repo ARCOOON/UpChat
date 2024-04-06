@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.devusercode.upchat.ConversationActivity
 import com.devusercode.upchat.R
 import com.devusercode.upchat.models.UserPair
@@ -75,8 +76,11 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
             }
 
             if (user.photoUrl!!.isNotEmpty()) {
-                Glide.with(profileImage.context).load(Uri.parse(user.photoUrl))
-                    .placeholder(R.drawable.ic_account_circle_black).circleCrop()
+                Glide.with(profileImage.context)
+                    .load(Uri.parse(user.photoUrl))
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .placeholder(R.drawable.ic_account_circle_black)
+                    .circleCrop()
                     .into(profileImage)
             } else {
                 profileImage.setImageResource(R.drawable.ic_account_circle_black)
@@ -86,14 +90,15 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
                 if (lastMsg == null) {
                     lastMessageText.visibility = View.GONE
                     lastMessageTime.visibility = View.GONE
+                    return@getLastMessage
+                }
 
-                } else if (lastMsg.senderId.equals("system")) {
+                if (lastMsg.senderId.equals("system")) {
                     lastMessageText.visibility = View.GONE
                     lastMessageTime.visibility = View.GONE
 
-                } else {
-                    val aes = AES(user.uid!!)
-                    lastMessageText.text = aes.decrypt(lastMsg.message!!)
+                } else if (lastMsg.type == "image") {
+                    lastMessageText.text = username.context.getString(R.string.home_last_message_photo)
                     lastMessageTime.text = lastMsg.parsedTime
                 }
             }

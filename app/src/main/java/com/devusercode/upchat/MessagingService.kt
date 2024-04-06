@@ -14,12 +14,15 @@ import com.google.firebase.messaging.RemoteMessage
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class MessagingService : FirebaseMessagingService() {
+    private val TAG = "FCM"
     private val CHANNEL_ID = "personal_notifications"
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
-        Log.d("MessagingService", "Message Payload: ${message.data}")
+        Log.d(TAG, "Message Payload: ${message.data}")
+        Log.d(TAG, "Message Notification: ${message.notification}")
+        Log.d(TAG, "Message To: ${message.to}")
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 

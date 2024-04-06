@@ -23,8 +23,8 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 
-class UserAdapter(app: AppCompatActivity, options: FirebaseRecyclerOptions<User?>) :
-    FirebaseRecyclerAdapter<User, UserAdapter.UserViewHolder>(options) {
+class UserListAdapter(app: AppCompatActivity, options: FirebaseRecyclerOptions<User?>) :
+    FirebaseRecyclerAdapter<User, UserListAdapter.UserViewHolder>(options) {
     private val TAG = this.javaClass.simpleName
 
     private val firebaseUser = FirebaseAuth.getInstance().currentUser
@@ -43,9 +43,11 @@ class UserAdapter(app: AppCompatActivity, options: FirebaseRecyclerOptions<User?
         holder.email.text = user.email
 
         // Load a profile picture into the view holder
-        if (user.photoUrl!!.isNotEmpty()) {
-            Glide.with(context).load(Uri.parse(user.photoUrl))
-                .placeholder(R.drawable.ic_account_circle_black).circleCrop()
+        if (!user.photoUrl.isNullOrBlank()) {
+            Glide.with(context)
+                .load(Uri.parse(user.photoUrl))
+                .placeholder(R.drawable.ic_account_circle_black)
+                .circleCrop()
                 .into(holder.profileImage)
         } else {
             holder.profileImage.setImageResource(R.drawable.ic_account_circle_black)

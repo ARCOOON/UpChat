@@ -16,7 +16,7 @@ import com.devusercode.upchat.security.MAC
 import com.devusercode.upchat.utils.GetTimeAgo
 
 class SentMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    private val TAG = "MessageAdapter@SentMessageViewHolder"
+    private val TAG = "MessageAdapter@${this.javaClass.simpleName}"
 
     private var message: TextView
     private var time: TextView

@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.devusercode.upchat.adapter.UserAdapter
+import com.devusercode.upchat.adapter.UserListAdapter
 import com.devusercode.upchat.adapter.WrapLayoutManager
 import com.devusercode.upchat.models.User
 import com.firebase.ui.database.FirebaseRecyclerOptions
@@ -37,7 +37,7 @@ class ListUsersActivity : AppCompatActivity() {
     private lateinit var scanQrcodeButton: Button
     private lateinit var recyclerview1: RecyclerView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var adapter: UserAdapter
+    private lateinit var adapter: UserListAdapter
     private lateinit var noDataAvailableText: TextView
     private lateinit var searchView: SearchView
 
@@ -132,7 +132,7 @@ class ListUsersActivity : AppCompatActivity() {
         val options = FirebaseRecyclerOptions.Builder<User>().setQuery(users, User::class.java)
             .build()
 
-        adapter = UserAdapter(this, options)
+        adapter = UserListAdapter(this, options)
         recyclerview1.adapter = adapter
 
         adapter.startListening()
@@ -162,7 +162,7 @@ class ListUsersActivity : AppCompatActivity() {
         val options = FirebaseRecyclerOptions.Builder<User>().setQuery(query, User::class.java)
             .setLifecycleOwner(this).build()
 
-        adapter = UserAdapter(this, options)
+        adapter = UserListAdapter(this, options)
         recyclerview1.adapter = adapter
     }
 

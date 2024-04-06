@@ -9,7 +9,7 @@ import com.devusercode.upchat.models.Message
 import com.google.android.material.card.MaterialCardView
 
 class SystemMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    private val TAG = "MessageAdapter@SystemMessageViewHolder"
+    private val TAG = "MessageAdapter@${this.javaClass.simpleName}"
     var message: TextView
     var cardview: MaterialCardView
     var rootLayout: LinearLayout

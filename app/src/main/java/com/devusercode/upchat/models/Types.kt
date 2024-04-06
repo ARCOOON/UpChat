@@ -1,32 +1,35 @@
 package com.devusercode.upchat.models
 
-
-enum class MessageTypes {
-    TEXT, AUDIO, IMAGE, FILE, UNKNOWN;
-
-    override fun toString(): String {
-        return super.toString().lowercase()
-    }
+enum class MessageStatus {
+    SENT, READ, UNKNOWN;
 
     companion object {
-        fun parse(data: Any?): MessageTypes {
-            if (data == null)
-                return UNKNOWN
+        private val typeMap = MessageStatus.values().associateBy { it.toString().lowercase() }
 
-            return if (data is String) {
-                when (data.lowercase()) {
-                    "text" -> TEXT
-                    "audio" -> AUDIO
-                    "image" -> IMAGE
-                    "file" -> FILE
-                    else -> UNKNOWN
-                }
-            } else {
-                UNKNOWN
+        fun parse(data: Any?): MessageStatus {
+            return when (data) {
+                is String -> MessageStatus.typeMap[data.lowercase()] ?: MessageStatus.UNKNOWN
+                else -> MessageStatus.UNKNOWN
             }
         }
     }
 }
+
+enum class MessageTypes {
+    TEXT, AUDIO, IMAGE, FILE, UNKNOWN;
+
+    companion object {
+        private val typeMap = values().associateBy { it.toString().lowercase() }
+
+        fun parse(data: Any?): MessageTypes {
+            return when (data) {
+                is String -> typeMap[data.lowercase()] ?: UNKNOWN
+                else -> UNKNOWN
+            }
+        }
+    }
+}
+
 
 enum class Placeholder {
     NULL

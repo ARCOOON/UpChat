@@ -4,57 +4,37 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class User() {
-    var deviceId: String? = null
-    var deviceToken: String? = null
-    var email: String? = null
-    var joined: String? = null
-    var online: String? = null
-    var username: String? = null
-    var uid: String? = null
-    var photoUrl: String? = null
+data class User(
+    var deviceId: String? = null,
+    var deviceToken: String? = null,
+    var email: String? = null,
+    var joined: String? = null,
+    var online: String? = null,
+    var username: String? = null,
+    var uid: String? = null,
+    var photoUrl: String? = null,
     var conversations: Map<String, String>? = null
+) {
+    fun getConversationIds(): List<String> = conversations?.values?.toList() ?: emptyList()
 
-    fun getConversationIds(): List<String> {
-        val conversationIds: MutableList<String> = ArrayList()
-
-        for ((_, value) in conversations!!) {
-            conversationIds.add(value)
-        }
-
-        return conversationIds
-    }
-
-    fun getUids(): List<String> {
-        val uids: MutableList<String> = ArrayList()
-
-        for ((uid, _) in conversations!!) {
-            uids.add(uid)
-        }
-
-        return uids
-    }
+    fun getUids(): List<String> = conversations?.keys?.toList() ?: emptyList()
 
     val formattedJoined: String
-        get() {
-            val date = Date(this.joined!!.toLong())
-            return SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(date)
-        }
+        get() = joined?.let {
+            val date = Date(it.toLong())
+            SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(date)
+        } ?: ""
 
-    val info: HashMap<String, Any?>
-        get() {
-            val userInfo = HashMap<String, Any?>()
-
-            userInfo["deviceId"] = deviceId
-            userInfo["deviceToken"] = deviceToken
-            userInfo["username"] = username
-            userInfo["email"] = email
-            userInfo["uid"] = uid
-            userInfo["photoUrl"] = photoUrl
-            userInfo["joined"] = joined
-            userInfo["online"] = online
-            userInfo["conversations"] = conversations
-
-            return userInfo
-        }
+    val info: Map<String, Any?>
+        get() = mapOf(
+            "deviceId" to deviceId,
+            "deviceToken" to deviceToken,
+            "username" to username,
+            "email" to email,
+            "uid" to uid,
+            "photoUrl" to photoUrl,
+            "joined" to joined,
+            "online" to online,
+            "conversations" to conversations
+        )
 }

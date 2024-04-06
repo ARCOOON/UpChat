@@ -20,7 +20,7 @@ class UpdateInstaller(private val context: Context) {
                 performInstall(filePath)
             } else {
                 // Request install permissions
-                requestInstallPermissions()
+                requestInstallPermissions().run { performInstall(filePath) }
                 // -> Install permissions granted
                 // -> Perform installation
             }

@@ -1,6 +1,8 @@
 package com.devusercode.upchat.utils
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.devusercode.upchat.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -11,9 +13,16 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.function.Consumer
 
-enum class ErrorCodes {
-    USER_NOT_FOUND, SUCCESS, UNKNOWN_ERROR, INIT, CANCELLED
+enum class ErrorCodes(val message: String) {
+    USER_NOT_FOUND("User not found"),
+    SUCCESS("Success"),
+    UNKNOWN_ERROR("Unknown error"),
+    INIT("Initialization error"),
+    CANCELLED("Operation cancelled"),
+    NO_PROP_TO_SERIALIZE("No properties to serialize found on class"),
+    NO_PROP_TO_SERIALIZE_FOR_FIELD("No properties to serialize for field"),
 }
+
 
 class UserUtils {
     companion object {

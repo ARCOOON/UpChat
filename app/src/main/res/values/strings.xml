@@ -53,4 +53,6 @@
     <string name="layout_item_conversation_popup__reply">Reply</string>
     <string name="layout_item_user__username">Username</string>
     <string name="layout_item_user__email">Email</string>
+    <string name="home_last_message_photo">Photo</string>
+    <string name="layout_item_conversation_popup__message_info">Message Info</string>
 </resources>
