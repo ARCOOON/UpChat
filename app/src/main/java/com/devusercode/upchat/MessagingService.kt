@@ -30,6 +30,8 @@ class MessagingService : FirebaseMessagingService() {
         val notificationMessage: String? = message.notification?.body
         val clickAction: String? = message.notification?.clickAction
         val uid: String? = message.data["uid"]
+		
+		Log.d(TAG, "Message Uid: $uid")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
@@ -55,6 +57,8 @@ class MessagingService : FirebaseMessagingService() {
 
             val notificationId = System.currentTimeMillis().toInt()
             notificationManager.notify(notificationId, mBuilder.build())
-        }
+        } else {
+			Log.e(TAG, "Android version not compatible with FCM Push-Notification")
+		}
     }
 }
