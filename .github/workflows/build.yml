@@ -59,17 +59,19 @@ jobs:
     - name: Get apk build path
       id: releaseApk
       run: echo "apkfile=$(find app/build/outputs/apk/release/*.apk)" >> $GITHUB_OUTPUT
-    
-    - name: Zip Files
-      run: zip ${{ github.workspace }}/Releases.zip ${{ steps.releaseAab.outputs.aabfile }} ${{ steps.releaseApk.outputs.apkfile }} -r
 
-    - name: Upload Release Build to Artifacts
+    - name: Upload AAB Release Build to Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Releases
-        path: ${{ github.workspace }}/Releases.zip
+        name: ${{ steps.releaseAab.outputs.aabfile }}
+        path: ${{ steps.releaseAab.outputs.aabfile }}.zip
         if-no-files-found: error
         compression-level: 0
 
-    - name: Deleting Releases
-      run: rm ${{ github.workspace }}/Releases.zip
+    - name: Upload APK Release Build to Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.releaseApk.outputs.apkfile }}
+        path: ${{ steps.releaseApk.outputs.apkfile }}.zip
+        if-no-files-found: error
+        compression-level: 0
