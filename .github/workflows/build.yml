@@ -57,3 +57,4 @@ jobs:
       with:
         name: release-artifacts
         path: ${{ steps.releaseApk.outputs.apkfile }}
+        if-no-files-found: error
