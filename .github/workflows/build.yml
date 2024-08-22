@@ -70,6 +70,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Releases
-        path: ${{ github.workspace }}/Releases.zip
+        path: ${{ github.workspace }}/Releases
         if-no-files-found: error
         compression-level: 0
