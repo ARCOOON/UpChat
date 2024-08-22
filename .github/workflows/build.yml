@@ -12,6 +12,17 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      name:
+        description: "Release-Build"
+        default: "Generate release build"
+      testers:
+        type: choice
+        description: "Select testers"
+        options:
+          - android
+          - internalTesters
+          - everyone
 
 env:
   # Enable debugging
@@ -23,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Checkout branch
       uses: actions/checkout@v4
 
     - name: Setup JDK 17
@@ -35,5 +46,18 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Run gradlew
-      run: ./gradlew tasks
+    - name: Clean up previous builds
+      run: ./gradlew clean
+
+    - name: Build Release apk
+      run: ./gradlew assembleRelease --stacktrace
+    
+    - name: Get release file apk path
+      id: releaseApk
+      run: echo "apkfile=$(find app/build/outputs/apk/release/*.apk)" >> $GITHUB_OUTPUT
+    
+    - name: Upload Release Build to Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-artifacts
+        path: ${{ steps.releaseApk.outputs.apkfile }}
