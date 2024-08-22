@@ -63,7 +63,7 @@ jobs:
     - name: Upload AAB Release Build to Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ steps.releaseAab.outputs.aabfile }}
+        name: AAB
         path: ${{ steps.releaseAab.outputs.aabfile }}
         if-no-files-found: error
         compression-level: 0
@@ -71,7 +71,7 @@ jobs:
     - name: Upload APK Release Build to Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ steps.releaseApk.outputs.apkfile }}
+        name: APK
         path: ${{ steps.releaseApk.outputs.apkfile }}
         if-no-files-found: error
         compression-level: 0
