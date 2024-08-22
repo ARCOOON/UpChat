@@ -37,7 +37,9 @@ jobs:
       uses: android-actions/setup-android@v3
 
     - name: Setup google-services.json
-      run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > /home/runner/work/UpChat/UpChat/app/google-services.json
+      env:
+        google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
+      run: echo $google_service > /home/runner/work/UpChat/UpChat/app/google-services.json
 
     - name: Clean up previous builds
       run: ./gradlew clean
