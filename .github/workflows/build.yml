@@ -33,5 +33,5 @@ jobs:
         distribution: 'oracle'
         cache: gradle
       
-    - name: Set current date as env variable
-      run: echo "$(pwd)"
+    - name: Get Content
+      run: ls -la
