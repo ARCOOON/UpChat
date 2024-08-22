@@ -35,13 +35,15 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
+      with:
+          log-accepted-android-sdk-licenses: false
 
     - name: Setup google-services.json
       env:
         google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
       run: echo $google_service > /home/runner/work/UpChat/UpChat/app/google-services.json
 
-    - name: Clean up previous builds
+    - name: Cleaning builds
       run: ./gradlew clean
 
     - name: Building Release apk
