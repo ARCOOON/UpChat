@@ -65,11 +65,13 @@ jobs:
       with:
         files: ${{ steps.releaseAab.outputs.aabfile }} ${{ steps.releaseApk.outputs.apkfile }}
         dest: ${{ github.workspace }}/Releases.zip
+        run: "${{ github.workspace }}/Releases.zip"
     
     - name: Upload Release Build to Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: Releases
-        path: ${{ github.workspace }}/Releases
+        path: ${{ github.workspace }}/Releases.zip
+        run: "${{ github.workspace }}/Releases.zip"
         if-no-files-found: error
         compression-level: 0
