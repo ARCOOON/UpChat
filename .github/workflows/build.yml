@@ -64,7 +64,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.releaseAab.outputs.aabfile }}
-        path: ${{ steps.releaseAab.outputs.aabfile }}.zip
+        path: ${{ steps.releaseAab.outputs.aabfile }}
         if-no-files-found: error
         compression-level: 0
 
@@ -72,6 +72,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.releaseApk.outputs.apkfile }}
-        path: ${{ steps.releaseApk.outputs.apkfile }}.zip
+        path: ${{ steps.releaseApk.outputs.apkfile }}
         if-no-files-found: error
         compression-level: 0
