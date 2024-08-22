@@ -30,26 +30,26 @@ android {
     }
 
     signingConfigs {
-        debug {
-            storeFile file('C:\\Users\\leon\\Desktop\\UpChat\\debug-keystore.jks')
-            storePassword 'master'
-            keyAlias 'DebuggingKey'
-            keyPassword 'master'
-        }
+        // debug {
+        //    storeFile file('C:\\Users\\leon\\Desktop\\UpChat\\debug-keystore.jks')
+        //    storePassword 'master'
+        //    keyAlias 'DebuggingKey'
+        //    keyPassword 'master'
+        // }
     }
 
     buildTypes {
         release {
             debuggable false
             minifyEnabled true
-            signingConfig signingConfigs.debug
+            // signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
         debug {
             minifyEnabled false
             debuggable true
-            signingConfig signingConfigs.debug
+            // signingConfig signingConfigs.debug
         }
 
         applicationVariants.all { variant ->
