@@ -17,11 +17,6 @@ on:
         description: "Release-Build"
         default: "Generate release build"
 
-env:
-  # Enable debugging
-  ACTIONS_STEP_DEBUG: false
-  ACTIONS_RUNNER_DEBUG: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
