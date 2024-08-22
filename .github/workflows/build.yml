@@ -64,7 +64,7 @@ jobs:
       uses: papeloto/action-zip@v1.2
       with:
         files: ${{ steps.releaseAab.outputs.aabfile }} ${{ steps.releaseApk.outputs.apkfile }}
-        dest: ${{ steps.releaseApk.outputs.apkfile }}.zip
+        dest: release.zip
     
     - name: Upload Release Build to Artifacts
       uses: actions/upload-artifact@v4
