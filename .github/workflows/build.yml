@@ -1,7 +1,14 @@
+name: Build Android
+
 on:
+  push:
+    branches: [ "main" ]
+
+  pull_request:
+    branches: [ "main" ]
+
   workflow_dispatch:
 
 jobs:
-  setup:
-    name: Using Ubuntu-Latest
+  build:
     runs-on: ubuntu-latest
