@@ -53,7 +53,7 @@ jobs:
     - name: Upload Release Build to Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Release-${{ inputs.version || "latest" }}
+        name: Release-${{ inputs.version || 'latest' }}
         path: ${{ steps.releaseApk.outputs.apkfile }}
         if-no-files-found: error
         compression-level: 0
