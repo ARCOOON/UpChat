@@ -45,7 +45,7 @@ jobs:
     - name: Fetching google-services.json
       env:
         DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
-      run: echo $DATA > /home/runner/work/UpChat/UpChat/app/google-services.jso
+      run: echo $DATA > /home/runner/work/UpChat/UpChat/app/google-services.json
 
     - name: Clean up previous builds
       run: ./gradlew clean
