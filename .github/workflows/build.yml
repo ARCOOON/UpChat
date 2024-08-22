@@ -16,13 +16,6 @@ on:
       name:
         description: "Release-Build"
         default: "Generate release build"
-      testers:
-        type: choice
-        description: "Select testers"
-        options:
-          - android
-          - internalTesters
-          - everyone
 
 env:
   # Enable debugging
