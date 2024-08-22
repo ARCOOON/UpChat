@@ -1,0 +1,7 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    name: Using Ubuntu-Latest
+    runs-on: ubuntu-latest
