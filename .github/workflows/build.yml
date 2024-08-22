@@ -44,8 +44,11 @@ jobs:
     - name: Clean up previous builds
       run: ./gradlew clean
 
-    - name: Build Release apk
+    - name: Building Release apk
       run: ./gradlew assembleRelease --stacktrace
+
+    - name: Building Bundle Release
+      run: ./gradlew bundleRelease --stacktrace
     
     - name: Get release file apk path
       id: releaseApk
