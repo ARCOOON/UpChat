@@ -63,12 +63,6 @@ jobs:
     - name: Zip Files
       run: zip ${{ github.workspace }}/Releases.zip ${{ steps.releaseAab.outputs.aabfile }} ${{ steps.releaseApk.outputs.apkfile }} -r
 
-    - name: Run ls -la
-      run: ls -la
-
-    - name: Run tree
-      run: tree .
-
     - name: Upload Release Build to Artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -76,3 +70,6 @@ jobs:
         path: ${{ github.workspace }}/Releases.zip
         if-no-files-found: error
         compression-level: 0
+
+    - name: Deleting Releases
+      run: rm ${{ github.workspace }}/Releases.zip
