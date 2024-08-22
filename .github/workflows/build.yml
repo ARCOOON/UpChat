@@ -52,14 +52,24 @@ jobs:
     - name: Building Bundle Release
       run: ./gradlew bundleRelease --stacktrace
     
-    - name: Get release file apk path
+    - name: Get aab build path
+      id: releaseAab
+      run: echo "aabfile=$(find app/build/outputs/bundle/release/*.aab)" >> $GITHUB_OUTPUT
+    
+    - name: Get apk build path
       id: releaseApk
       run: echo "apkfile=$(find app/build/outputs/apk/release/*.apk)" >> $GITHUB_OUTPUT
     
-    - name: Upload Release Build to Artifacts
-      uses: actions/upload-artifact@v4
+    - name: Zip Files
+      uses: papeloto/action-zip@v1
       with:
-        name: Release-${{ inputs.version || 'latest' }}
+        files: ${{ steps.releaseAab.outputs.aabfile }} ${{ steps.releaseApk.outputs.apkfile }}
+        dest: ${{ steps.releaseApk.outputs.apkfile }}.zip
+    
+    - name: Upload Release Build to Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Releases
         path: ${{ steps.releaseApk.outputs.apkfile }}
         if-no-files-found: error
         compression-level: 0
