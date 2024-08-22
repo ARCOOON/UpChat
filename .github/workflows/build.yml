@@ -64,12 +64,12 @@ jobs:
       uses: papeloto/action-zip@v1.2
       with:
         files: ${{ steps.releaseAab.outputs.aabfile }} ${{ steps.releaseApk.outputs.apkfile }}
-        dest: release.zip
+        dest: Release.zip
     
     - name: Upload Release Build to Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: Releases
-        path: ${{ steps.releaseApk.outputs.apkfile }}
+        path: ${{ github.workspace }}/Releases.zip
         if-no-files-found: error
         compression-level: 0
