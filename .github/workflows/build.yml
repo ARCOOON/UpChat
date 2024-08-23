@@ -4,11 +4,19 @@ name: Building Release
 on:
   # Trigger on push in main
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - 'releases/**'
+    tags:
+      - v*
     # paths: ['app/**']
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+env:
+  ACTIONS_RUNNER_DEBUG: false
+  ACTIONS_STEP_DEBUG: false
 
 jobs:
   build:
@@ -36,12 +44,21 @@ jobs:
       env:
         google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
       run: echo $google_service > /home/runner/work/UpChat/UpChat/app/google-services.json
+    
+    - name: Collect Dependencies
+      run: ./gradlew dependencies --console=plain > dependencies.txt
+
+    - name: Upload Dependencies
+      uses: actions/upload-artifact@v4
+      with:
+        name: Dependencies
+        path: dependencies.txt
 
     - name: Cleaning builds
       run: ./gradlew clean
 
-    - name: Verifying Code
-      run: ./gradlew check
+    - name: Test
+      run: ./gradlew check --console=plain
 
     - name: Building Release apk
       run: ./gradlew assembleRelease --stacktrace
@@ -77,6 +94,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Check_Result
-        path: "${{ github.GITHUB_WORKSPACE }}/app/build/reports/lint-results-debug.html"
+        path: ${{ github.GITHUB_WORKSPACE }}/app/build/reports/lint-results-debug.html
         if-no-files-found: ignore
         compression-level: 0
