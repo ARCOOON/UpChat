@@ -44,21 +44,12 @@ jobs:
       env:
         google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
       run: echo $google_service > /home/runner/work/UpChat/UpChat/app/google-services.json
-    
-    - name: Collect Dependencies
-      run: ./gradlew dependencies --console=plain > dependencies.txt
-
-    - name: Upload Dependencies
-      uses: actions/upload-artifact@v4
-      with:
-        name: Dependencies
-        path: dependencies.txt
 
     - name: Cleaning builds
       run: ./gradlew clean
 
-    - name: Test
-      run: ./gradlew check --console=plain
+    - name: Testing
+      run: ./gradlew check
 
     - name: Building Release apk
       run: ./gradlew assembleRelease --stacktrace
@@ -90,10 +81,12 @@ jobs:
         if-no-files-found: error
         compression-level: 0
 
+    - run: mv ${{ github.GITHUB_WORKSPACE }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html
+
     - name: Upload Check Results to Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: Check_Result
-        path: ${{ github.GITHUB_WORKSPACE }}/app/build/reports/lint-results-debug.html
+        path: ./lint-results-debug.html
         if-no-files-found: ignore
         compression-level: 0
