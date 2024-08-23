@@ -40,11 +40,8 @@ jobs:
     - name: Cleaning builds
       run: ./gradlew clean
 
-    - name: Testing Build
-      run: ./gradlew test
-
-    - name: Verifying Build
-      run: ./gradle check
+    - name: Verifying Code
+      run: ./gradlew check
 
     - name: Building Release apk
       run: ./gradlew assembleRelease --stacktrace
