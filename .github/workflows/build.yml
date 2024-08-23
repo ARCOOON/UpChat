@@ -14,17 +14,8 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-env:
-  ACTIONS_RUNNER_DEBUG: false
-  ACTIONS_STEP_DEBUG: false
-
 jobs:
-  request:
-    name: CI
-    uses: ./.github/workflows/request-approval.yml
-
   build:
-    needs: [request]
     runs-on: ubuntu-latest
 
     steps:
