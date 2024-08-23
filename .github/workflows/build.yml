@@ -9,12 +9,6 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-    inputs:
-      version:
-        type: string
-        description: Build/Release version
-        required: true
-        default: "latest"
 
 jobs:
   build:
@@ -45,6 +39,12 @@ jobs:
 
     - name: Cleaning builds
       run: ./gradlew clean
+
+    - name: Testing Build
+      run: ./gradlew test
+
+    - name: Verifying Build
+      run: ./gradle check
 
     - name: Building Release apk
       run: ./gradlew assembleRelease --stacktrace
