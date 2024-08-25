@@ -77,7 +77,7 @@ jobs:
         if-no-files-found: error
         compression-level: 0
 
-    - run: mv ${{ github.GITHUB_WORKSPACE }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html
+    - run: mv ${{ github.workspace }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html
 
     - name: Upload Check Results to Artifacts
       uses: actions/upload-artifact@v4
