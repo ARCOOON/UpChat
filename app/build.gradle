@@ -30,26 +30,26 @@ android {
     }
 
     signingConfigs {
-        debug {
-            storeFile file('C:\\Users\\leon\\Desktop\\UpChat\\debug-keystore.jks')
-            storePassword 'master'
-            keyAlias 'DebuggingKey'
-            keyPassword 'master'
-        }
+        // debug {
+        //    storeFile file('C:\\Users\\leon\\Desktop\\UpChat\\debug-keystore.jks')
+        //    storePassword 'master'
+        //    keyAlias 'DebuggingKey'
+        //    keyPassword 'master'
+        // }
     }
 
     buildTypes {
         release {
             debuggable false
             minifyEnabled true
-            signingConfig signingConfigs.debug
+            // signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
         debug {
             minifyEnabled false
             debuggable true
-            signingConfig signingConfigs.debug
+            // signingConfig signingConfigs.debug
         }
 
         applicationVariants.all { variant ->
@@ -75,7 +75,7 @@ dependencies {
     implementation(fileTree(dir: 'libs', include: ['*.jar']))
 
     // Import the Firebase BoM
-    implementation(platform('com.google.firebase:firebase-bom:32.8.0'))
+    implementation(platform('com.google.firebase:firebase-bom:33.1.0'))
 
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-database-ktx'
@@ -91,7 +91,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
 
     implementation 'androidx.core:core-ktx:1.13.1'
-    implementation 'androidx.activity:activity-ktx:1.8.2'
+    implementation 'androidx.activity:activity-ktx:1.9.1'
+
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.lifecycle:lifecycle-process:2.7.0'
     implementation 'androidx.security:security-crypto-ktx:1.1.0-alpha06'
@@ -109,7 +110,7 @@ dependencies {
     // For generating and scanning QR-Code
     implementation 'com.google.zxing:core:3.5.3'
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
-    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.google.code.gson:gson:2.11.0'
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 }

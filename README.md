@@ -2,7 +2,7 @@
 
 UpChat is an open source messenger for android.
 
-[![Android CI](https://github.com/ARCOOON/UpChat/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/ARCOOON/UpChat/actions/workflows/android.yml)
+[![Latest Build](https://github.com/ARCOOON/UpChat/actions/workflows/build.yml/badge.svg)](https://github.com/ARCOOON/UpChat/actions/workflows/build.yml)
 
 # Development Status
 
@@ -17,7 +17,7 @@ UpChat is an open source messenger for android.
 
 - [x] Home
 	- [x] View all you chats
-	- [ ] Delete a single message
+	- [X] Delete a single message _(working on)_
 	- [ ] Delete a conversation 
 	- [x] Is the Main Activity
 
@@ -36,3 +36,11 @@ UpChat is an open source messenger for android.
 - [x] App
 	- [x] Signing Config
  	- [x] Auto Update (download and install)
+
+---
+
+**Github**
+
+> - From now on are normal, weekly and daily builds possible.
+> - Another feature are automatic github releases.
+> - And building both apk and bundles.
