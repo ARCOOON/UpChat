@@ -9,4 +9,19 @@ jobs:
     steps:
       - name: Auto Changelog
         uses: ardalanamini/auto-changelog@v4.0.1
-            
+        id: changelog
+        with:
+          github-token: ${{ github.token }}
+          commit-types: |
+            feat: New Features
+            fix: Bug Fixes
+            build: Build System & Dependencies
+          release-name: v1.0.0-test
+          release-name-prefix: ""
+          mention-authors: true
+          mention-new-contributors: true
+          include-compare-link: true
+          include-pr-links: true
+          include-commit-links: true
+          semver: true
+          use-github-autolink: true
