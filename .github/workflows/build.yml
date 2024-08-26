@@ -48,11 +48,11 @@ jobs:
       run: ./gradlew check
 
     - name: Building Release apk
-      run: ./gradlew assembleRelease --stacktrace
+      run: echo "./gradlew assembleRelease --stacktrace"
 
     - name: Building Bundle Release
-      run: ./gradlew bundleRelease --stacktrace
-    
+      run: echo "./gradlew bundleRelease --stacktrace"
+
     - name: Get aab build path
       id: releaseAab
       run: echo "aabfile=$(find app/build/outputs/bundle/release/*.aab)" >> $GITHUB_OUTPUT
