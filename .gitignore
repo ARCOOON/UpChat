@@ -58,3 +58,5 @@ google-services.json
 
 # Some info files
 firebase-rl-db-rules.json
+
+!/local.properties

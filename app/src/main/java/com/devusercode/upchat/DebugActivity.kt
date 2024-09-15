@@ -34,11 +34,11 @@ class DebugActivity : Activity() {
         val split = errorMessage.split("\n")
 
         try {
-            for (j in exceptionTypes.indices) {
-                if (split[0].contains(exceptionTypes[j])) {
-                    madeErrorMessage = exceptionMessages[j]
+            for (typeIndex in exceptionTypes.indices) {
+                if (split[0].contains(exceptionTypes[typeIndex])) {
+                    madeErrorMessage = exceptionMessages[typeIndex]
 
-                    val addIndex = split[0].indexOf(exceptionTypes[j]) + exceptionTypes[j].length
+                    val addIndex = split[0].indexOf(exceptionTypes[typeIndex]) + exceptionTypes[typeIndex].length
 
                     madeErrorMessage += split[0].substring(addIndex)
                     madeErrorMessage += "\n\nDetailed error message:\n$errorMessage"
