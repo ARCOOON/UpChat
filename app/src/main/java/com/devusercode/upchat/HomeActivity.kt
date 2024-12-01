@@ -1,8 +1,8 @@
 package com.devusercode.upchat
 
 import android.content.Intent
-import android.os.Bundle
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -29,6 +29,7 @@ import com.google.firebase.database.ValueEventListener
 
 @RequiresApi(Build.VERSION_CODES.O)
 class HomeActivity : AppCompatActivity() {
+    @Suppress("PrivatePropertyName")
     private val TAG = HomeActivity::class.java.simpleName
     private val auth = FirebaseAuth.getInstance()
     private var user: User? = null
@@ -38,28 +39,6 @@ class HomeActivity : AppCompatActivity() {
     private val userListeners: MutableMap<String, ValueEventListener> = HashMap()
     private lateinit var storageController: StorageController
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.home_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_item_profile -> startActivity(Intent(this, MyProfileActivity::class.java))
-            R.id.menu_item_logout -> logout()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun logout() {
-        auth.signOut()
-        storageController.apply {
-            set("save_login_info", false)
-            remove("email")
-            remove("password")
-        }
-        startActivity(Intent(this, LoginActivity::class.java))
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,9 +46,9 @@ class HomeActivity : AppCompatActivity() {
 
         storageController = StorageController.getInstance(this)!!
 
+        loadUser()
         setupToolbar()
         setupViews()
-        loadUser()
     }
 
     private fun setupToolbar() {
@@ -90,21 +69,31 @@ class HomeActivity : AppCompatActivity() {
 
     private fun loadUser() {
         if (storageController.contains("user")) {
-            user = storageController.getUser("user")
-                .also {
-                    Log.d(TAG, "User from Storage: ${it?.info}")
-                }
-        } else {
-            UserUtils.getUserByUid(auth.currentUser!!.uid) { result ->
-                if (result.code == ErrorCodes.SUCCESS) {
-                    user = result.user!!
-                    loadOpenConversations()
-                } else {
+            val suser = storageController.getUser("user")
+
+            if (suser != null) {
+                user = suser
+                Log.d(TAG, "User loaded from Storage: ${user?.info}")
+                loadOpenConversations()
+            } else {
+                Log.e(TAG, "User not found in Storage")
+                startActivity(Intent(this, LoginActivity::class.java))
+            }
+            return
+        }
+
+        UserUtils.getUserByUid(auth.currentUser!!.uid) { result ->
+            if (result.code == ErrorCodes.SUCCESS) {
+                user = result.user!!
+                loadOpenConversations()
+            } else {
+                if (result.user == null) {
                     Log.e(TAG, result.error?.message!!)
-                    Toast.makeText(this, "Error: ${result.code}", Toast.LENGTH_SHORT).show()
-                    if (result.code == ErrorCodes.USER_NOT_FOUND) {
-                        startActivity(Intent(this, LoginActivity::class.java))
-                    }
+                }
+
+                Toast.makeText(this, "Error: ${result.code}", Toast.LENGTH_SHORT).show()
+                if (result.code == ErrorCodes.USER_NOT_FOUND) {
+                    startActivity(Intent(this, LoginActivity::class.java))
                 }
             }
         }
@@ -119,29 +108,35 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun loadOpenConversations() {
-        if (user == null || user!!.conversations == null) return
+        user?.conversations?.let {
+            // Continue with conversations
+            openConversations = mutableListOf()
+            val conversationIds = user?.getConversationIds() ?: run {
+                Log.e(TAG, "Conversation IDs not found")
+                return
+            }
 
-        openConversations = mutableListOf()
-        val conversationIds = user?.getConversationIds() ?: return
+            conversationIds.forEach { cid ->
+                Log.d(TAG, "Fetching conversation: $cid")
+                ConversationUtil.getConversationById(cid) { task ->
+                    if (!task!!.isSuccessful) {
+                        Log.e(TAG, task.error?.message!!)
+                    } else {
+                        val conversation = task.getConversation()
 
-        conversationIds.forEach { cid ->
-            ConversationUtil.getConversationById(cid) { task ->
-                if (!task!!.isSuccessful) {
-                    Log.e(TAG, task.error?.message!!)
-                } else {
-                    val conversation = task.getConversation()
-                    conversation?.getParticipant { result ->
-                        if (!result.isSuccessful) {
-                            Log.e(TAG, result.error?.message!!)
-                        } else {
-                            val userPair = UserPair(result.user!!, cid)
-                            openConversations?.add(userPair)
+                        conversation?.getParticipant { result ->
+                            if (!result.isSuccessful) {
+                                Log.e(TAG, result.error?.message!!)
+                            } else {
+                                val userPair = UserPair(result.user!!, cid)
+                                openConversations?.add(userPair)
+                            }
+                            createAdapter()
                         }
-                        createAdapter()
                     }
                 }
             }
-        }
+        } ?: return
     }
 
     private fun createAdapter() {
@@ -174,21 +169,52 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun updateOnlineStatus(userId: String, isOnline: Boolean) {
-        openConversations?.forEach { userPair ->
-            if (userPair.user.uid == userId) {
+        openConversations?.firstOrNull { it.user.uid == userId }?.let { userPair ->
+            if (userPair.user.online.toBoolean() != isOnline) {
                 userPair.user.online = isOnline.toString()
+                adapter?.update(openConversations!!)
             }
         }
-        adapter?.update(openConversations!!)
+    }
+
+    private fun removeUserOnlineStatusListeners() {
+        openConversations?.forEach { userPair ->
+            val uid = userPair.user.uid!!
+            userListeners[uid]?.let {
+                FirebaseDatabase.getInstance().getReference("users").child(uid)
+                    .removeEventListener(it)
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.home_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_item_profile -> startActivity(Intent(this, MyProfileActivity::class.java))
+            R.id.menu_item_logout -> logout()
+            else -> return super.onOptionsItemSelected(item)
+        }
+        return true
+    }
+
+    private fun logout() {
+        auth.signOut()
+        storageController.apply {
+            set("save_login_info", false)
+            remove("user")
+            remove("email")
+            remove("password")
+        }
+        startActivity(Intent(this, LoginActivity::class.java))
     }
 
     override fun onStop() {
         super.onStop()
-        openConversations?.forEach { userPair ->
-            val uid = userPair.user.uid!!
-            val userRef = FirebaseDatabase.getInstance().getReference("users").child(uid)
-            userListeners[uid]?.let { userRef.removeEventListener(it) }
-        }
+        removeUserOnlineStatusListeners()
     }
 
     override fun onStart() {

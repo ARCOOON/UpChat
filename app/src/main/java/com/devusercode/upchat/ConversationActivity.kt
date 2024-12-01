@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -16,8 +15,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.view.size
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,7 +31,6 @@ import com.devusercode.upchat.utils.StorageController
 import com.devusercode.upchat.utils.UserUtils
 import com.devusercode.upchat.utils.Util
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -89,37 +85,45 @@ class ConversationActivity : AppCompatActivity() {
 
         storageController = StorageController.getInstance(this)!!
 
-        // get uid and get participant user
+        // Simplified logic to fetch user and participant data
         if (intent != null && intent.extras != null) {
-            val uid = intent.getStringExtra("uid")!!
+            // The uid for the participant
+            val uid = intent?.getStringExtra("uid") ?: run {
+                Log.e(TAG, "No uid for the participant provided in intent")
+                return
+            }
 
+            // fetch the participant
             UserUtils.getUserByUid(uid) { result ->
-                if (result.code == ErrorCodes.SUCCESS) {
+                if (result.isSuccessful && result.user != null) {
                     participant = result.user
+                } else {
+                    Log.e(TAG, result.error?.message ?: "Error fetching participant")
+                }
+            }
+            fetchUser()
+        }
+    }
 
-                    if (storageController.contains("user")) {
-                        user = storageController.getUser("user")
-                        Log.d(TAG, "User from Storage" + user?.info.toString())
+    private fun fetchUser() {
+        // Check if the current user is already available in storage
+        val suser = storageController.getUser("user")
 
-                        initialize()
-                    } else {
-
-                        UserUtils.getUserByUid(auth.currentUser!!.uid) { result2 ->
-                            if (result2.code == ErrorCodes.SUCCESS) {
-                                user = result2.user
-                                initialize()
-                            } else {
-                                user = null
-                                Log.e(TAG, result2.error?.message!!)
-                            }
-                        }
-                    }
+        if (suser != null) {
+            user = suser
+            Log.d(TAG, "User loaded from Storage: ${suser.info}")
+            initialize()
+        } else {
+            // If not in storage, fetch from Firebase
+            UserUtils.getUserByUid(auth.currentUser!!.uid) { result ->
+                if (result.isSuccessful && result.user != null) {
+                    user = result.user
+                    // storageController["user"] = result.user // Save the user for future use
+                    initialize()
                 } else {
                     Log.e(TAG, result.error?.message!!)
                 }
             }
-        } else {
-            onBackPressedDispatcher.onBackPressed()
         }
     }
 
@@ -180,45 +184,52 @@ class ConversationActivity : AppCompatActivity() {
         backButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         sendButton.setOnClickListener {
+            // Checks if a chat is already created
             if (!chatExists) {
                 currentConversationId = ConversationUtil.newConversation(user!!, participant!!)
                 conversationUtil =
                     ConversationUtil(this, currentConversationId, user!!, participant!!)
-
                 Log.d(TAG, "Conversation ($currentConversationId) created")
-
                 loadConversation(currentConversationId)
             }
 
             val message: String = messageInput.text.toString()
 
+            // Check if user has selected a image to upload
             if (file != null) {
-                if (message.isNotEmpty()) {
-                    conversationUtil.sendImage(file!!, message)
-                    messageInput.setText("")
-                } else {
-                    conversationUtil.sendImage(file!!, null)
-                }
+                // Show a loading indicator or disable input while sending
+                sendButton.isEnabled = false
+
+                // Sends message
+                conversationUtil.sendImage(
+                    file!!,
+                    if (message.isNotEmpty() && message.isNotBlank()) message else null
+                ).run { message }
+
                 file = null
-                return@setOnClickListener
+            } else {
+                // Check if user has entered a text
+                if (message.isNotEmpty()) {
+                    sendButton.isEnabled = false
+                    conversationUtil.sendMessage(message)
+                }
             }
 
-            if (message.isNotEmpty()) {
-                conversationUtil.sendMessage(message)
-                messageInput.setText("")
-            }
+            // finally clear the input field after sending
+            messageInput.setText("")
+            sendButton.isEnabled = true
         }
 
         participantName.text = participant!!.username
 
-        if (participant!!.photoUrl!!.isNotEmpty()) {
+        participant?.photoUrl?.let {
             Glide.with(applicationContext)
-                .load(Uri.parse(participant!!.photoUrl))
+                .load(Uri.parse(it))
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .placeholder(R.drawable.ic_account_circle_white)
                 .circleCrop()
                 .into(profileImage)
-        } else {
+        } ?: run {
             profileImage.setImageResource(R.drawable.ic_account_circle_white)
         }
 
@@ -252,28 +263,48 @@ class ConversationActivity : AppCompatActivity() {
         }
     }
 
+    fun scrollToBottom() {
+        recyclerview.post {
+            recyclerview.smoothScrollToPosition(recyclerview.adapter!!.itemCount - 1)
+        }
+    }
+
     private fun loadConversation(cid: String) {
         val messages: Query = conversations.child(cid).child(Key.Conversation.MESSAGES)
 
-        val options =
-            FirebaseRecyclerOptions.Builder<Message>().setQuery(messages, Message::class.java)
-                .build()
+        val options = FirebaseRecyclerOptions.Builder<Message>()
+            .setQuery(messages, Message::class.java)
+            .build()
 
         adapter = MessageAdapter(applicationContext, options)
 
         adapter?.setConversationId(cid)
         adapter?.setParticipant(participant)
 
+        recyclerview.adapter = adapter
+        adapter?.startListening()
+
         adapter?.registerAdapterDataObserver(object : AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
-                recyclerview.smoothScrollToPosition(positionStart)
+
+                // Automatically scroll to the bottom when messages are first loaded
+                if (positionStart == 0) {
+                    recyclerview.smoothScrollToPosition(adapter!!.itemCount - 1)
+                } else {
+                    // Handle scrolling to the bottom when new messages are inserted
+                    val lastVisiblePosition =
+                        (recyclerview.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
+
+                    // If the last message is visible or the user is at the end of the list, scroll down
+                    if (lastVisiblePosition == -1 || (positionStart >= (adapter!!.itemCount - 1) && lastVisiblePosition == (positionStart - 1))) {
+                        recyclerview.smoothScrollToPosition(positionStart)
+                    }
+                }
             }
         })
-
-        recyclerview.adapter = adapter
-        adapter?.startListening()
     }
+
 
     override fun onStart() {
         adapter?.startListening()

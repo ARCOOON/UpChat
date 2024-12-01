@@ -16,14 +16,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.devusercode.upchat.ConversationActivity
 import com.devusercode.upchat.R
 import com.devusercode.upchat.models.UserPair
-import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.utils.ConversationUtil
 import com.google.android.material.card.MaterialCardView
 
 @RequiresApi(Build.VERSION_CODES.O)
-class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeAdapter.HomeViewHolder>() {
-    private val TAG = "HomeAdapter"
-
+class HomeAdapter(private var data: List<UserPair>) :
+    RecyclerView.Adapter<HomeAdapter.HomeViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.item_home_user, parent, false)
@@ -46,21 +44,12 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
     }
 
     class HomeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var username: TextView
-        private var lastMessageText: TextView
-        private var lastMessageTime: TextView
-        private var materialCardView: MaterialCardView
-        private var profileImage: ImageView
-        private var onlineStatus: ImageView
-
-        init {
-            materialCardView = view.findViewById(R.id.materialcardview1)
-            profileImage = view.findViewById(R.id.profile_image)
-            onlineStatus = view.findViewById(R.id.online_status)
-            username = view.findViewById(R.id.username)
-            lastMessageText = view.findViewById(R.id.last_message_text)
-            lastMessageTime = view.findViewById(R.id.last_message_time)
-        }
+        private var materialCardView: MaterialCardView = view.findViewById(R.id.materialcardview1)
+        private var profileImage: ImageView = view.findViewById(R.id.profile_image)
+        private var onlineStatus: ImageView = view.findViewById(R.id.online_status)
+        var username: TextView = view.findViewById(R.id.username)
+        private var lastMessageText: TextView = view.findViewById(R.id.last_message_text)
+        private var lastMessageTime: TextView = view.findViewById(R.id.last_message_time)
 
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(pair: UserPair) {
@@ -75,11 +64,12 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
                 onlineStatus.setImageResource(R.drawable.ic_status_offline)
             }
 
-            if (user.photoUrl!!.isNotEmpty()) {
+            if (!user.photoUrl.isNullOrEmpty()) {
                 Glide.with(profileImage.context)
                     .load(Uri.parse(user.photoUrl))
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .placeholder(R.drawable.ic_account_circle_black)
+                    .error(R.drawable.ic_account_circle_black) // Error fallback
                     .circleCrop()
                     .into(profileImage)
             } else {
@@ -98,7 +88,8 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
                     lastMessageTime.visibility = View.GONE
 
                 } else if (lastMsg.type == "image") {
-                    lastMessageText.text = username.context.getString(R.string.home_last_message_photo)
+                    lastMessageText.text =
+                        username.context.getString(R.string.home_last_message_photo)
                     lastMessageTime.text = lastMsg.parsedTime
                 }
             }

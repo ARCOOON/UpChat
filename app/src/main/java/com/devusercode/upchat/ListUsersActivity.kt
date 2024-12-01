@@ -45,7 +45,6 @@ class ListUsersActivity : AppCompatActivity() {
 
     enum class MenuFilter { USERNAME, EMAIL, UID }
 
-    private val intent = Intent()
     private var selectedFilter: MenuFilter = MenuFilter.USERNAME
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,12 +58,12 @@ class ListUsersActivity : AppCompatActivity() {
 
     override fun startActivity(intent: Intent) {
         super.startActivity(intent)
-        overridePendingTransition(R.anim.right_in, R.anim.left_out)
+        // overridePendingTransition(R.anim.right_in, R.anim.left_out)
     }
 
     override fun finish() {
         super.finish()
-        overridePendingTransition(R.anim.left_in, R.anim.right_out)
+        // overridePendingTransition(R.anim.left_in, R.anim.right_out)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -98,29 +97,29 @@ class ListUsersActivity : AppCompatActivity() {
         recyclerview1 = findViewById(R.id.recyclerview1)
         scanQrcodeButton = findViewById(R.id.scan_qrcode_button)
 
-        recyclerview1.layoutManager = WrapLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
+        recyclerview1.layoutManager =
+            WrapLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
 
         swipeRefreshLayout.setOnRefreshListener {
             loadUsers()
-            adapter.notifyDataSetChanged()
             swipeRefreshLayout.isRefreshing = false
         }
 
         scanQrcodeButton.setOnClickListener {
             IntentIntegrator(this).setCaptureActivity(CaptureActivityPortrait::class.java)
                 .setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-                .setPrompt("Scan an QR Code from a Friend").setBeepEnabled(false)
+                .setPrompt("Scan an QR Code from a Friends device.").setBeepEnabled(false)
                 .setOrientationLocked(true).initiateScan()
         }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                filterUsers(query)
+                filterUsers(query) // Filter when user submits query
                 return true
             }
 
-            override fun onQueryTextChange(query: String): Boolean {
-                filterUsers(query)
+            override fun onQueryTextChange(newText: String): Boolean {
+                filterUsers(newText) // Filter dynamically as the user types
                 return true
             }
         })
@@ -129,41 +128,58 @@ class ListUsersActivity : AppCompatActivity() {
     }
 
     private fun loadUsers() {
-        val options = FirebaseRecyclerOptions.Builder<User>().setQuery(users, User::class.java)
+        // Default query that loads all users
+        val options = FirebaseRecyclerOptions.Builder<User>()
+            .setQuery(users, User::class.java)
             .build()
 
         adapter = UserListAdapter(this, options)
         recyclerview1.adapter = adapter
 
+        // Start listening to the Firebase query
         adapter.startListening()
+
+        // Register observer to toggle visibility of no data text
         adapter.registerAdapterDataObserver(object : AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                if (adapter.itemCount > 1) {
-                    recyclerview1.visibility = View.VISIBLE
-                    noDataAvailableText.visibility = View.GONE
-                } else {
-                    recyclerview1.visibility = View.GONE
-                    noDataAvailableText.visibility = View.VISIBLE
-                }
+                toggleNoDataView()
+            }
+
+            override fun onChanged() {
+                toggleNoDataView()
             }
         })
     }
 
     private fun initializeLogic() {
         if (auth.currentUser == null) {
-            intent.setClass(applicationContext, StartActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(applicationContext, StartActivity::class.java))
             finish()
         }
     }
 
-    private fun filterUsers(text: String) {
-        val query = users.orderByChild(selectedFilter.toString().lowercase()).startAt(text).endAt(text + "\uf8ff")
-        val options = FirebaseRecyclerOptions.Builder<User>().setQuery(query, User::class.java)
-            .setLifecycleOwner(this).build()
+    private fun toggleNoDataView() {
+        if (adapter.itemCount > 0) {
+            recyclerview1.visibility = View.VISIBLE
+            noDataAvailableText.visibility = View.GONE
+        } else {
+            recyclerview1.visibility = View.GONE
+            noDataAvailableText.visibility = View.VISIBLE
+        }
+    }
 
-        adapter = UserListAdapter(this, options)
-        recyclerview1.adapter = adapter
+    private fun filterUsers(text: String) {
+        // Create the new query based on the user's input and selected filter
+        val query = users.orderByChild(selectedFilter.toString().lowercase())
+            .startAt(text)
+            .endAt(text + "\uf8ff")
+
+        // Update the adapter's options without recreating the adapter
+        val newOptions = FirebaseRecyclerOptions.Builder<User>()
+            .setQuery(query, User::class.java)
+            .build()
+
+        adapter.updateOptions(newOptions)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -210,7 +226,9 @@ class ListUsersActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        adapter.startListening()
+        if (::adapter.isInitialized) {
+            adapter.startListening()
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

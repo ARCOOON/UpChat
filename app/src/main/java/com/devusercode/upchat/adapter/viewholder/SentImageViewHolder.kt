@@ -1,5 +1,6 @@
 package com.devusercode.upchat.adapter.viewholder
 
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -11,13 +12,17 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestListener
+import com.devusercode.upchat.ConversationActivity
 import com.devusercode.upchat.R
 import com.devusercode.upchat.adapter.MessageAdapter
 import com.devusercode.upchat.models.Message
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.security.MAC
 import com.devusercode.upchat.utils.GetTimeAgo
+import com.bumptech.glide.request.target.Target
 
 class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view) {
     private val TAG = "MessageAdapter@${this.javaClass.simpleName}"
@@ -26,6 +31,7 @@ class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view
     private var imageView: ImageView = view.findViewById(R.id.image_view)
     private var timeView: TextView = view.findViewById(R.id.message_time)
     private var cardView: LinearLayout = view.findViewById(R.id.materialcardview1)
+
     // private var rootLayout: LinearLayout = view.findViewById(R.id.root_layout)
     private var verified: ImageView = view.findViewById(R.id.message_verified)
 
@@ -56,12 +62,37 @@ class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view
 
         Log.d(TAG, "Url: ${model.url}")
 
+        // Use Glide with a listener to detect when the image is fully loaded
         Glide.with(view.context)
             .load(Uri.parse(model.url))
             .override(700, 900)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .fitCenter()
             .transform(RoundedCorners(14))
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    // Handle if image load fails
+                    Log.e(TAG, "Image load failed: ${e?.message}")
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: com.bumptech.glide.load.DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    // Scroll to bottom when the image is fully loaded
+                    (view.context as ConversationActivity).scrollToBottom()
+                    return false
+                }
+            })
             .into(imageView)
 
         cardView.setOnLongClickListener { view: View ->

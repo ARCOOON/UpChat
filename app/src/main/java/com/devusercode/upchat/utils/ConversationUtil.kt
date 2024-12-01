@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
 import com.devusercode.upchat.Key
 import com.devusercode.upchat.models.Conversation
 import com.devusercode.upchat.models.Message
@@ -91,7 +92,8 @@ class ConversationUtil(
         }
 
         fun newConversation(user: User, participant: User): String {
-            val conversationsRef = FirebaseDatabase.getInstance().getReference("conversations")
+            val conversationsRef =
+                FirebaseDatabase.getInstance().getReference(Key.Conversation.CONVERSATIONS)
             // Generate a unique conversation ID
             var conversationId = conversationsRef.push().key
 
@@ -101,18 +103,20 @@ class ConversationUtil(
             }
 
             // Add the conversation ID to the user's profile
-            val userConversationsRef = FirebaseDatabase.getInstance().reference.child("users")
-                .child(user.uid!!).child("conversations")
+            val userConversationsRef =
+                FirebaseDatabase.getInstance().reference.child(Key.Conversation.USERS)
+                    .child(user.uid!!).child(Key.Conversation.CONVERSATIONS)
             userConversationsRef.child(participant.uid!!).setValue(conversationId)
 
             // Add the conversation ID to the participant's profile
             val participantConversationsRef =
-                FirebaseDatabase.getInstance().reference.child("users")
-                    .child(participant.uid!!).child("conversations")
+                FirebaseDatabase.getInstance().reference.child(Key.Conversation.USERS)
+                    .child(participant.uid!!).child(Key.Conversation.CONVERSATIONS)
             participantConversationsRef.child(user.uid!!).setValue(conversationId)
 
             // Add both user IDs to the conversation's members
-            val membersRef = conversationsRef.child(conversationId!!).child("members")
+            val membersRef =
+                conversationsRef.child(conversationId!!).child(Key.Conversation.MEMBERS)
             val members: MutableList<String?> = ArrayList()
 
             members.add(user.uid)
@@ -123,8 +127,9 @@ class ConversationUtil(
         }
 
         fun getConversationById(cid: String, onFinish: Consumer<ConversationResult?>) {
-            val conversationRef = FirebaseDatabase.getInstance().reference.child("conversations")
-                .child(cid)
+            val conversationRef =
+                FirebaseDatabase.getInstance().reference.child(Key.Conversation.CONVERSATIONS)
+                    .child(cid)
 
             conversationRef.get().addOnCompleteListener { task: Task<DataSnapshot?> ->
                 if (task.isSuccessful) {
@@ -152,10 +157,11 @@ class ConversationUtil(
         }
 
         fun getLastMessage(conversationId: String?, onFinish: Consumer<Message?>) {
-            val messagesRef = FirebaseDatabase.getInstance().reference.child("conversations")
-                .child(conversationId!!).child("messages")
+            val messagesRef =
+                FirebaseDatabase.getInstance().reference.child(Key.Conversation.CONVERSATIONS)
+                    .child(conversationId!!).child(Key.Conversation.MESSAGES)
 
-            val lastMessageQuery = messagesRef.orderByChild("timestamp").limitToLast(1)
+            val lastMessageQuery = messagesRef.orderByChild(Key.Message.TIMESTAMP).limitToLast(1)
 
             lastMessageQuery.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -185,9 +191,12 @@ class ConversationUtil(
             FirebaseDatabase.getInstance().reference.child(Key.Conversation.CONVERSATIONS)
                 .child(cid).child(Key.Conversation.MESSAGES)
 
-        var messageId = messagesRef.push().key
+        var messageId = messagesRef.push().key ?: run {
+            Log.e(TAG, "Failed to generate message ID")
+            return
+        }
 
-        if (messageId != null && messageId.startsWith("-")) {
+        if (messageId.startsWith("-")) {
             messageId = messageId.substring(1)
         }
 
@@ -201,10 +210,10 @@ class ConversationUtil(
         data[Key.Message.SENDER_ID] = user.uid
         data[Key.Message.TIMESTAMP] = System.currentTimeMillis().toString()
 
-        messagesRef.child(messageId!!).setValue(data)
+        messagesRef.child(messageId).setValue(data)
     }
 
-    fun sendFile(file: Uri, mime: String, extension: String?, msg: String?): String? {
+    fun sendFile(file: Uri, mime: String, extension: String?, msg: String?) {
         val data: MutableMap<String, String?> = HashMap()
 
         val storageRef = FirebaseStorage.getInstance().reference
@@ -216,7 +225,11 @@ class ConversationUtil(
             .child(cid)
             .child(Key.Conversation.MESSAGES)
 
-        var messageId = messagesRef.push().key!!
+        var messageId = messagesRef.push().key ?: run {
+            Log.e(TAG, "Failed to generate message ID")
+            return
+        }
+
         if (messageId.startsWith("-")) {
             messageId = messageId.substring(1)
         }
@@ -231,8 +244,6 @@ class ConversationUtil(
         data[Key.Message.CHECKSUM] = SHA512.generate(file)
         data[Key.Message.SENDER_ID] = user.uid
         data[Key.Message.TIMESTAMP] = System.currentTimeMillis().toString()
-
-        return null
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -259,6 +270,12 @@ class ConversationUtil(
             Log.d(TAG, "260 - Temp file path -> ${tempFile.absoluteFile}")
             Log.d(TAG, "261 - Temp file exists -> ${tempFile.exists()}")
 
+            if (tempFile.exists())
+                checksum = SHA512.generate(tempFile.toUri())
+
+            // val inputStream = contentResolver.openInputStream(file)
+            // inputStream?.use { input -> input.copyTo(output) } ?: Log.e(TAG, "Failed to open input stream for the selected file")
+
             tempFile.outputStream().use { output ->
                 input.copyTo(output)
             }
@@ -275,8 +292,6 @@ class ConversationUtil(
                             Log.d(TAG, "276 - Temp file path -> ${tempFile.absoluteFile}")
                             Log.d(TAG, "277 - Temp file exists -> ${tempFile.exists()}")
 
-                            if (tempFile.exists())
-                                checksum = SHA512.generate(uri)
                             val message = msg?.trim() ?: ""
 
                             val data = mapOf(
@@ -293,13 +308,16 @@ class ConversationUtil(
                             Log.d(TAG, "Data: $data")
 
                             messagesRef.child(messageId).setValue(data)
+                            tempFile.delete() // Delete the temp file here after success.
                         }
                         .addOnFailureListener { error ->
                             Log.e(TAG, error.message!!)
+                            // onFailure(error) // Pass error to a callback function for handling.
                         }
                 }
                 .addOnFailureListener { error ->
                     Log.e(TAG, error.message!!)
+                    tempFile.delete() // Still delete temp file if upload fails.
                 }
             tempFile.delete()
         } ?: Log.e(TAG, "Failed to open input stream for the selected file")

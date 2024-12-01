@@ -25,8 +25,6 @@ import com.google.firebase.auth.FirebaseAuth
 
 class UserListAdapter(app: AppCompatActivity, options: FirebaseRecyclerOptions<User?>) :
     FirebaseRecyclerAdapter<User, UserListAdapter.UserViewHolder>(options) {
-    private val TAG = this.javaClass.simpleName
-
     private val firebaseUser = FirebaseAuth.getInstance().currentUser
     private val context = app.applicationContext
 
@@ -77,20 +75,11 @@ class UserListAdapter(app: AppCompatActivity, options: FirebaseRecyclerOptions<U
     }
 
     class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var username: TextView
-        var email: TextView
-        var profileImage: ImageView
-        var root: LinearLayout
-        var materialCardView: MaterialCardView
-        var addUserButton: Button
-
-        init {
-            root = view.findViewById(R.id.linear1)
-            materialCardView = view.findViewById(R.id.materialcardview1)
-            profileImage = view.findViewById(R.id.profile_image)
-            username = view.findViewById(R.id.username)
-            email = view.findViewById(R.id.email)
-            addUserButton = view.findViewById(R.id.add_user_button)
-        }
+        var root: LinearLayout = view.findViewById(R.id.linear1)
+        var materialCardView: MaterialCardView = view.findViewById(R.id.materialcardview1)
+        var profileImage: ImageView = view.findViewById(R.id.profile_image)
+        var username: TextView = view.findViewById(R.id.username)
+        var email: TextView = view.findViewById(R.id.email)
+        var addUserButton: Button = view.findViewById(R.id.add_user_button)
     }
 }

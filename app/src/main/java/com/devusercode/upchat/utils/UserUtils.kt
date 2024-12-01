@@ -1,8 +1,6 @@
 package com.devusercode.upchat.utils
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.devusercode.upchat.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -23,33 +21,18 @@ enum class ErrorCodes(val message: String) {
     NO_PROP_TO_SERIALIZE_FOR_FIELD("No properties to serialize for field"),
 }
 
-
 class UserUtils {
     companion object {
         private const val TAG = "UserUtils"
         private const val REF = "users"
 
-        class Result {
-            var user: User?
-            var error: Error?
-            var code: ErrorCodes? = ErrorCodes.INIT
-
-            constructor(user: User?, error: Error?, code: ErrorCodes?) {
-                this.user = user
-                this.error = error
-                this.code = code
-            }
-
-            constructor(user: User, code: ErrorCodes) {
-                this.user = user
-                this.error = null
-                this.code = code
-            }
-
-            constructor(user: User?) {
-                this.user = user
-                error = null
-            }
+        class Result(
+            val user: User?,
+            val error: Error?,
+            val code: ErrorCodes?
+        ) {
+            constructor(user: User, code: ErrorCodes) : this(user, null, code)
+            constructor(user: User?) : this(user, null, ErrorCodes.SUCCESS)
 
             val isSuccessful: Boolean
                 get() = error == null && user != null && code == ErrorCodes.SUCCESS
@@ -90,12 +73,34 @@ class UserUtils {
             }
         }
 
+        // The new getUserByUid function using a suspend keyword
+        suspend fun getUserByUidAsync(uid: String): Result {
+            val usersRef = FirebaseDatabase.getInstance().getReference(REF).child(uid)
+
+            return try {
+                val dataSnapshot = usersRef.get().await()
+                if (dataSnapshot.exists()) {
+                    val user = dataSnapshot.getValue(User::class.java)
+                    if (user != null) {
+                        Result(user, null, ErrorCodes.SUCCESS)
+                    } else {
+                        val error = Error("Unknown error while retrieving User ($uid)")
+                        Result(null, error, ErrorCodes.UNKNOWN_ERROR)
+                    }
+                } else {
+                    val error = Error("User not found ($uid)")
+                    Result(null, error, ErrorCodes.USER_NOT_FOUND)
+                }
+            } catch (exception: Exception) {
+                val error = Error(exception.message ?: "Unknown error")
+                Result(null, error, ErrorCodes.CANCELLED)
+            }
+        }
 
         fun update(field: String?, value: Any?) {
             val user = FirebaseAuth.getInstance().currentUser ?: return
-
             val uid = user.uid
-            val ref = FirebaseDatabase.getInstance().reference.child("users").child(uid)
+            val ref = FirebaseDatabase.getInstance().reference.child(REF).child(uid)
 
             ref.child(field!!).setValue(value)
                 .addOnFailureListener { error: Exception -> Log.e(TAG, error.message!!) }

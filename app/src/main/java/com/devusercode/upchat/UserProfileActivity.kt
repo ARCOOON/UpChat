@@ -3,6 +3,7 @@ package com.devusercode.upchat
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -12,6 +13,9 @@ import com.devusercode.upchat.utils.ErrorCodes
 import com.devusercode.upchat.utils.UserUtils
 
 class UserProfileActivity : AppCompatActivity() {
+    @Suppress("PrivatePropertyName")
+    private val TAG = this.javaClass.getSimpleName()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
@@ -24,11 +28,14 @@ class UserProfileActivity : AppCompatActivity() {
         backButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         if (intent != null && intent.extras != null) {
-            val userid = intent.getStringExtra("uid")!!
+            val userid = intent.getStringExtra("uid") ?: run {
+                Log.e(TAG, "No UserId passed in intent")
+                return
+            }
 
             UserUtils.getUserByUid(userid) { result ->
-                if (result.code == ErrorCodes.SUCCESS) {
-                    val user = result.user!!
+                if (result.user != null) {
+                    val user = result.user
 
                     val profileImage = findViewById<ImageView>(R.id.profile_image)
                     val usernameView = findViewById<TextView>(R.id.username)
@@ -47,7 +54,10 @@ class UserProfileActivity : AppCompatActivity() {
                     usernameView.text = user.username
                     emailView.text = getString(R.string.user_profile__email_label, user.email)
                     userIdView.text = getString(R.string.user_profile__uid_label, user.uid)
-                    joinedView.text = getString(R.string.user_profile__joined_label, user.formattedJoined)
+                    joinedView.text =
+                        getString(R.string.user_profile__joined_label, user.formattedJoined)
+                } else {
+                    Log.e(TAG, "Failed to fetch user: ${result.code} - ${result.error}")
                 }
             }
         }

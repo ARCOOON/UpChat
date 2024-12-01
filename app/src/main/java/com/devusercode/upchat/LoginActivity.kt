@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.devusercode.upchat.utils.StorageController
+import com.devusercode.upchat.utils.UserUtils
 import com.devusercode.upchat.utils.Util
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
@@ -21,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 
 @RequiresApi(Build.VERSION_CODES.O)
 class LoginActivity : AppCompatActivity() {
+    @Suppress("PrivatePropertyName")
     private val TAG = this.javaClass.simpleName
     private val auth = FirebaseAuth.getInstance()
 
@@ -114,12 +116,26 @@ class LoginActivity : AppCompatActivity() {
 
         authSignInListener = OnCompleteListener { task ->
             if (task.isSuccessful) {
+                val user = task.result.user ?: run {
+                    Log.e(TAG, "Failed to get user from login")
+                    return@run null
+                }
+
                 val saveLoginInfo = saveLoginInfoCheckbox.isChecked
                 storageController["save_login_info"] = saveLoginInfo
 
                 if (saveLoginInfo) {
                     storageController["email"] = emailEdit.text.toString()
                     storageController["password"] = passwordEdit.text.toString()
+
+                    if (user != null) {
+                        UserUtils.getUserByUid(user.uid) { result ->
+                            if (result.isSuccessful && result.user != null) {
+                                storageController["user"] = result.user
+                                // UserUtils.update("online", true)
+                            }
+                        }
+                    }
                 }
 
                 intent.setClass(applicationContext, HomeActivity::class.java)
