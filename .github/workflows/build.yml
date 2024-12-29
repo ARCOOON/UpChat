@@ -82,6 +82,7 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
+      - name: Moving Check Results
       - run: mv ./app/build/reports/lint-results-debug.html ./lint-results-debug.html
       
       - name: Upload Check Results to Artifacts
