@@ -97,7 +97,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-process:2.7.0'
     implementation 'androidx.security:security-crypto-ktx:1.1.0-alpha06'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
 
     implementation 'com.google.android.gms:play-services-vision:20.1.3'
 
