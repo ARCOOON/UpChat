@@ -1,4 +1,4 @@
-# UpChat | Dev Channel
+# UpChat | Development Channel
 
 This is the development channel.
 
