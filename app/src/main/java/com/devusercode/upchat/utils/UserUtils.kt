@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.util.function.Consumer
 
 enum class ErrorCodes(val message: String) {
@@ -26,55 +25,65 @@ class UserUtils {
         private const val TAG = "UserUtils"
         private const val REF = "users"
 
+        // Result class to encapsulate user-fetching results
         class Result(
             val user: User?,
             val error: Error?,
-            val code: ErrorCodes?
+            val code: ErrorCodes
         ) {
             constructor(user: User, code: ErrorCodes) : this(user, null, code)
-            constructor(user: User?) : this(user, null, ErrorCodes.SUCCESS)
+            constructor(error: Error, code: ErrorCodes) : this(null, error, code)
 
             val isSuccessful: Boolean
-                get() = error == null && user != null && code == ErrorCodes.SUCCESS
+                get() = user != null && error == null && code == ErrorCodes.SUCCESS
         }
 
+        /**
+         * Fetch user by UID using callback.
+         * @param uid User's unique ID.
+         * @param onFinish Callback to handle the result.
+         */
         fun getUserByUid(uid: String, onFinish: Consumer<Result>?) {
             val usersRef = FirebaseDatabase.getInstance().getReference(REF).child(uid)
 
             CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val dataSnapshot = usersRef.get().await()
-
-                    if (dataSnapshot.exists()) {
-                        val user = dataSnapshot.getValue(User::class.java)
-
-                        if (user != null) {
-                            withContext(Dispatchers.Main) {
-                                onFinish?.accept(Result(user, ErrorCodes.SUCCESS))
-                            }
-                        } else {
-                            val error = Error("Unknown error while retrieving User ($uid)")
-                            withContext(Dispatchers.Main) {
-                                onFinish?.accept(Result(null, error, ErrorCodes.UNKNOWN_ERROR))
-                            }
-                        }
-                    } else {
-                        val error = Error("User not found ($uid)")
-                        withContext(Dispatchers.Main) {
-                            onFinish?.accept(Result(null, error, ErrorCodes.USER_NOT_FOUND))
-                        }
-                    }
-                } catch (exception: Exception) {
-                    val error = Error(exception.message ?: "Unknown error")
-                    withContext(Dispatchers.Main) {
-                        onFinish?.accept(Result(null, error, ErrorCodes.CANCELLED))
-                    }
+                val result = fetchUser(uid)
+                withContext(Dispatchers.Main) {
+                    onFinish?.accept(result)
                 }
             }
         }
 
-        // The new getUserByUid function using a suspend keyword
+        /**
+         * Fetch user by UID as a suspend function.
+         * @param uid User's unique ID.
+         * @return Result containing user or error.
+         */
         suspend fun getUserByUidAsync(uid: String): Result {
+            return fetchUser(uid)
+        }
+
+        /**
+         * Update a specific field for the current user.
+         * @param field The field to update.
+         * @param value The new value.
+         */
+        fun update(field: String?, value: Any?) {
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            if (currentUser == null || field == null || value == null) {
+                Log.e(TAG, "Invalid input or user is not authenticated")
+                return
+            }
+
+            val uid = currentUser.uid
+            val ref = FirebaseDatabase.getInstance().reference.child(REF).child(uid)
+
+            ref.child(field).setValue(value)
+                .addOnFailureListener { error -> Log.e(TAG, "Update failed: ${error.message}") }
+        }
+
+        // Internal helper function to fetch user
+        private suspend fun fetchUser(uid: String): Result {
             val usersRef = FirebaseDatabase.getInstance().getReference(REF).child(uid)
 
             return try {
@@ -82,28 +91,16 @@ class UserUtils {
                 if (dataSnapshot.exists()) {
                     val user = dataSnapshot.getValue(User::class.java)
                     if (user != null) {
-                        Result(user, null, ErrorCodes.SUCCESS)
+                        Result(user, ErrorCodes.SUCCESS)
                     } else {
-                        val error = Error("Unknown error while retrieving User ($uid)")
-                        Result(null, error, ErrorCodes.UNKNOWN_ERROR)
+                        Result(Error("Failed to parse user data"), ErrorCodes.UNKNOWN_ERROR)
                     }
                 } else {
-                    val error = Error("User not found ($uid)")
-                    Result(null, error, ErrorCodes.USER_NOT_FOUND)
+                    Result(Error("User not found: $uid"), ErrorCodes.USER_NOT_FOUND)
                 }
             } catch (exception: Exception) {
-                val error = Error(exception.message ?: "Unknown error")
-                Result(null, error, ErrorCodes.CANCELLED)
+                Result(Error(exception.message ?: "Unknown error"), ErrorCodes.CANCELLED)
             }
-        }
-
-        fun update(field: String?, value: Any?) {
-            val user = FirebaseAuth.getInstance().currentUser ?: return
-            val uid = user.uid
-            val ref = FirebaseDatabase.getInstance().reference.child(REF).child(uid)
-
-            ref.child(field!!).setValue(value)
-                .addOnFailureListener { error: Exception -> Log.e(TAG, error.message!!) }
         }
     }
 }

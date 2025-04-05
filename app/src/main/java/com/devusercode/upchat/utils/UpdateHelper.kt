@@ -44,7 +44,8 @@ class UpdateHelper private constructor(
                 // repo: https://github.com/ARCOOON/UpChat
                 // download: repo + /releases/download/$appVersion/$filename.apk
 
-                val newUpdateUrl = "$appRepo/releases/download/$appVersion/$baseFilename-$appVersion.apk"
+                val newUpdateUrl =
+                    "$appRepo/releases/download/$appVersion/$baseFilename-$appVersion.apk"
                 val filename = "$baseFilename-$appVersion.apk"
 
                 Log.d(TAG, "installed version: $installedVersion")

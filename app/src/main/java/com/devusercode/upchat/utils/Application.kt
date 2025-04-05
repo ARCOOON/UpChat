@@ -32,7 +32,10 @@ class Application : android.app.Application() {
             intent.putExtra("error", Log.getStackTraceString(throwable))
 
             val pendingIntent = PendingIntent.getActivity(
-                applicationContext, 11111, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+                applicationContext,
+                11111,
+                intent,
+                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
             )
 
             val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
