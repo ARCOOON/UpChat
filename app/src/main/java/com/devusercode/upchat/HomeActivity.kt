@@ -32,10 +32,11 @@ class HomeActivity : AppCompatActivity() {
     private val TAG = HomeActivity::class.java.simpleName
     private val auth = FirebaseAuth.getInstance()
     private var user: User? = null
-    private lateinit var recyclerView: RecyclerView
     private var adapter: HomeAdapter? = null
     private var openConversations: MutableList<UserPair>? = null
     private val userListeners: MutableMap<String, ValueEventListener> = HashMap()
+
+    private lateinit var recyclerView: RecyclerView
     private lateinit var storageController: StorageController
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

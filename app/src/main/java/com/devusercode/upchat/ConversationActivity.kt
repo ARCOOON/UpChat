@@ -43,6 +43,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
+import androidx.core.net.toUri
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ConversationActivity : AppCompatActivity() {
@@ -125,12 +126,22 @@ class ConversationActivity : AppCompatActivity() {
 
     override fun startActivity(intent: Intent) {
         super.startActivity(intent)
-        overridePendingTransition(R.anim.right_in, R.anim.left_out)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, R.anim.right_in, R.anim.left_out)
+        } else {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(R.anim.right_in, R.anim.left_out)
+        }
     }
 
     override fun finish() {
         super.finish()
-        overridePendingTransition(R.anim.left_in, R.anim.right_out)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, R.anim.left_in, R.anim.right_out)
+        } else {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(R.anim.left_in, R.anim.right_out)
+        }
     }
 
     private fun initialize() {
@@ -211,9 +222,9 @@ class ConversationActivity : AppCompatActivity() {
 
         participantName.text = participant!!.username
 
-        if (participant!!.photoUrl!!.isNotEmpty()) {
+        if (participant?.photoUrl!!.isNotEmpty()) {
             Glide.with(applicationContext)
-                .load(Uri.parse(participant!!.photoUrl))
+                .load(participant!!.photoUrl!!.toUri())
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .placeholder(R.drawable.ic_account_circle_white)
                 .circleCrop()
