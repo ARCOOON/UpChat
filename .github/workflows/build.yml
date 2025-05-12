@@ -51,35 +51,29 @@ jobs:
       - name: Run gradle tests
         run: ./gradlew test
 
-      - name: Building App Release (APK) - ${{ env.main_project_module }} module
-        run: ./gradlew assembleRelease --stacktrace
-
-      - name: Build App Bundle Release (AAB) - ${{ env.main_project_module }} module
-        run: ./gradlew bundleRelease --stacktrace
-
-      - name: Get aab build path
-        id: releaseAab
+      - name: Building App Release (APK)
         run: |
-          aabfile=$(find app/build/outputs/bundle/release -name "*.aab" -print -quit || echo "")
-          echo "aabfile=$aabfile" >> $GITHUB_ENV
-          echo "aabfile=$aabfile" >> $GITHUB_OUTPUT
-
-      - name: Get apk build path
-        id: releaseApk
-        run: |
-          apkfile=$(find app/build/outputs/apk/release -name "*.apk" -print -quit || echo "")
+          ./gradlew assembleRelease --stacktrace
+          apkfile=$(find app/build/outputs/apk/release -name "*.apk" -print -quit)
           echo "apkfile=$apkfile" >> $GITHUB_ENV
           echo "apkfile=$apkfile" >> $GITHUB_OUTPUT
 
-      - name: Upload AAB Release Build - ${{ env.repository_name }}
+      - name: Build App Bundle Release (AAB)
+        run: |
+          ./gradlew bundleRelease --stacktrace
+          aabfile=$(find app/build/outputs/bundle/release -name "*.aab" -print -quit)
+          echo "aabfile=$aabfile" >> $GITHUB_ENV
+          echo "aabfile=$aabfile" >> $GITHUB_OUTPUT
+
+      - name: Upload AAB Release Build
         uses: actions/upload-artifact@v4
         with:
           name: AAB
           path: ${{ steps.releaseAab.outputs.aabfile }}
-          if-no-files-found: ignore
+          if-no-files-found: error
           compression-level: 0
 
-      - name: Upload APK Release Build - ${{ env.repository_name }}
+      - name: Upload APK Release Build
         uses: actions/upload-artifact@v4
         with:
           name: APK
@@ -87,12 +81,13 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
-      - run: mv ${{ github.workspace }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html
+      - name: Copying Linting Results to Output
+        run: mv ${{ github.workspace }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html
 
       - name: Upload Check Results to Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Check_Result
+          name: Linting_Result
           path: ./lint-results-debug.html
           if-no-files-found: ignore
           compression-level: 0

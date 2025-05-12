@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
@@ -24,14 +23,15 @@ class MessagingService : FirebaseMessagingService() {
         Log.d(TAG, "Message Notification: ${message.notification}")
         Log.d(TAG, "Message To: ${message.to}")
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         val notificationTitle: String? = message.notification?.title
         val notificationMessage: String? = message.notification?.body
         val clickAction: String? = message.notification?.clickAction
         val uid: String? = message.data["uid"]
-		
-		Log.d(TAG, "Message Uid: $uid")
+
+        Log.d(TAG, "Message Uid: $uid")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
@@ -58,7 +58,7 @@ class MessagingService : FirebaseMessagingService() {
             val notificationId = System.currentTimeMillis().toInt()
             notificationManager.notify(notificationId, mBuilder.build())
         } else {
-			Log.e(TAG, "Android version not compatible with FCM Push-Notification")
-		}
+            Log.e(TAG, "Android version not compatible with FCM Push-Notification")
+        }
     }
 }
