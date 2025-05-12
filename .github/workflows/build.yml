@@ -55,11 +55,17 @@ jobs:
 
     - name: Get aab build path
       id: releaseAab
-      run: echo "aabfile=$(find app/build/outputs/bundle/release/*.aab)" >> $GITHUB_OUTPUT
-    
+      run: |
+        aabfile=$(find app/build/outputs/bundle/release -name "*.aab" -print -quit)
+        echo "aabfile=$aabfile" >> $GITHUB_ENV
+        echo "aabfile=$aabfile" >> $GITHUB_OUTPUT
+
     - name: Get apk build path
       id: releaseApk
-      run: echo "apkfile=$(find app/build/outputs/apk/release/*.apk)" >> $GITHUB_OUTPUT
+      run: |
+        apkfile=$(find app/build/outputs/apk/release -name "*.apk" -print -quit)
+        echo "apkfile=$apkfile" >> $GITHUB_ENV
+        echo "apkfile=$apkfile" >> $GITHUB_OUTPUT
 
     - name: Upload AAB Release Build to Artifacts
       uses: actions/upload-artifact@v4
