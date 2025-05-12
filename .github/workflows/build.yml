@@ -52,6 +52,7 @@ jobs:
         run: ./gradlew test
 
       - name: Building App Release (APK)
+        id: release_apk
         run: |
           ./gradlew assembleRelease --stacktrace
           apkfile=$(find app/build/outputs/apk/release -name "*.apk" -print -quit)
@@ -59,6 +60,7 @@ jobs:
           echo "apkfile=$apkfile" >> $GITHUB_OUTPUT
 
       - name: Build App Bundle Release (AAB)
+        id: release_aab
         run: |
           ./gradlew bundleRelease --stacktrace
           aabfile=$(find app/build/outputs/bundle/release -name "*.aab" -print -quit)
@@ -69,7 +71,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: AAB
-          path: ${{ steps.releaseAab.outputs.aabfile }}
+          path: ${{ steps.release_aab.outputs.aabfile }}
           if-no-files-found: error
           compression-level: 0
 
@@ -77,7 +79,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: APK
-          path: ${{ steps.releaseApk.outputs.apkfile }}
+          path: ${{ steps.release_apk.outputs.apkfile }}
           if-no-files-found: error
           compression-level: 0
 
