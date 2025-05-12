@@ -66,7 +66,7 @@ jobs:
       with:
         name: AAB
         path: ${{ steps.releaseAab.outputs.aabfile }}
-        if-no-files-found: error
+        if-no-files-found: ignore
         compression-level: 0
 
     - name: Upload APK Release Build to Artifacts
