@@ -31,7 +31,10 @@ class ReceivedImageViewHolder(private var view: View) : RecyclerView.ViewHolder(
 
     @RequiresApi(Build.VERSION_CODES.S)
     fun bind(model: Message, cid: String, uid: String) {
-        val aes = AES(uid)
+        val aes = AES(
+            AES.buildSharedSecret(model.senderId, uid),
+            cid
+        )
         val mac = MAC(cid)
 
         var message = model.message

@@ -32,7 +32,10 @@ class ReceivedMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 
     fun bind(model: Message, cid: String, uid: String) {
-        val aes = AES(uid)
+        val aes = AES(
+            AES.buildSharedSecret(model.senderId, uid),
+            cid
+        )
         val mac = MAC(cid)
 
         val messageDecrypted = aes.decrypt(model.message!!)

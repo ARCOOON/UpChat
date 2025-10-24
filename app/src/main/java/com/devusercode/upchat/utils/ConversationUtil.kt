@@ -29,7 +29,10 @@ class ConversationUtil(
     participant: User
 ) {
     private var mac: MAC = MAC(cid)
-    private var aes: AES = AES(participant.uid!!)
+    private var aes: AES = AES(
+        AES.buildSharedSecret(user.uid, participant.uid),
+        cid
+    )
 
     companion object {
         private const val TAG = "ConversationUtil"

@@ -34,7 +34,10 @@ class SentMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun bind(model: Message, cid: String, uid: String) {
-        val aes = AES(uid)
+        val aes = AES(
+            AES.buildSharedSecret(model.senderId, uid),
+            cid
+        )
         val mac = MAC(cid)
 
         val messageDecrypted = aes.decrypt(model.message!!)
