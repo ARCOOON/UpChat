@@ -1,6 +1,7 @@
 # Gradle files
 .gradle/
 build/
+gradle/
 
 # Gradlew scripts
 gradlew
