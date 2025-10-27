@@ -34,11 +34,24 @@ jobs:
           distribution: 'oracle'
           cache: 'gradle'
 
+      - name: Wipe Gradle caches (kill stale Kotlin transforms)
+        run: |
+          rm -rf ~/.gradle/caches/transforms-*
+          rm -rf ~/.gradle/caches/*/transforms
+          rm -rf ~/.gradle/caches/*/kotlin
+          rm -rf ~/.gradle/caches/8.*    # blows away versioned cache dirs like 8.11.1
+          rm -rf ~/.gradle/caches/modules-*
+          rm -rf ~/.gradle/caches/jars-*
+          rm -rf ~/.gradle/caches/build-cache-*
+          rm -rf ~/.gradle/caches
+          rm -rf ~/.gradle/configuration-cache
+
       # Official Gradle action. Handles wrapper validation and caching of Gradle User Home.
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
           cache-read-only: false
+          cache-cleanup: always
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -46,7 +59,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          packages: 'tools platform-tools'
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.1 extras;google;m2repository extras;android;m2repository'
           cmdline-tools-version: 12266719 # Command line tools 16.0
           log-accepted-android-sdk-licenses: false
 
@@ -55,14 +68,11 @@ jobs:
           google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo $google_service > /home/runner/work/UpChat/UpChat/app/google-services.json
 
-      - name: Upgrading Gradle to 8.6
-        run: ./gradlew wrapper --gradle-version 8.6
-
       - name: Cleaning builds
-        run: ./gradlew clean
+        run: ./gradlew --no-daemon --no-build-cache clean
 
       - name: Run gradle checks
-        run: ./gradlew check
+        run: ./gradlew --no-daemon --no-build-cache check
 
       - name: Run gradle tests
         run: ./gradlew test
@@ -99,7 +109,7 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
-      - name: Copying Linting Results to Output
+      - name: Copying Linting Results
         run: mv ${{ github.workspace }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html
 
       - name: Upload Check Results to Artifacts
@@ -109,3 +119,14 @@ jobs:
           path: ./lint-results-debug.html
           if-no-files-found: ignore
           compression-level: 0
+
+      - name: Upload problem report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-problem-report
+          path: |
+            build/reports/problems/problems-report.html
+            build/reports/problems/
+          if-no-files-found: warn
+          retention-days: 7
