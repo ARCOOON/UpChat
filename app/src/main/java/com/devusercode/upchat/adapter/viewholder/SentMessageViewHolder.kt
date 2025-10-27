@@ -13,6 +13,7 @@ import com.devusercode.upchat.adapter.MessageAdapter
 import com.devusercode.upchat.models.Message
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.security.MAC
+import com.devusercode.upchat.security.MessageIntegrity
 import com.devusercode.upchat.utils.GetTimeAgo
 
 class SentMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -33,24 +34,25 @@ class SentMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun bind(model: Message, cid: String, uid: String) {
-        val aes = AES(uid)
-        val mac = MAC(cid)
+    fun bind(model: Message, cid: String, sharedSecret: String) {
+        val aes = AES(sharedSecret, cid)
+        val mac = MAC(sharedSecret, cid)
 
-        val messageDecrypted = aes.decrypt(model.message!!)
+        val decrypted = model.message?.let { aes.decrypt(it) } ?: ""
+        val payload = MessageIntegrity.canonicalize(model, cid)
+        val hasMac = model.mac != null
+        val isVerified = mac.verify(payload, model.mac)
 
-        if (model.mac != null) {
-            val messageMac = mac.generate(messageDecrypted)
-            val verify = mac.verifyMAC(model.mac!!, messageMac)
-
-            if (verify) {
-                verified.visibility = View.VISIBLE
-            } else {
-                verified.visibility = View.GONE
-            }
+        if (hasMac) {
+            verified.visibility = View.VISIBLE
+            verified.setImageResource(
+                if (isVerified) R.drawable.ic_verified_white else R.drawable.ic_round_error_white
+            )
+        } else {
+            verified.visibility = View.GONE
         }
 
-        message.text = messageDecrypted
+        message.text = decrypted
         time.text = GetTimeAgo.parse(model.timestamp!!)
 
         cardview.setOnLongClickListener { view: View ->
