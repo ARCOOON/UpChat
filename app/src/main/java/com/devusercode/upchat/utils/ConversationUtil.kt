@@ -12,24 +12,32 @@ import com.devusercode.upchat.models.MessageTypes
 import com.devusercode.upchat.models.User
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.security.MAC
+import com.devusercode.upchat.security.MessageIntegrity
 import com.devusercode.upchat.security.SHA512
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.TaskCompletionSource
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
+import java.util.HashMap
 import java.util.function.Consumer
 
 class ConversationUtil(
     private var context: Context,
     private var cid: String,
     private var user: User,
-    participant: User
+    participant: User,
+    sharedSecret: String
 ) {
-    private var mac: MAC = MAC(cid)
-    private var aes: AES = AES(participant.uid!!)
+    private var mac: MAC = MAC(sharedSecret, cid)
+    private var aes: AES = AES(
+        sharedSecret,
+        cid
+    )
 
     companion object {
         private const val TAG = "ConversationUtil"
@@ -90,36 +98,31 @@ class ConversationUtil(
             return conversations.containsKey(uid)
         }
 
-        fun newConversation(user: User, participant: User): String {
-            val conversationsRef = FirebaseDatabase.getInstance().getReference("conversations")
-            // Generate a unique conversation ID
-            var conversationId = conversationsRef.push().key
+        fun newConversation(user: User, participant: User): Task<String> {
+            val rootRef = FirebaseDatabase.getInstance().reference
+            val conversationId = rootRef.child(Key.Conversation.CONVERSATIONS).push().key
+                ?.removePrefix("-")
 
-            // Remove hyphen at the beginning, if exists
-            if (conversationId != null && conversationId.startsWith("-")) {
-                conversationId = conversationId.substring(1)
+            if (conversationId.isNullOrBlank()) {
+                return Tasks.forException(IllegalStateException("Failed to generate conversation id"))
             }
 
-            // Add the conversation ID to the user's profile
-            val userConversationsRef = FirebaseDatabase.getInstance().reference.child("users")
-                .child(user.uid!!).child("conversations")
-            userConversationsRef.child(participant.uid!!).setValue(conversationId)
+            val updates = hashMapOf<String, Any?>(
+                "${Key.Conversation.CONVERSATIONS}/$conversationId/${Key.Conversation.MEMBERS}/0" to user.uid,
+                "${Key.Conversation.CONVERSATIONS}/$conversationId/${Key.Conversation.MEMBERS}/1" to participant.uid,
+                "users/${user.uid}/${Key.User.CONVERSATIONS}/${participant.uid}" to conversationId,
+                "users/${participant.uid}/${Key.User.CONVERSATIONS}/${user.uid}" to conversationId
+            )
 
-            // Add the conversation ID to the participant's profile
-            val participantConversationsRef =
-                FirebaseDatabase.getInstance().reference.child("users")
-                    .child(participant.uid!!).child("conversations")
-            participantConversationsRef.child(user.uid!!).setValue(conversationId)
+            val completion = TaskCompletionSource<String>()
 
-            // Add both user IDs to the conversation's members
-            val membersRef = conversationsRef.child(conversationId!!).child("members")
-            val members: MutableList<String?> = ArrayList()
+            rootRef.updateChildren(updates)
+                .addOnSuccessListener { completion.setResult(conversationId) }
+                .addOnFailureListener { error ->
+                    completion.setException(error ?: Exception("Unknown error creating conversation"))
+                }
 
-            members.add(user.uid)
-            members.add(participant.uid)
-            membersRef.setValue(members)
-
-            return conversationId
+            return completion.task
         }
 
         fun getConversationById(cid: String, onFinish: Consumer<ConversationResult?>) {
@@ -178,18 +181,15 @@ class ConversationUtil(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun sendMessage(msg: String) {
+    fun sendMessage(msg: String): Task<Void> {
         val data: MutableMap<String, String?> = HashMap()
 
         val messagesRef =
             FirebaseDatabase.getInstance().reference.child(Key.Conversation.CONVERSATIONS)
                 .child(cid).child(Key.Conversation.MESSAGES)
 
-        var messageId = messagesRef.push().key
-
-        if (messageId != null && messageId.startsWith("-")) {
-            messageId = messageId.substring(1)
-        }
+        val messageId = messagesRef.push().key?.removePrefix("-")
+            ?: return Tasks.forException(IllegalStateException("Failed to generate message id"))
 
         val message = msg.trim { it <= ' ' }
 
@@ -197,11 +197,18 @@ class ConversationUtil(
         data[Key.Message.MESSAGE] = aes.encrypt(message)
         data[Key.Message.ID] = messageId
         data[Key.Message.TYPE] = MessageTypes.TEXT.toString()
-        data[Key.Message.MAC] = mac.generate(message)
         data[Key.Message.SENDER_ID] = user.uid
         data[Key.Message.TIMESTAMP] = System.currentTimeMillis().toString()
+        user.username?.let { data[Key.User.USERNAME] = it }
+        user.deviceId?.let { data[Key.User.DEVICE_ID] = it }
 
-        messagesRef.child(messageId!!).setValue(data)
+        val payloadValues = HashMap(data)
+        payloadValues[Key.Conversation.CONVERSATION_ID] = cid
+
+        val payload = MessageIntegrity.canonicalize(payloadValues)
+        data[Key.Message.MAC] = mac.generate(payload)
+
+        return messagesRef.child(messageId).setValue(data)
     }
 
     fun sendFile(file: Uri, mime: String, extension: String?, msg: String?): String? {
@@ -279,16 +286,24 @@ class ConversationUtil(
                                 checksum = SHA512.generate(uri)
                             val message = msg?.trim() ?: ""
 
-                            val data = mapOf(
+                            val data = mutableMapOf(
                                 Key.Message.MESSAGE to message,
                                 Key.Message.ID to messageId,
                                 Key.Message.TYPE to MessageTypes.IMAGE.toString(),
                                 Key.Message.URL to uri.toString(),
                                 Key.Message.CHECKSUM to checksum,
                                 Key.Message.SENDER_ID to user.uid,
-                                Key.Message.TIMESTAMP to System.currentTimeMillis().toString(),
-                                Key.Message.MAC to mac.generate(checksum)
+                                Key.Message.TIMESTAMP to System.currentTimeMillis().toString()
                             )
+
+                            user.username?.let { data[Key.User.USERNAME] = it }
+                            user.deviceId?.let { data[Key.User.DEVICE_ID] = it }
+
+                            val payloadValues = HashMap(data)
+                            payloadValues[Key.Conversation.CONVERSATION_ID] = cid
+
+                            val payload = MessageIntegrity.canonicalize(payloadValues)
+                            data[Key.Message.MAC] = mac.generate(payload)
 
                             Log.d(TAG, "Data: $data")
 
