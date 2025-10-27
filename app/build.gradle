@@ -8,7 +8,7 @@ static def getVersionCode(versionName) {
 
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android' version '1.8.10' apply false
+    id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
 }
