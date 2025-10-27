@@ -36,10 +36,18 @@ class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view
         val mac = MAC(sharedSecret, cid)
 
         val decrypted = model.message?.let { aes.decrypt(it) } ?: ""
-        val payload = MessageIntegrity.canonicalize(model)
+        val payload = MessageIntegrity.canonicalize(model, cid)
+        val hasMac = model.mac != null
         val isVerified = mac.verify(payload, model.mac)
 
-        verified.visibility = if (isVerified) View.VISIBLE else View.GONE
+        if (hasMac) {
+            verified.visibility = View.VISIBLE
+            verified.setImageResource(
+                if (isVerified) R.drawable.ic_verified_white else R.drawable.ic_round_error_white
+            )
+        } else {
+            verified.visibility = View.GONE
+        }
 
         messageView.text = decrypted
         timeView.text = GetTimeAgo.parse(model.timestamp!!)

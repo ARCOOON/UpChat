@@ -194,13 +194,23 @@ class ConversationActivity : AppCompatActivity() {
 
         sendButton.setOnClickListener {
             if (!chatExists) {
-                currentConversationId = ConversationUtil.newConversation(user!!, participant!!)
                 chatExists = true
 
-                Log.d(TAG, "Conversation ($currentConversationId) created")
-
-                prepareConversation(currentConversationId)
-                Util.showMessage(this, "Setting up secure channel...")
+                ConversationUtil.newConversation(user!!, participant!!)
+                    .addOnSuccessListener { conversationId ->
+                        currentConversationId = conversationId
+                        Log.d(TAG, "Conversation ($currentConversationId) created")
+                        prepareConversation(currentConversationId)
+                        Util.showMessage(this, "Setting up secure channel...")
+                    }
+                    .addOnFailureListener { error ->
+                        chatExists = false
+                        Log.e(TAG, "Error creating conversation", error)
+                        Util.showMessage(
+                            this,
+                            error.message ?: getString(R.string.conversation__error_generic)
+                        )
+                    }
                 return@setOnClickListener
             }
 
@@ -225,7 +235,14 @@ class ConversationActivity : AppCompatActivity() {
 
             if (message.isNotEmpty()) {
                 conversationUtil.sendMessage(message)
-                messageInput.setText("")
+                    .addOnSuccessListener { messageInput.setText("") }
+                    .addOnFailureListener { error ->
+                        Log.e(TAG, "Failed to send message", error)
+                        Util.showMessage(
+                            this,
+                            error.message ?: getString(R.string.conversation__error_generic)
+                        )
+                    }
             }
         }
 

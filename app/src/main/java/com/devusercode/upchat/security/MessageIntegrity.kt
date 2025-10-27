@@ -25,7 +25,7 @@ object MessageIntegrity {
         return builder.toString()
     }
 
-    fun canonicalize(message: Message): String {
+    fun canonicalize(message: Message, conversationId: String): String {
         val values = linkedMapOf<String, String?>()
 
         message.message?.let { values[Key.Message.MESSAGE] = it }
@@ -37,6 +37,9 @@ object MessageIntegrity {
         message.checksum?.let { values[Key.Message.CHECKSUM] = it }
         message.senderId?.let { values[Key.Message.SENDER_ID] = it }
         message.timestamp?.let { values[Key.Message.TIMESTAMP] = it }
+        message.username?.let { values[Key.User.USERNAME] = it }
+        message.deviceId?.let { values[Key.User.DEVICE_ID] = it }
+        values[Key.Conversation.CONVERSATION_ID] = conversationId
 
         return canonicalize(values)
     }

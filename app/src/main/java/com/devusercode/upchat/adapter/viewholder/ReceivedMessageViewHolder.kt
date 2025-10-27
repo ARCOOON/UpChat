@@ -37,7 +37,7 @@ class ReceivedMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val mac = MAC(sharedSecret, cid)
 
         val decrypted = model.message?.let { aes.decrypt(it) } ?: ""
-        val payload = MessageIntegrity.canonicalize(model)
+        val payload = MessageIntegrity.canonicalize(model, cid)
         val hasMac = model.mac != null
         val isVerified = mac.verify(payload, model.mac)
 

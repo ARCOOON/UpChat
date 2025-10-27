@@ -14,7 +14,6 @@ class AES(private val sharedSecret: String, private val salt: String) {
     private val keySize = 16 // 128-bit key
     private val ivSize = 16 // 128-bit IV
     private val secureRandom = SecureRandom()
-
     private val derivedKey: SecretKeySpec by lazy {
         val keyMaterial = Hkdf.derive(
             sharedSecret.toByteArray(StandardCharsets.UTF_8),
