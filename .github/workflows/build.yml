@@ -46,12 +46,17 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
+          packages: 'tools platform-tools'
+          cmdline-tools-version: 12266719 # Command line tools 16.0
           log-accepted-android-sdk-licenses: false
 
       - name: Setup google-services.json
         env:
           google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo $google_service > /home/runner/work/UpChat/UpChat/app/google-services.json
+
+      - name: Upgrading Gradle to 8.6
+        run: ./gradlew wrapper --gradle-version 8.6
 
       - name: Cleaning builds
         run: ./gradlew clean
