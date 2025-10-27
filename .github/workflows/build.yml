@@ -43,6 +43,7 @@ jobs:
           rm -rf ~/.gradle/caches/modules-*
           rm -rf ~/.gradle/caches/jars-*
           rm -rf ~/.gradle/caches/build-cache-*
+          rm -rf ~/.gradle/caches
           rm -rf ~/.gradle/configuration-cache
 
       # Official Gradle action. Handles wrapper validation and caching of Gradle User Home.
