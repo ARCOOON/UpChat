@@ -8,6 +8,7 @@ gradlew.bat
 
 # Local configuration file (sdk path, etc)
 local.properties
+/local.properties
 
 # Log/OS Files
 *.log
@@ -59,4 +60,3 @@ google-services.json
 
 # Some info files
 firebase-rl-db-rules.json
-!/local.properties
