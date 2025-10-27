@@ -56,10 +56,10 @@ jobs:
         run: echo $google_service > /home/runner/work/UpChat/UpChat/app/google-services.json
 
       - name: Cleaning builds
-        run: ./gradlew clean
+        run: ./gradlew --no-daemon --no-build-cache clean
 
       - name: Run gradle checks
-        run: ./gradlew check
+        run: ./gradlew --no-daemon --no-build-cache check
 
       - name: Run gradle tests
         run: ./gradlew test
@@ -106,3 +106,14 @@ jobs:
           path: ./lint-results-debug.html
           if-no-files-found: ignore
           compression-level: 0
+
+      - name: Upload problem report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-problem-report
+          path: |
+            build/reports/problems/problems-report.html
+            build/reports/problems/
+          if-no-files-found: warn
+          retention-days: 7
