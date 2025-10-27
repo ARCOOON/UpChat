@@ -9,7 +9,6 @@ on:
       - 'releases/**'
     tags:
       - v*
-    # paths: ['app/**']
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch: { }
@@ -18,16 +17,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      JAVA_VERSION: "17"
+      GRADLE_USER_HOME: ~/.gradle
+
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup JDK 17
+      - name: Setup JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: ${{ env.JAVA_VERSION }}
           distribution: 'oracle'
           cache: 'gradle'
+
+      # Official Gradle action. Handles wrapper validation and caching of Gradle User Home.
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: false
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
