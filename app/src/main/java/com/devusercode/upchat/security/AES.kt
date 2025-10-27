@@ -6,18 +6,16 @@ import java.security.SecureRandom
 import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
 import javax.crypto.IllegalBlockSizeException
-import javax.crypto.Mac
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 class AES(private val sharedSecret: String, private val salt: String) {
     private val algorithm = "AES/CBC/PKCS5Padding"
-    private val hkdfAlgorithm = "HmacSHA256"
     private val keySize = 16 // 128-bit key
     private val ivSize = 16 // 128-bit IV
     private val secureRandom = SecureRandom()
     private val derivedKey: SecretKeySpec by lazy {
-        val keyMaterial = hkdf(
+        val keyMaterial = Hkdf.derive(
             sharedSecret.toByteArray(StandardCharsets.UTF_8),
             salt.toByteArray(StandardCharsets.UTF_8),
             "UpChat-AES-Key".toByteArray(StandardCharsets.UTF_8),
@@ -65,37 +63,6 @@ class AES(private val sharedSecret: String, private val salt: String) {
                 encryptedText
             }
         }
-    }
-
-    private fun hkdf(secret: ByteArray, salt: ByteArray, info: ByteArray, size: Int): ByteArray {
-        val mac = Mac.getInstance(hkdfAlgorithm)
-
-        val actualSalt = if (salt.isNotEmpty()) salt else ByteArray(mac.macLength)
-        mac.init(SecretKeySpec(actualSalt, hkdfAlgorithm))
-        val prk = mac.doFinal(secret)
-
-        mac.init(SecretKeySpec(prk, hkdfAlgorithm))
-
-        val result = ByteArray(size)
-        var previous = ByteArray(0)
-        var bytesGenerated = 0
-        var counter = 1
-
-        while (bytesGenerated < size) {
-            mac.update(previous)
-            mac.update(info)
-            mac.update(counter.toByte())
-
-            val output = mac.doFinal()
-            val bytesToCopy = minOf(output.size, size - bytesGenerated)
-            System.arraycopy(output, 0, result, bytesGenerated, bytesToCopy)
-
-            previous = output
-            bytesGenerated += bytesToCopy
-            counter++
-        }
-
-        return result
     }
 
     companion object {
