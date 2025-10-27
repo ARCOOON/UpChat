@@ -15,7 +15,7 @@ plugins {
 
 android {
     namespace 'com.devusercode.upchat'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId 'com.devusercode.upchat'

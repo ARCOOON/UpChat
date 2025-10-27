@@ -29,6 +29,8 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.toColorInt
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MessageAdapter(
@@ -159,7 +161,7 @@ class MessageAdapter(
             )
 
             // Darken the background by setting a semi-transparent black color
-            val darkBackground = ColorDrawable(Color.parseColor("#50000000"))
+            val darkBackground = "#50000000".toColorInt().toDrawable()
             popupWindow.setBackgroundDrawable(darkBackground)
 
             // Set animation style
