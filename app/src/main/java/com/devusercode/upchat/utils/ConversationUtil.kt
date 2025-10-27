@@ -12,6 +12,7 @@ import com.devusercode.upchat.models.MessageTypes
 import com.devusercode.upchat.models.User
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.security.MAC
+import com.devusercode.upchat.security.MessageIntegrity
 import com.devusercode.upchat.security.SHA512
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
@@ -28,8 +29,12 @@ class ConversationUtil(
     private var user: User,
     participant: User
 ) {
-    private var mac: MAC = MAC(cid)
-    private var aes: AES = AES(participant.uid!!)
+    private val sharedSecret = AES.buildSharedSecret(user.uid, participant.uid)
+    private var mac: MAC = MAC(sharedSecret, cid)
+    private var aes: AES = AES(
+        sharedSecret,
+        cid
+    )
 
     companion object {
         private const val TAG = "ConversationUtil"
@@ -197,9 +202,11 @@ class ConversationUtil(
         data[Key.Message.MESSAGE] = aes.encrypt(message)
         data[Key.Message.ID] = messageId
         data[Key.Message.TYPE] = MessageTypes.TEXT.toString()
-        data[Key.Message.MAC] = mac.generate(message)
         data[Key.Message.SENDER_ID] = user.uid
         data[Key.Message.TIMESTAMP] = System.currentTimeMillis().toString()
+
+        val payload = MessageIntegrity.canonicalize(data)
+        data[Key.Message.MAC] = mac.generate(payload)
 
         messagesRef.child(messageId!!).setValue(data)
     }
@@ -279,16 +286,18 @@ class ConversationUtil(
                                 checksum = SHA512.generate(uri)
                             val message = msg?.trim() ?: ""
 
-                            val data = mapOf(
+                            val data = mutableMapOf(
                                 Key.Message.MESSAGE to message,
                                 Key.Message.ID to messageId,
                                 Key.Message.TYPE to MessageTypes.IMAGE.toString(),
                                 Key.Message.URL to uri.toString(),
                                 Key.Message.CHECKSUM to checksum,
                                 Key.Message.SENDER_ID to user.uid,
-                                Key.Message.TIMESTAMP to System.currentTimeMillis().toString(),
-                                Key.Message.MAC to mac.generate(checksum)
+                                Key.Message.TIMESTAMP to System.currentTimeMillis().toString()
                             )
+
+                            val payload = MessageIntegrity.canonicalize(data)
+                            data[Key.Message.MAC] = mac.generate(payload)
 
                             Log.d(TAG, "Data: $data")
 

@@ -17,6 +17,7 @@ import com.devusercode.upchat.adapter.MessageAdapter
 import com.devusercode.upchat.models.Message
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.security.MAC
+import com.devusercode.upchat.security.MessageIntegrity
 import com.devusercode.upchat.utils.GetTimeAgo
 
 class ReceivedImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view) {
@@ -31,27 +32,17 @@ class ReceivedImageViewHolder(private var view: View) : RecyclerView.ViewHolder(
 
     @RequiresApi(Build.VERSION_CODES.S)
     fun bind(model: Message, cid: String, uid: String) {
-        val aes = AES(uid)
-        val mac = MAC(cid)
+        val sharedSecret = AES.buildSharedSecret(model.senderId, uid)
+        val aes = AES(sharedSecret, cid)
+        val mac = MAC(sharedSecret, cid)
 
-        var message = model.message
+        val decrypted = model.message?.let { aes.decrypt(it) } ?: ""
+        val payload = MessageIntegrity.canonicalize(model)
+        val isVerified = mac.verify(payload, model.mac)
 
-        if (model.message != null) {
-            message = aes.decrypt(model.message!!)
-        }
+        verified.visibility = if (isVerified) View.VISIBLE else View.GONE
 
-        if (model.mac != null) {
-            val messageMac = mac.generate(message!!)
-            val verify = mac.verifyMAC(model.mac!!, messageMac)
-
-            if (verify) {
-                verified.visibility = View.VISIBLE
-            } else {
-                verified.visibility = View.GONE
-            }
-        }
-
-        messageView.text = message
+        messageView.text = decrypted
         timeView.text = GetTimeAgo.parse(model.timestamp!!)
 
         Log.d(TAG, "Url: ${model.url}")
