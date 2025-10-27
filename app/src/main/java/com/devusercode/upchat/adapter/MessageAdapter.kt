@@ -39,6 +39,7 @@ class MessageAdapter(
 
     private var participant: User? = null
     private var conversationId: String? = null
+    private var conversationSecret: String? = null
 
     private object MessageSender {
         const val MESSAGE_SENT_TEXT = 0
@@ -60,6 +61,10 @@ class MessageAdapter(
 
     fun setParticipant(user: User?) {
         participant = user
+    }
+
+    fun setConversationSecret(secret: String) {
+        conversationSecret = secret
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -122,17 +127,23 @@ class MessageAdapter(
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, model: Message) {
+        val secret = conversationSecret
+        if (secret.isNullOrEmpty()) {
+            Log.w(TAG, "Conversation secret unavailable; skipping bind")
+            return
+        }
+
         when (holder) {
             is SentMessageViewHolder -> {
-                holder.bind(model, conversationId!!, participant?.uid!!)
+                holder.bind(model, conversationId!!, secret)
             }
 
             is SentImageViewHolder -> {
-                holder.bind(model, conversationId!!, participant?.uid!!)
+                holder.bind(model, conversationId!!, secret)
             }
 
             is ReceivedMessageViewHolder -> {
-                holder.bind(model, conversationId!!, firebase_user!!.uid)
+                holder.bind(model, conversationId!!, secret)
             }
 
             is SystemMessageViewHolder -> {

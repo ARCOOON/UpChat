@@ -27,9 +27,9 @@ class ConversationUtil(
     private var context: Context,
     private var cid: String,
     private var user: User,
-    participant: User
+    participant: User,
+    sharedSecret: String
 ) {
-    private val sharedSecret = AES.buildSharedSecret(user.uid, participant.uid)
     private var mac: MAC = MAC(sharedSecret, cid)
     private var aes: AES = AES(
         sharedSecret,
