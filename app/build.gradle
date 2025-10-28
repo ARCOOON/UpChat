@@ -7,15 +7,15 @@ static def getVersionCode(versionName) {
 }
 
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'com.google.gms.google-services'
-    id 'com.google.firebase.crashlytics'
+    id('com.android.application')
+    id('org.jetbrains.kotlin.android')
+    id('com.google.gms.google-services')
+    id('com.google.firebase.crashlytics')
 }
 
 android {
     namespace 'com.devusercode.upchat'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId 'com.devusercode.upchat'
@@ -64,35 +64,37 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
-        coreLibraryDesugaringEnabled true
+        // coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
         jvmTarget = '17'
     }
+
+    buildToolsVersion '35.0.1'
 }
 
 dependencies {
     implementation(fileTree(dir: 'libs', include: ['*.jar']))
 
     // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:33.13.0')
+    implementation platform('com.google.firebase:firebase-bom:34.4.0')
 
-    implementation 'com.google.firebase:firebase-auth-ktx'
-    implementation 'com.google.firebase:firebase-database-ktx'
-    implementation 'com.google.firebase:firebase-messaging-ktx'
-    implementation 'com.google.firebase:firebase-config-ktx'
-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
-    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-config'
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
 
     implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
     implementation 'com.firebaseui:firebase-ui-database:8.0.2'
     implementation 'com.firebaseui:firebase-ui-storage:8.0.2'
 
-    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'com.google.android.material:material:1.13.0'
 
-    implementation 'androidx.core:core-ktx:1.13.1'
-    implementation 'androidx.activity:activity-ktx:1.9.1'
+    implementation 'androidx.core:core-ktx:1.17.0'
+    implementation 'androidx.activity:activity-ktx:1.11.0'
 
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.lifecycle:lifecycle-process:2.7.0'
@@ -116,8 +118,8 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1'
 
     // Libsignal for
-    coreLibraryDesugaring 'org.signal:libsignal-android:0.71.0'
-    implementation 'org.signal:libsignal-client:0.71.0'
+    // coreLibraryDesugaring 'org.signal:libsignal-android:0.71.0'
+    // implementation 'org.signal:libsignal-client:0.71.0'
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 }
