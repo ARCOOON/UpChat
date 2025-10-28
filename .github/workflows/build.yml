@@ -126,7 +126,7 @@ jobs:
         with:
           name: gradle-problem-report
           path: |
-            build/reports/problems/problems-report.html
-            build/reports/problems/
+            ${{ github.workspace }}/app/build/reports/problems/problems-report.html
+            ${{ github.workspace }}/app/build/reports/problems/
           if-no-files-found: warn
           retention-days: 7
