@@ -1,4 +1,4 @@
-<resources>
+<resources tools:ignore="MissingTranslation">
     <string name="app_name" translatable="false">UpChat</string>
     <string name="app_version" translatable="false">1.2.3-alpha</string>
     <string name="developer_name" translatable="false">DevUserCode</string>
