@@ -39,10 +39,10 @@ class StorageController private constructor(context: Context) {
 
     init {
         try {
-            val masterKey = MasterKey.Builder(appContext)
+            masterKeyAlias = buildMasterKeyAlias(appContext)
+            MasterKey.Builder(appContext, masterKeyAlias)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .build()
-            masterKeyAlias = masterKey.keyAlias
             keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
         } catch (e: GeneralSecurityException) {
             throw IllegalStateException("Failed to initialize secure storage", e)
@@ -71,6 +71,10 @@ class StorageController private constructor(context: Context) {
     private fun getSecretKey(): SecretKey {
         return (keyStore.getEntry(masterKeyAlias, null) as? KeyStore.SecretKeyEntry)?.secretKey
             ?: throw IllegalStateException("Master key entry missing for alias: $masterKeyAlias")
+    }
+
+    private fun buildMasterKeyAlias(context: Context): String {
+        return "${context.packageName}.secure.datastore.masterkey"
     }
 
     private fun encrypt(plainText: String): String {
