@@ -42,7 +42,7 @@ class StorageController private constructor(context: Context) {
             val masterKey = MasterKey.Builder(appContext)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .build()
-            masterKeyAlias = masterKey.alias
+            masterKeyAlias = masterKey.keyAlias
             keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
         } catch (e: GeneralSecurityException) {
             throw IllegalStateException("Failed to initialize secure storage", e)

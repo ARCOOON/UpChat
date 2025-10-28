@@ -302,11 +302,11 @@ class ConversationActivity : AppCompatActivity() {
             conversationId,
             user!!,
             participant!!,
-            onSuccess = { secret ->
+            onSuccess = success@{ secret ->
                 if (previousSecret == secret && ::conversationUtil.isInitialized) {
                     conversationSecret = secret
                     adapter?.setConversationSecret(secret)
-                    return@onSuccess
+                    return@success
                 }
 
                 conversationSecret = secret
