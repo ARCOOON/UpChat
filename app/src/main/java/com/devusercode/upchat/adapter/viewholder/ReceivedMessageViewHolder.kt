@@ -11,6 +11,7 @@ import com.devusercode.upchat.R
 import com.devusercode.upchat.models.Message
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.security.MAC
+import com.devusercode.upchat.security.MessageIntegrity
 import com.devusercode.upchat.utils.GetTimeAgo
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -31,24 +32,25 @@ class ReceivedMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         verified = view.findViewById(R.id.message_verified)
     }
 
-    fun bind(model: Message, cid: String, uid: String) {
-        val aes = AES(uid)
-        val mac = MAC(cid)
+    fun bind(model: Message, cid: String, sharedSecret: String) {
+        val aes = AES(sharedSecret, cid)
+        val mac = MAC(sharedSecret, cid)
 
-        val messageDecrypted = aes.decrypt(model.message!!)
+        val decrypted = model.message?.let { aes.decrypt(it) } ?: ""
+        val payload = MessageIntegrity.canonicalize(model, cid)
+        val hasMac = model.mac != null
+        val isVerified = mac.verify(payload, model.mac)
 
-        if (model.mac != null) {
-            val messageMac = mac.generate(messageDecrypted)
-            val verify = mac.verifyMAC(model.mac!!, messageMac)
-
-            if (verify) {
-                verified.setImageResource(R.drawable.ic_verified_white)
-            } else {
-                verified.setImageResource(R.drawable.ic_round_error_white)
-            }
+        if (hasMac) {
+            verified.visibility = View.VISIBLE
+            verified.setImageResource(
+                if (isVerified) R.drawable.ic_verified_white else R.drawable.ic_round_error_white
+            )
+        } else {
+            verified.visibility = View.GONE
         }
 
-        message.text = messageDecrypted
+        message.text = decrypted
         time.text = GetTimeAgo.parse(model.timestamp!!)
     }
 }
