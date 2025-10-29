@@ -34,6 +34,7 @@ jobs:
     env:
       JAVA_VERSION: "17"
       GRADLE_USER_HOME: ~/.gradle
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
     steps:
       - name: Checkout branch
@@ -77,13 +78,13 @@ jobs:
         run: echo $google_service && echo $google_service > ${{ github.workspace }}/app/google-services.json && ls ${{ github.workspace }}/app/
 
       - name: Cleaning builds
-        run: ./gradlew --no-daemon --no-build-cache clean
+        run: ./gradlew --no-build-cache clean
 
       - name: Run gradle checks
-        run: ./gradlew --no-daemon --no-build-cache check
+        run: ./gradlew --no-build-cache check
 
       - name: Run gradle tests
-        run: ./gradlew --no-daemon --no-build-cache test
+        run: ./gradlew --no-build-cache test
 
       - name: Building App Release (APK)
         id: release_apk
