@@ -14,14 +14,31 @@ on:
   workflow_dispatch: { }
 
 jobs:
-  build:
+  determine-runner:
     runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.set-runner.outputs.use-runner }}
+    steps:
+      - name: Determine which runner to use
+        id: set-runner
+        uses: jimmygchen/runner-fallback-action@v1
+        with:
+          primary-runner: "self-hosted,windows"
+          fallback-runner: "ubuntu-latest"
+          github-token: ${{ secrets.YOUR_GITHUB_TOKEN }}
+
+  build:
+    needs: determine-runner
+    runs-on: ${{ fromJson(needs.determine-runner.outputs.runner) }} # ubuntu-latest
 
     env:
       JAVA_VERSION: "17"
       GRADLE_USER_HOME: ~/.gradle
 
     steps:
+      - name: Do something
+        run: echo "Using Runner:\ ${{ needs.determine-runner.outputs.runner }}"
+
       - name: Checkout branch
         uses: actions/checkout@v4
         with:
