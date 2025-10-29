@@ -2,6 +2,7 @@
 <resources>
     <string name="view_all_users__no_user_available">Kein Benutzer verfügbar</string>
     <string name="conversation__status_online">online</string>
+    <string name="conversation__error_generic">Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.</string>
     <string name="my_profile__toolbar_title">Mein Profil</string>
     <string name="my_profile__app_version">v%1$s</string>
     <string name="my_profile__unknown_version">Unbekannte Version</string>

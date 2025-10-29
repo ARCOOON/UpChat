@@ -80,13 +80,17 @@ class StorageController private constructor(context: Context) {
     private fun encrypt(plainText: String): String {
         return try {
             val cipher = Cipher.getInstance(AES_GCM)
+
             cipher.init(Cipher.ENCRYPT_MODE, getSecretKey())
+
             val iv = cipher.iv
             val cipherBytes = cipher.doFinal(plainText.toByteArray(Charsets.UTF_8))
             val payload = ByteBuffer.allocate(Int.SIZE_BYTES + iv.size + cipherBytes.size)
+
             payload.putInt(iv.size)
             payload.put(iv)
             payload.put(cipherBytes)
+
             Base64.encodeToString(payload.array(), Base64.NO_WRAP)
         } catch (e: GeneralSecurityException) {
             throw IllegalStateException("Failed to encrypt value", e)
@@ -98,11 +102,15 @@ class StorageController private constructor(context: Context) {
             val payload = ByteBuffer.wrap(Base64.decode(encrypted, Base64.NO_WRAP))
             val ivLength = payload.int
             val iv = ByteArray(ivLength)
+
             payload.get(iv)
+
             val cipherBytes = ByteArray(payload.remaining())
             payload.get(cipherBytes)
+
             val cipher = Cipher.getInstance(AES_GCM)
             cipher.init(Cipher.DECRYPT_MODE, getSecretKey(), GCMParameterSpec(GCM_TAG_LENGTH, iv))
+
             val plainBytes = cipher.doFinal(cipherBytes)
             String(plainBytes, Charsets.UTF_8)
         } catch (e: GeneralSecurityException) {
@@ -126,6 +134,7 @@ class StorageController private constructor(context: Context) {
         val prefKey = stringPreferencesKey(key)
         val preferences = dataStore.data.first()
         val encrypted = preferences[prefKey] ?: return null
+
         return runCatching { decrypt(encrypted) }
             .onFailure { Log.e(LOG_TAG, "Removing corrupt entry for $key", it) }
             .getOrElse {

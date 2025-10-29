@@ -2,11 +2,7 @@
     <string name="app_name" translatable="false">UpChat</string>
     <string name="app_version" translatable="false">1.2.3-alpha</string>
     <string name="developer_name" translatable="false">DevUserCode</string>
-
-    <!-- View all users activity -->
     <string name="view_all_users__no_user_available">No User Available</string>
-
-    <!-- Conversation activity -->
     <string name="conversation__status_online">online</string>
     <string name="conversation__error_generic">Something went wrong. Please try again.</string>
     <string name="my_profile__toolbar_title">My Profile</string>

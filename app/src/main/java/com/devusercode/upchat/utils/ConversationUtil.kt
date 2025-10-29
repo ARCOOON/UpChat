@@ -119,7 +119,7 @@ class ConversationUtil(
             rootRef.updateChildren(updates)
                 .addOnSuccessListener { completion.setResult(conversationId) }
                 .addOnFailureListener { error ->
-                    completion.setException(error ?: Exception("Unknown error creating conversation"))
+                    completion.setException(error)
                 }
 
             return completion.task
@@ -199,8 +199,8 @@ class ConversationUtil(
         data[Key.Message.TYPE] = MessageTypes.TEXT.toString()
         data[Key.Message.SENDER_ID] = user.uid
         data[Key.Message.TIMESTAMP] = System.currentTimeMillis().toString()
-        user.username?.let { data[Key.User.USERNAME] = it }
-        user.deviceId?.let { data[Key.User.DEVICE_ID] = it }
+        user.username.let { data[Key.User.USERNAME] = it }
+        user.deviceId.let { data[Key.User.DEVICE_ID] = it }
 
         val payloadValues = HashMap(data)
         payloadValues[Key.Conversation.CONVERSATION_ID] = cid

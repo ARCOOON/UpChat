@@ -47,7 +47,7 @@ class UpdateHelper private constructor(
                 val newUpdateUrl = "$appRepo/releases/download/$appVersion/$baseFilename-$appVersion.apk"
                 val filename = "$baseFilename-$appVersion.apk"
 
-                Log.d(TAG, "installed version: $installedVersion")
+                Log.d(TAG, "local version: $installedVersion")
                 Log.d(TAG, "server version: $appVersion")
                 // Log.d(TAG, "update url: $newUpdateUrl")
 

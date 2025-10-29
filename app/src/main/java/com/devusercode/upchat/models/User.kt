@@ -5,14 +5,14 @@ import java.util.Date
 import java.util.Locale
 
 data class User(
-    var deviceId: String? = null,
-    var deviceToken: String? = null,
-    var email: String? = null,
-    var joined: String? = null,
-    var online: String? = null,
-    var username: String? = null,
-    var uid: String? = null,
-    var photoUrl: String? = null,
+    var deviceId: String = "",
+    var deviceToken: String = "",
+    var email: String = "",
+    var joined: String = "",
+    var online: String = "",
+    var username: String = "",
+    var uid: String = "",
+    var photoUrl: String = "",
     var conversations: Map<String, String>? = null,
     var publicKey: String? = null
 ) {

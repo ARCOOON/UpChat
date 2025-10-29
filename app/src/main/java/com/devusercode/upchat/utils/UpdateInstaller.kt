@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import java.io.File
+import androidx.core.net.toUri
 
 @RequiresApi(Build.VERSION_CODES.O)
 class UpdateInstaller(private val context: Context) {
@@ -33,9 +34,9 @@ class UpdateInstaller(private val context: Context) {
     private fun requestInstallPermissions() {
         val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
         val packageName = String.format("package:%s", context.packageName)
-        val packageURI = Uri.parse(packageName)
+        val packageURI = packageName.toUri()
 
-        intent.setData(packageURI)
+        intent.data = packageURI
 
         context.startActivity(intent)
     }
