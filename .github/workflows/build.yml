@@ -36,8 +36,6 @@ jobs:
       GRADLE_USER_HOME: ~/.gradle
 
     steps:
-      - name: Using Runner ${{ needs.determine-runner.outputs.runner }}
-
       - name: Checkout branch
         uses: actions/checkout@v4
         with:
