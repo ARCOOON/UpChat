@@ -23,7 +23,7 @@ jobs:
         id: set-runner
         uses: jimmygchen/runner-fallback-action@v1
         with:
-          primary-runner: "self-hosted,windows"
+          primary-runner: "self-hosted"
           fallback-runner: "ubuntu-latest"
           github-token: ${{ secrets.SELF_HOSTED_TOKEN }}
 
