@@ -44,7 +44,6 @@ object ConversationKeyManager {
         }
 
         val storage = StorageController.getInstance(context)
-        @Suppress("SENSELESS_COMPARISON")
         if (storage == null) {
             onError(IllegalStateException("Secure storage unavailable"))
             return

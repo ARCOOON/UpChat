@@ -1,14 +1,16 @@
 package com.devusercode.upchat.utils
 
 import android.content.Context
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
 import android.util.Base64
 import android.util.Log
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStoreFile
-import androidx.security.crypto.MasterKey
 import com.devusercode.upchat.models.User
 import com.google.gson.Gson
 import java.io.IOException
@@ -16,6 +18,7 @@ import java.nio.ByteBuffer
 import java.security.GeneralSecurityException
 import java.security.KeyStore
 import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +26,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 
 class StorageController private constructor(context: Context) {
 
@@ -40,10 +42,8 @@ class StorageController private constructor(context: Context) {
     init {
         try {
             masterKeyAlias = buildMasterKeyAlias(appContext)
-            MasterKey.Builder(appContext, masterKeyAlias)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
             keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
+            ensureMasterKey()
         } catch (e: GeneralSecurityException) {
             throw IllegalStateException("Failed to initialize secure storage", e)
         } catch (e: IOException) {
@@ -68,6 +68,28 @@ class StorageController private constructor(context: Context) {
         }
     }
 
+    private fun ensureMasterKey() {
+        if (keyStore.containsAlias(masterKeyAlias)) {
+            val entry = keyStore.getEntry(masterKeyAlias, null)
+            if (entry is KeyStore.SecretKeyEntry) {
+                return
+            }
+            keyStore.deleteEntry(masterKeyAlias)
+        }
+
+        val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
+        val parameterSpec = KeyGenParameterSpec.Builder(
+            masterKeyAlias,
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+        )
+            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+            .setKeySize(256)
+            .build()
+        keyGenerator.init(parameterSpec)
+        keyGenerator.generateKey()
+    }
+
     private fun getSecretKey(): SecretKey {
         return (keyStore.getEntry(masterKeyAlias, null) as? KeyStore.SecretKeyEntry)?.secretKey
             ?: throw IllegalStateException("Master key entry missing for alias: $masterKeyAlias")
@@ -80,17 +102,13 @@ class StorageController private constructor(context: Context) {
     private fun encrypt(plainText: String): String {
         return try {
             val cipher = Cipher.getInstance(AES_GCM)
-
             cipher.init(Cipher.ENCRYPT_MODE, getSecretKey())
-
             val iv = cipher.iv
             val cipherBytes = cipher.doFinal(plainText.toByteArray(Charsets.UTF_8))
             val payload = ByteBuffer.allocate(Int.SIZE_BYTES + iv.size + cipherBytes.size)
-
             payload.putInt(iv.size)
             payload.put(iv)
             payload.put(cipherBytes)
-
             Base64.encodeToString(payload.array(), Base64.NO_WRAP)
         } catch (e: GeneralSecurityException) {
             throw IllegalStateException("Failed to encrypt value", e)
@@ -102,15 +120,11 @@ class StorageController private constructor(context: Context) {
             val payload = ByteBuffer.wrap(Base64.decode(encrypted, Base64.NO_WRAP))
             val ivLength = payload.int
             val iv = ByteArray(ivLength)
-
             payload.get(iv)
-
             val cipherBytes = ByteArray(payload.remaining())
             payload.get(cipherBytes)
-
             val cipher = Cipher.getInstance(AES_GCM)
             cipher.init(Cipher.DECRYPT_MODE, getSecretKey(), GCMParameterSpec(GCM_TAG_LENGTH, iv))
-
             val plainBytes = cipher.doFinal(cipherBytes)
             String(plainBytes, Charsets.UTF_8)
         } catch (e: GeneralSecurityException) {
@@ -134,7 +148,6 @@ class StorageController private constructor(context: Context) {
         val prefKey = stringPreferencesKey(key)
         val preferences = dataStore.data.first()
         val encrypted = preferences[prefKey] ?: return null
-
         return runCatching { decrypt(encrypted) }
             .onFailure { Log.e(LOG_TAG, "Removing corrupt entry for $key", it) }
             .getOrElse {

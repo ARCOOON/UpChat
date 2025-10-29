@@ -26,6 +26,8 @@ import com.devusercode.upchat.utils.QRCode
 import com.devusercode.upchat.utils.StorageController
 import com.devusercode.upchat.utils.UserUtils
 import com.devusercode.upchat.utils.Util
+import com.devusercode.upchat.utils.applyActivityCloseAnimation
+import com.devusercode.upchat.utils.applyActivityOpenAnimation
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.FirebaseApp
@@ -75,12 +77,12 @@ class MyProfileActivity : AppCompatActivity() {
 
     override fun startActivity(intent: Intent) {
         super.startActivity(intent)
-        overridePendingTransition(R.anim.right_in, R.anim.left_out)
+        applyActivityOpenAnimation(R.anim.right_in, R.anim.left_out)
     }
 
     override fun finish() {
         super.finish()
-        overridePendingTransition(R.anim.left_in, R.anim.right_out)
+        applyActivityCloseAnimation(R.anim.left_in, R.anim.right_out)
     }
 
     private fun initialize(savedInstanceState: Bundle?) {
