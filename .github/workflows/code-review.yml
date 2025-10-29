@@ -18,10 +18,7 @@ jobs:
       - name: Shippie 🚢
         uses: mattzcarey/shippie@v0.10.0
         with:
-          TELEMETRY: "false"
           REVIEW_LANGUAGE: "English"
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          GITHUB_SHA: ${{ github.sha }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           MODEL_STRING: "openai:gpt-5"
