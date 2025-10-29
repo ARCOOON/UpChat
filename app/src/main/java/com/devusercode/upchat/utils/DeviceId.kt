@@ -8,7 +8,6 @@ object DeviceId {
     private const val TAG = "DeviceId"
 
     @RequiresApi(Build.VERSION_CODES.O)
-
     fun getId(): String {
         /*
         val cpuABI: Int = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {

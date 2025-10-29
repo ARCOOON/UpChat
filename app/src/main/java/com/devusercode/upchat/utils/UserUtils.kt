@@ -1,8 +1,6 @@
 package com.devusercode.upchat.utils
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.devusercode.upchat.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -46,7 +44,7 @@ class UserUtils {
                 this.code = code
             }
 
-            constructor(user: User?) {
+            constructor(user: User) {
                 this.user = user
                 error = null
             }
@@ -55,7 +53,7 @@ class UserUtils {
                 get() = error == null && user != null && code == ErrorCodes.SUCCESS
         }
 
-        fun getUserByUid(uid: String, onFinish: Consumer<Result>?) {
+        fun getUserByUid(uid: String, onFinish: Consumer<Result>) {
             val usersRef = FirebaseDatabase.getInstance().getReference(REF).child(uid)
 
             CoroutineScope(Dispatchers.IO).launch {
@@ -67,18 +65,18 @@ class UserUtils {
 
                         if (user != null) {
                             withContext(Dispatchers.Main) {
-                                onFinish?.accept(Result(user, ErrorCodes.SUCCESS))
+                                onFinish.accept(Result(user, ErrorCodes.SUCCESS))
                             }
                         } else {
                             val error = Error("Unknown error while retrieving User ($uid)")
                             withContext(Dispatchers.Main) {
-                                onFinish?.accept(Result(null, error, ErrorCodes.UNKNOWN_ERROR))
+                                onFinish.accept(Result(null, error, ErrorCodes.UNKNOWN_ERROR))
                             }
                         }
                     } else {
                         val error = Error("User not found ($uid)")
                         withContext(Dispatchers.Main) {
-                            onFinish?.accept(Result(null, error, ErrorCodes.USER_NOT_FOUND))
+                            onFinish.accept(Result(null, error, ErrorCodes.USER_NOT_FOUND))
                         }
                     }
                 } catch (exception: Exception) {

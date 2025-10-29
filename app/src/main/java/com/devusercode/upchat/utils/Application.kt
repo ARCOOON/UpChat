@@ -2,7 +2,6 @@ package com.devusercode.upchat.utils
 
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Process
 import android.util.Log
@@ -35,7 +34,7 @@ class Application : android.app.Application() {
                 applicationContext, 11111, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
             )
 
-            val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val am = getSystemService(ALARM_SERVICE) as AlarmManager
             am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 1000, pendingIntent)
 
             Process.killProcess(Process.myPid())

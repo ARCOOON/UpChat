@@ -29,6 +29,8 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.Random
+import androidx.core.graphics.toColorInt
+import androidx.core.util.size
 
 
 object Util {
@@ -63,7 +65,7 @@ object Util {
     fun createOverlay(context: Context): View {
         // Create a semi-transparent view with black background color
         val overlay = View(context)
-        overlay.setBackgroundColor(Color.parseColor("#80000000")) // 50% opacity
+        overlay.setBackgroundColor("#80000000".toColorInt()) // 50% opacity
 
         // Set the layout parameters to match the parent's size
         overlay.layoutParams = FrameLayout.LayoutParams(
@@ -234,7 +236,7 @@ object Util {
         val result = ArrayList<Double>()
         val checkedPositions = listView.checkedItemPositions
 
-        for (i in 0 until checkedPositions.size()) {
+        for (i in 0 until checkedPositions.size) {
             val position = checkedPositions.keyAt(i)
             if (checkedPositions.valueAt(i)) {
                 result.add(position.toDouble())

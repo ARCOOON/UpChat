@@ -4,30 +4,63 @@ name: Building Release
 on:
   # Trigger on push in main
   push:
-    branches:
-      - main
-      - 'releases/**'
-    tags:
-      - v*
-    # paths: ['app/**']
+    paths:
+      - 'app/**'
+      - 'build.gradle'
+      - 'gradle.properties'
+      - 'settings.gradle'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch: { }
 
 jobs:
-  build:
+  determine-runner:
     runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.set-runner.outputs.use-runner }}
+    steps:
+      - name: Determine which runner to use
+        id: set-runner
+        uses: jimmygchen/runner-fallback-action@v1
+        with:
+          primary-runner: "self-hosted"
+          fallback-runner: "ubuntu-latest"
+          github-token: ${{ secrets.SELF_HOSTED_TOKEN }}
+
+  build:
+    needs: determine-runner
+    runs-on: ${{ fromJson(needs.determine-runner.outputs.runner) }} # ubuntu-latest
+
+    env:
+      JAVA_VERSION: "17"
+      GRADLE_USER_HOME: ~/.gradle
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup JDK 17
+      - name: Setup JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: ${{ env.JAVA_VERSION }}
           distribution: 'oracle'
           cache: 'gradle'
+
+      - name: Wipe Gradle caches (kill stale Kotlin transforms)
+        run: |
+          rm -rf ~/.gradle/caches/*
+          rm -rf ~/.gradle/caches
+          rm -rf ~/.gradle/configuration-cache
+
+      # Official Gradle action. Handles wrapper validation and caching of Gradle User Home.
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: false
+          cache-cleanup: always
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -35,21 +68,23 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.1 extras;google;m2repository extras;android;m2repository'
+          cmdline-tools-version: 12266719 # Command line tools 16.0
           log-accepted-android-sdk-licenses: false
 
       - name: Setup google-services.json
         env:
           google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $google_service > /home/runner/work/UpChat/UpChat/app/google-services.json
+        run: echo $google_service && echo $google_service > ${{ github.workspace }}/app/google-services.json && ls ${{ github.workspace }}/app/
 
       - name: Cleaning builds
-        run: ./gradlew clean
+        run: ./gradlew --no-build-cache clean
 
       - name: Run gradle checks
-        run: ./gradlew check
+        run: ./gradlew --no-build-cache check
 
       - name: Run gradle tests
-        run: ./gradlew test
+        run: ./gradlew --no-build-cache test
 
       - name: Building App Release (APK)
         id: release_apk
@@ -83,7 +118,7 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
-      - name: Copying Linting Results to Output
+      - name: Copying Linting Results
         run: mv ${{ github.workspace }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html
 
       - name: Upload Check Results to Artifacts
@@ -93,3 +128,14 @@ jobs:
           path: ./lint-results-debug.html
           if-no-files-found: ignore
           compression-level: 0
+
+      - name: Upload problem report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-problem-report
+          path: |
+            ${{ github.workspace }}/app/build/reports/problems/problems-report.html
+            ${{ github.workspace }}/app/build/reports/problems/
+          if-no-files-found: warn
+          retention-days: 7

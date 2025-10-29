@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "UpChat Kotlin"
+rootProject.name = "UpChat"
 include ':app'
