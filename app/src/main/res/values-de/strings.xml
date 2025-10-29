@@ -50,4 +50,7 @@
     <string name="layout_item_user__email">Email</string>
     <string name="home_last_message_photo">Bild</string>
     <string name="layout_item_conversation_popup__message_info">Info</string>
+    <string name="start__update_dialog_title">Neue App-Version</string>
+    <string name="start__update_downloading">Update wird heruntergeladen…</string>
+    <string name="start__update_download_progress">Update wird heruntergeladen… %1$d%%</string>
 </resources>
