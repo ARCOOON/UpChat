@@ -74,7 +74,7 @@ jobs:
       - name: Setup google-services.json
         env:
           google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $google_service > /home/runner/work/UpChat/UpChat/app/google-services.json
+        run: echo $google_service && echo $google_service > ${{ github.workspace }}/app/google-services.json && ls ${{ github.workspace }}/app/
 
       - name: Cleaning builds
         run: ./gradlew --no-daemon --no-build-cache clean
@@ -83,7 +83,7 @@ jobs:
         run: ./gradlew --no-daemon --no-build-cache check
 
       - name: Run gradle tests
-        run: ./gradlew test
+        run: ./gradlew --no-daemon --no-build-cache test
 
       - name: Building App Release (APK)
         id: release_apk
