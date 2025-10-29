@@ -1,8 +1,11 @@
 name: Shippie 🚢 - Code Review
 
+# on:
+#   pull_request:
+#     branches: [main]
+
 on:
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   run_code_review:
