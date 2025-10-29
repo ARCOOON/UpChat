@@ -19,6 +19,7 @@ import com.devusercode.upchat.models.UserPair
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.utils.ConversationUtil
 import com.google.android.material.card.MaterialCardView
+import androidx.core.net.toUri
 
 @RequiresApi(Build.VERSION_CODES.O)
 class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeAdapter.HomeViewHolder>() {
@@ -46,21 +47,12 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
     }
 
     class HomeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var username: TextView
-        private var lastMessageText: TextView
-        private var lastMessageTime: TextView
-        private var materialCardView: MaterialCardView
-        private var profileImage: ImageView
-        private var onlineStatus: ImageView
-
-        init {
-            materialCardView = view.findViewById(R.id.materialcardview1)
-            profileImage = view.findViewById(R.id.profile_image)
-            onlineStatus = view.findViewById(R.id.online_status)
-            username = view.findViewById(R.id.username)
-            lastMessageText = view.findViewById(R.id.last_message_text)
-            lastMessageTime = view.findViewById(R.id.last_message_time)
-        }
+        var username: TextView = view.findViewById(R.id.username)
+        private var lastMessageText: TextView = view.findViewById(R.id.last_message_text)
+        private var lastMessageTime: TextView = view.findViewById(R.id.last_message_time)
+        private var materialCardView: MaterialCardView = view.findViewById(R.id.materialcardview1)
+        private var profileImage: ImageView = view.findViewById(R.id.profile_image)
+        private var onlineStatus: ImageView = view.findViewById(R.id.online_status)
 
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(pair: UserPair) {
@@ -77,7 +69,7 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
 
             if (user.photoUrl!!.isNotEmpty()) {
                 Glide.with(profileImage.context)
-                    .load(Uri.parse(user.photoUrl))
+                    .load(user.photoUrl?.toUri())
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .placeholder(R.drawable.ic_account_circle_black)
                     .circleCrop()

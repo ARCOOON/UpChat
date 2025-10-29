@@ -4,7 +4,7 @@ enum class MessageStatus {
     SENT, READ, UNKNOWN;
 
     companion object {
-        private val typeMap = MessageStatus.values().associateBy { it.toString().lowercase() }
+        private val typeMap = entries.associateBy { it.toString().lowercase() }
 
         fun parse(data: Any?): MessageStatus {
             return when (data) {
@@ -19,7 +19,7 @@ enum class MessageTypes {
     TEXT, AUDIO, IMAGE, FILE, UNKNOWN;
 
     companion object {
-        private val typeMap = values().associateBy { it.toString().lowercase() }
+        private val typeMap = entries.associateBy { it.toString().lowercase() }
 
         fun parse(data: Any?): MessageTypes {
             return when (data) {

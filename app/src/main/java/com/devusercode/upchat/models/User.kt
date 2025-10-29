@@ -21,8 +21,8 @@ data class User(
     fun getUids(): List<String> = conversations?.keys?.toList() ?: emptyList()
 
     val formattedJoined: String
-        get() = joined?.let {
-            val date = Date(it.toLong())
+        get() = joined.let {
+            val date = Date(it!!.toLong())
             SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(date)
         } ?: ""
 

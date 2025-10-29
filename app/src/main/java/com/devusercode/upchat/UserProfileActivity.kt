@@ -36,8 +36,8 @@ class UserProfileActivity : AppCompatActivity() {
                     val userIdView = findViewById<TextView>(R.id.uid)
                     val joinedView = findViewById<TextView>(R.id.joined)
 
-                    if (user.photoUrl.isNotEmpty()) {
-                        Glide.with(this).load(user.photoUrl.toUri())
+                    if (user.photoUrl!!.isNotEmpty()) {
+                        Glide.with(this).load(user.photoUrl!!.toUri())
                             .placeholder(R.drawable.ic_account_circle_black).circleCrop()
                             .into(profileImage)
                     } else {

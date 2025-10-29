@@ -1,6 +1,5 @@
 package com.devusercode.upchat.adapter.viewholder
 
-import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -8,6 +7,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -55,7 +55,7 @@ class ReceivedImageViewHolder(private var view: View) : RecyclerView.ViewHolder(
         Log.d(TAG, "Url: ${model.url}")
 
         Glide.with(view.context)
-            .load(Uri.parse(model.url))
+            .load(model.url?.toUri())
             .override(700, 900)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .fitCenter()

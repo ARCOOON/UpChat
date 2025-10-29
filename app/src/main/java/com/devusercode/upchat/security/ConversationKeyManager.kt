@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
 
+
 object ConversationKeyManager {
     private const val TAG = "ConversationKeyManager"
     private const val STORAGE_PUBLIC_KEY = "crypto.publicKey"
@@ -44,6 +45,7 @@ object ConversationKeyManager {
         }
 
         val storage = StorageController.getInstance(context)
+        @Suppress("SENSELESS_COMPARISON")
         if (storage == null) {
             onError(IllegalStateException("Secure storage unavailable"))
             return
