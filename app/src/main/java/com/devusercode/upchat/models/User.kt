@@ -13,7 +13,8 @@ data class User(
     var username: String? = null,
     var uid: String? = null,
     var photoUrl: String? = null,
-    var conversations: Map<String, String>? = null
+    var conversations: Map<String, String>? = null,
+    var publicKey: String? = null
 ) {
     fun getConversationIds(): List<String> = conversations?.values?.toList() ?: emptyList()
 
@@ -33,6 +34,7 @@ data class User(
             "email" to email,
             "uid" to uid,
             "photoUrl" to photoUrl,
+            "publicKey" to publicKey,
             "joined" to joined,
             "online" to online,
             "conversations" to conversations

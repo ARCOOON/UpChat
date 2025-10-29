@@ -4,7 +4,6 @@ import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.AlertDialog
-import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,6 +15,8 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.devusercode.upchat.utils.applyActivityCloseAnimation
+import com.devusercode.upchat.utils.applyActivityOpenAnimation
 import com.devusercode.upchat.utils.UpdateHelper
 import com.devusercode.upchat.utils.UpdateInstaller
 import com.devusercode.upchat.utils.UserUtils
@@ -44,12 +45,12 @@ class StartActivity : AppCompatActivity(), UpdateHelper.OnUpdateCheckListener {
 
     override fun startActivity(intent: Intent?) {
         super.startActivity(intent)
-        overridePendingTransition(R.anim.right_in, R.anim.left_out)
+        applyActivityOpenAnimation(R.anim.right_in, R.anim.left_out)
     }
 
     override fun finish() {
         super.finish()
-        overridePendingTransition(R.anim.left_in, R.anim.right_out)
+        applyActivityCloseAnimation(R.anim.left_in, R.anim.right_out)
     }
 
     private fun initialize() {
@@ -109,31 +110,66 @@ class StartActivity : AppCompatActivity(), UpdateHelper.OnUpdateCheckListener {
         val filePath = "${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_DOWNLOADS}/$filename"
         val outputFile = File(filePath)
 
-        val progressDialog = ProgressDialog(this)
-        progressDialog.setTitle("New App Version")
-        progressDialog.setMessage("Downloading update...")
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-        progressDialog.setCancelable(false)
-        progressDialog.isIndeterminate = false
-        progressDialog.show()
+        val progressUi = DownloadProgressDialog(this)
+        progressUi.show()
 
         val ion = Ion.with(this).load(url)
-        // progress { downloaded, total -> /* Do something with the process */ }
-        ion.progressDialog(progressDialog)
+        ion.progress { downloaded, total ->
+            progressUi.update(downloaded, total)
+        }
         ion.setLogging(TAG, Log.DEBUG)
         ion.write(outputFile)
             .fail { error ->
-                progressDialog.dismiss()
+                progressUi.dismiss()
                 val errorMessage = error.localizedMessage ?: error.message
                 Log.e(TAG, errorMessage.toString())
                 Util.alert(this, "Error downloading update!", errorMessage.toString(), null)
                 throw error
             }
             .success { file ->
-                progressDialog.dismiss()
+                progressUi.dismiss()
                 val updateInstaller = UpdateInstaller(this)
                 updateInstaller.install(file.path)
             }
+    }
+
+    private class DownloadProgressDialog(activity: StartActivity) {
+        private val dialogView = activity.layoutInflater.inflate(R.layout.dialog_download_progress, null)
+        private val progressIndicator: com.google.android.material.progressindicator.LinearProgressIndicator =
+            dialogView.findViewById(R.id.download_progress_indicator)
+        private val progressMessage: android.widget.TextView =
+            dialogView.findViewById(R.id.download_progress_message)
+
+        private val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.start__update_dialog_title)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        fun show() {
+            dialog.show()
+        }
+
+        fun dismiss() {
+            dialog.dismiss()
+        }
+
+        fun update(downloaded: Long, total: Long) {
+            val messageRes = R.string.start__update_downloading
+            if (total <= 0) {
+                progressIndicator.isIndeterminate = true
+                progressMessage.setText(messageRes)
+                return
+            }
+
+            val progress = ((downloaded.toDouble() / total.toDouble()) * 100).toInt().coerceIn(0, 100)
+            progressIndicator.isIndeterminate = false
+            progressIndicator.setProgressCompat(progress, true)
+            progressMessage.text = dialog.context.getString(
+                R.string.start__update_download_progress,
+                progress
+            )
+        }
     }
 
     private fun redirectRepo(urlApp: String) {

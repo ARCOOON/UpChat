@@ -21,6 +21,8 @@ import androidx.appcompat.widget.Toolbar
 import com.devusercode.upchat.utils.DatabaseUtil
 import com.devusercode.upchat.utils.DeviceId
 import com.devusercode.upchat.utils.Util
+import com.devusercode.upchat.utils.applyActivityCloseAnimation
+import com.devusercode.upchat.utils.applyActivityOpenAnimation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -84,12 +86,12 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun startActivity(intent: Intent) {
         super.startActivity(intent)
-        overridePendingTransition(R.anim.right_in, R.anim.left_out)
+        applyActivityOpenAnimation(R.anim.right_in, R.anim.left_out)
     }
 
     override fun finish() {
         super.finish()
-        overridePendingTransition(R.anim.left_in, R.anim.right_out)
+        applyActivityCloseAnimation(R.anim.left_in, R.anim.right_out)
     }
 
     private fun initialize() {

@@ -21,7 +21,7 @@ class MessagingService : FirebaseMessagingService() {
 
         Log.d(TAG, "Message Payload: ${message.data}")
         Log.d(TAG, "Message Notification: ${message.notification}")
-        Log.d(TAG, "Message To: ${message.to}")
+        Log.d(TAG, "Message From: ${message.from}")
 
         val notificationManager =
             getSystemService(NOTIFICATION_SERVICE) as NotificationManager

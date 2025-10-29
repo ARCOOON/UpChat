@@ -97,6 +97,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.lifecycle:lifecycle-process:2.7.0'
     implementation 'androidx.security:security-crypto-ktx:1.1.0-alpha06'
+    implementation 'androidx.datastore:datastore-preferences:1.1.1'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
 
@@ -112,6 +113,7 @@ dependencies {
     implementation 'com.google.zxing:core:3.5.3'
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
     implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1'
 
     // Libsignal for
     coreLibraryDesugaring 'org.signal:libsignal-android:0.71.0'
