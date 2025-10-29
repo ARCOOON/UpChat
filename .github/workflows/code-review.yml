@@ -18,7 +18,7 @@ jobs:
       - name: Shippie 🚢
         uses: mattzcarey/shippie@v0.10.0
         with:
-          TELEMETRY: "false"
+          TELEMETRY: false
           REVIEW_LANGUAGE: "English"
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
