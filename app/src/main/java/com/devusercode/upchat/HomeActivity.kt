@@ -103,6 +103,7 @@ class HomeActivity : AppCompatActivity() {
                 } else {
                     Log.e(TAG, result.error?.message!!)
                     Toast.makeText(this, "Error: ${result.code}", Toast.LENGTH_SHORT).show()
+
                     if (result.code == ErrorCodes.USER_NOT_FOUND) {
                         startActivity(Intent(this, LoginActivity::class.java))
                     }
@@ -131,6 +132,7 @@ class HomeActivity : AppCompatActivity() {
                     Log.e(TAG, task.error?.message!!)
                 } else {
                     val conversation = task.getConversation()
+
                     conversation?.getParticipant { result ->
                         if (!result.isSuccessful) {
                             Log.e(TAG, result.error?.message!!)
@@ -138,6 +140,7 @@ class HomeActivity : AppCompatActivity() {
                             val userPair = UserPair(result.user!!, cid)
                             openConversations?.add(userPair)
                         }
+
                         createAdapter()
                     }
                 }

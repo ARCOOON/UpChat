@@ -6,7 +6,6 @@ on:
   push:
     paths:
       - 'app/**'
-      - 'build.gradle'
       - 'gradle.properties'
       - 'settings.gradle'
 
@@ -72,37 +71,41 @@ jobs:
       - name: Run gradle tests
         run: ./gradlew --no-build-cache --warning-mode summary --info test
 
-      - name: Building App Release (APK)
-        id: release_apk
+      - name: Build Release Artifacts
+        id: build_release
         run: |
+          set -e
+
+          echo "Building APK..."
           ./gradlew assembleRelease --stacktrace
-          apkfile=$(find app/build/outputs/apk/release -name "*.apk" -print -quit)
-          echo "apkfile=$apkfile" >> $GITHUB_ENV
-          echo "apkfile=$apkfile" >> $GITHUB_OUTPUT
+          apk_file=$(find app/build/outputs/apk/release -type f -name "*.apk" -print -quit)
 
-      - name: Build App Bundle Release (AAB)
-        id: release_aab
-        run: |
+          echo "Building AAB..."
           ./gradlew bundleRelease --stacktrace
-          aabfile=$(find app/build/outputs/bundle/release -name "*.aab" -print -quit)
-          echo "aabfile=$aabfile" >> $GITHUB_ENV
-          echo "aabfile=$aabfile" >> $GITHUB_OUTPUT
+          aab_file=$(find app/build/outputs/bundle/release -type f -name "*.aab" -print -quit)
 
-      - name: Upload AAB Release Build
+          echo "APK:  $apk_file"
+          echo "AAB:  $aab_file"
+
+          {
+            echo "apkfile=$apk_file"
+            echo "aabfile=$aab_file"
+          } >> "$GITHUB_ENV"
+
+          {
+            echo "apkfile=$apk_file"
+            echo "aabfile=$aab_file"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload Release Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: AAB
-          path: ${{ steps.release_aab.outputs.aabfile }}
+          name: UpChat-Release
           if-no-files-found: error
           compression-level: 0
-
-      - name: Upload APK Release Build
-        uses: actions/upload-artifact@v4
-        with:
-          name: APK
-          path: ${{ steps.release_apk.outputs.apkfile }}
-          if-no-files-found: error
-          compression-level: 0
+          path: |
+            ${{ steps.build_release.outputs.apkfile }}
+            ${{ steps.build_release.outputs.aabfile }}
 
       - name: Copying Linting Results
         run: mv ${{ github.workspace }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html

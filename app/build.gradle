@@ -15,7 +15,7 @@ plugins {
 
 android {
     namespace 'com.devusercode.upchat'
-    compileSdk 36
+    compileSdkVersion 36
 
     defaultConfig {
         applicationId 'com.devusercode.upchat'
@@ -43,7 +43,7 @@ android {
             debuggable false
             minifyEnabled true
             // signingConfig signingConfigs.debug
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
 
         debug {
@@ -67,8 +67,8 @@ android {
         // coreLibraryDesugaringEnabled true
     }
 
-    kotlinOptions {
-        jvmTarget = '17'
+    kotlin {
+        jvmToolchain(17)
     }
 
     buildToolsVersion '35.0.1'
@@ -78,7 +78,7 @@ dependencies {
     implementation(fileTree(dir: 'libs', include: ['*.jar']))
 
     // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:34.4.0')
+    implementation platform('com.google.firebase:firebase-bom:34.5.0')
 
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
@@ -96,10 +96,10 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.17.0'
     implementation 'androidx.activity:activity-ktx:1.11.0'
 
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.lifecycle:lifecycle-process:2.7.0'
-    implementation 'androidx.security:security-crypto-ktx:1.1.0-alpha06'
-    implementation 'androidx.datastore:datastore-preferences:1.1.1'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.lifecycle:lifecycle-process:2.9.4'
+    implementation 'androidx.security:security-crypto-ktx:1.1.0'
+    implementation 'androidx.datastore:datastore-preferences:1.1.7'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
 
@@ -114,8 +114,8 @@ dependencies {
     // For generating and scanning QR-Code
     implementation 'com.google.zxing:core:3.5.3'
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
-    implementation 'com.google.code.gson:gson:2.11.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1'
+    implementation 'com.google.code.gson:gson:2.13.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
 
     // Libsignal for
     // coreLibraryDesugaring 'org.signal:libsignal-android:0.71.0'
