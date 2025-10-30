@@ -67,10 +67,10 @@ jobs:
         run: ./gradlew --no-build-cache clean
 
       - name: Run gradle checks
-        run: ./gradlew --no-build-cache --warning-mode=summary check
+        run: ./gradlew --no-build-cache --warning-mode summary --info check
 
       - name: Run gradle tests
-        run: ./gradlew --no-build-cache --warning-mode=summary test
+        run: ./gradlew --no-build-cache --warning-mode summary --info test
 
       - name: Building App Release (APK)
         id: release_apk
