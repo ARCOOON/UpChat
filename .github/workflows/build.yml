@@ -16,6 +16,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+
     env:
       JAVA_VERSION: "17"
       GRADLE_USER_HOME: ~/.gradle
@@ -53,7 +56,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          packages: 'platform-tools platforms;android-35 build-tools;35.0.1 extras;google;m2repository extras;android;m2repository'
+          # packages: 'platform-tools platforms;android-35 build-tools;35.0.1 extras;google;m2repository extras;android;m2repository'
           cmdline-tools-version: 12266719 # Command line tools 16.0
           log-accepted-android-sdk-licenses: false
 
