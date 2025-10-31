@@ -14,8 +14,8 @@ plugins {
 }
 
 android {
-    namespace 'com.devusercode.upchat'
-    compileSdkVersion 36
+    namespace = 'com.devusercode.upchat'
+    compileSdkVersion = 36
 
     defaultConfig {
         applicationId 'com.devusercode.upchat'
@@ -25,7 +25,7 @@ android {
         versionCode getVersionCode(versionName)
 
         vectorDrawables {
-            useSupportLibrary true
+            useSupportLibrary = true
         }
     }
 
@@ -52,6 +52,7 @@ android {
             // signingConfig signingConfigs.debug
         }
 
+        /*
         applicationVariants.all { variant ->
             variant.outputs.all {
                 var buildType = variant.name // release | debug
@@ -59,6 +60,7 @@ android {
                 outputFileName = "upchat-${version}-${buildType}.apk"
             }
         }
+         */
     }
 
     compileOptions {
@@ -72,6 +74,18 @@ android {
     }
 
     buildToolsVersion '35.0.1'
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        def buildType = variant.buildType  // "debug" | "release"
+
+        variant.outputs.forEach { output ->
+            // Provider<String>; handle absence safely
+            def version = output.versionName.isPresent() ? output.versionName.get() : "dev"
+            output.outputFileName.set("upchat-${version}-${buildType}.apk")
+        }
+    }
 }
 
 dependencies {
