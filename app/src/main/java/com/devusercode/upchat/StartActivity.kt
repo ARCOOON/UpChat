@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.koushikdutta.ion.Ion
 import java.io.File
+import androidx.core.net.toUri
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -176,7 +177,7 @@ class StartActivity : AppCompatActivity(), UpdateHelper.OnUpdateCheckListener {
         if (urlApp.isEmpty()) {
             return
         }
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlApp))
+        val intent = Intent(Intent.ACTION_VIEW, urlApp.toUri())
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
     }
