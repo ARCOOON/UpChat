@@ -199,12 +199,16 @@ object Util {
     }
 
     fun toggleKeyboard(context: Context, show: Boolean) {
-        val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        val currentFocus = (context as Activity).currentFocus
+        val activity = context as? Activity ?: return
+        val inputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val targetView = activity.currentFocus ?: activity.window?.decorView
+
         if (show) {
-            inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+            targetView?.let { view ->
+                inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+            }
         } else {
-            inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+            inputMethodManager.hideSoftInputFromWindow(targetView?.windowToken, 0)
         }
     }
 

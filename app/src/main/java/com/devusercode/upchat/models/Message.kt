@@ -11,6 +11,8 @@ class Message {
     var mac: String? = null
     var url: String? = null
     var checksum: String? = null
+    var username: String? = null
+    var deviceId: String? = null
     var seen: MessageStatus = MessageStatus.UNKNOWN
     var replyId: String = ""
 

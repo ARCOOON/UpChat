@@ -1,22 +1,26 @@
 package com.devusercode.upchat
 
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.Glide
 import com.devusercode.upchat.utils.ErrorCodes
 import com.devusercode.upchat.utils.UserUtils
+import com.devusercode.upchat.utils.setComposeContent
 
 class UserProfileActivity : AppCompatActivity() {
+    private lateinit var contentView: View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user_profile)
+        contentView = setComposeContent(R.layout.activity_user_profile)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val toolbar = contentView.findViewById<Toolbar>(R.id.toolbar)
         val backButton = toolbar.findViewById<Button>(R.id.back_button)
 
         setSupportActionBar(toolbar)
@@ -30,11 +34,11 @@ class UserProfileActivity : AppCompatActivity() {
                 if (result.code == ErrorCodes.SUCCESS) {
                     val user = result.user!!
 
-                    val profileImage = findViewById<ImageView>(R.id.profile_image)
-                    val usernameView = findViewById<TextView>(R.id.username)
-                    val emailView = findViewById<TextView>(R.id.email)
-                    val userIdView = findViewById<TextView>(R.id.uid)
-                    val joinedView = findViewById<TextView>(R.id.joined)
+                    val profileImage = contentView.findViewById<ImageView>(R.id.profile_image)
+                    val usernameView = contentView.findViewById<TextView>(R.id.username)
+                    val emailView = contentView.findViewById<TextView>(R.id.email)
+                    val userIdView = contentView.findViewById<TextView>(R.id.uid)
+                    val joinedView = contentView.findViewById<TextView>(R.id.joined)
 
                     if (user.photoUrl!!.isNotEmpty()) {
                         Glide.with(this).load(Uri.parse(user.photoUrl))
