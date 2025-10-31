@@ -108,7 +108,7 @@ jobs:
             ${{ steps.build_release.outputs.aabfile }}
 
       - name: Copying Linting Results
-        run: mv ${{ github.workspace }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html
+        run: cp ${{ github.workspace }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html
 
       - name: Upload Check Results to Artifacts
         uses: actions/upload-artifact@v4
@@ -116,6 +116,7 @@ jobs:
           name: Linting_Result
           path: ./lint-results-debug.html
           if-no-files-found: ignore
+          retention-days: 7
           compression-level: 0
 
       - name: Upload problem report on failure
@@ -126,5 +127,6 @@ jobs:
           path: |
             ${{ github.workspace }}/app/build/reports/problems/problems-report.html
             ${{ github.workspace }}/app/build/reports/problems/
-          if-no-files-found: warn
+          if-no-files-found: ignore
           retention-days: 7
+          compression-level: 0
