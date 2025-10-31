@@ -15,19 +15,14 @@ import androidx.core.net.toUri
 @RequiresApi(Build.VERSION_CODES.O)
 class UpdateInstaller(private val context: Context) {
     fun install(filePath: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (context.packageManager.canRequestPackageInstalls()) {
-                // Permissions are granted, proceed with installation
-                performInstall(filePath)
-            } else {
-                // Request install permissions
-                requestInstallPermissions().run { performInstall(filePath) }
-                // -> Install permissions granted
-                // -> Perform installation
-            }
-        } else {
-            // Continue with the installation on older Android versions
+        if (context.packageManager.canRequestPackageInstalls()) {
+            // Permissions are granted, proceed with installation
             performInstall(filePath)
+        } else {
+            // Request install permissions
+            requestInstallPermissions().run { performInstall(filePath) }
+            // -> Install permissions granted
+            // -> Perform installation
         }
     }
 
