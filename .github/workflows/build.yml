@@ -69,10 +69,10 @@ jobs:
         run: ./gradlew --no-build-cache clean
 
       - name: Run gradle checks
-        run: ./gradlew --no-build-cache --warning-mode summary --info check
+        run: ./gradlew --no-build-cache --warning-mode summary check
 
       - name: Run gradle tests
-        run: ./gradlew --no-build-cache --warning-mode summary --info test
+        run: ./gradlew --no-build-cache --warning-mode summary test
 
       - name: Build Release Artifacts
         id: build_release
