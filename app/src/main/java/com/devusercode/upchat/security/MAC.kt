@@ -1,49 +1,51 @@
 package com.devusercode.upchat.security
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.util.Base64
+import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
-import java.util.Base64
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 /**
- * **MessageAuthenticationCode**
- *
- * This uses the HMAC-SHA256 algorithm for generating and verifying the MAC.
- * It converts the MAC bytes to Base64 encoding for easy representation and comparison.
- * The the result from verify will be true if the MAC verification is successful,
- * indicating that the message integrity is maintained.
+ * Provides HMAC-SHA256 signing with keys derived from a shared secret using HKDF.
  */
-class MAC(private val secretKey: String) {
+class MAC(private val sharedSecret: String, private val salt: String) {
     private val macAlgorithm = "HmacSHA256"
+    private val keySize = 32
+    private val derivedKey: SecretKeySpec by lazy {
+        val keyMaterial = Hkdf.derive(
+            sharedSecret.toByteArray(StandardCharsets.UTF_8),
+            salt.toByteArray(StandardCharsets.UTF_8),
+            "UpChat-MAC-Key".toByteArray(StandardCharsets.UTF_8),
+            keySize
+        )
+        SecretKeySpec(keyMaterial, macAlgorithm)
+    }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun generate(message: String): String {
-        val hmacKey = SecretKeySpec(secretKey.toByteArray(), macAlgorithm)
+    fun generate(payload: String): String {
+        val macBytes = signToBytes(payload)
+        return Base64.encodeToString(macBytes, Base64.NO_WRAP)
+    }
+
+    fun verify(payload: String, receivedMAC: String?): Boolean {
+        if (receivedMAC.isNullOrEmpty()) {
+            return false
+        }
+
+        val expected = signToBytes(payload)
+
+        val received = try {
+            Base64.decode(receivedMAC, Base64.DEFAULT)
+        } catch (e: IllegalArgumentException) {
+            return false
+        }
+
+        return MessageDigest.isEqual(received, expected)
+    }
+
+    private fun signToBytes(payload: String): ByteArray {
         val mac = Mac.getInstance(macAlgorithm)
-
-        mac.init(hmacKey)
-
-        val macBytes = mac.doFinal(message.toByteArray())
-        return Base64.getEncoder().encodeToString(macBytes)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun verify(message: String, receivedMAC: String): Boolean {
-        val expectedMAC = generate(message)
-
-        return MessageDigest.isEqual(
-            Base64.getDecoder().decode(receivedMAC),
-            Base64.getDecoder().decode(expectedMAC)
-        )
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun verifyMAC(receivedMAC: String, generatedMac: String): Boolean {
-        return MessageDigest.isEqual(
-            Base64.getDecoder().decode(receivedMAC),
-            Base64.getDecoder().decode(generatedMac)
-        )
+        mac.init(derivedKey)
+        return mac.doFinal(payload.toByteArray(StandardCharsets.UTF_8))
     }
 }
