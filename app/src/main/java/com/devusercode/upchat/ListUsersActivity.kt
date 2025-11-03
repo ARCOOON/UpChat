@@ -24,7 +24,11 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.zxing.integration.android.IntentIntegrator
+import com.devusercode.upchat.utils.applyActivityCloseAnimation
+import com.devusercode.upchat.utils.applyActivityOpenAnimation
+import com.devusercode.upchat.utils.setComposeContent
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ListUsersActivity : AppCompatActivity() {
@@ -34,6 +38,7 @@ class ListUsersActivity : AppCompatActivity() {
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val users = firebaseDatabase.getReference("users")
 
+    private lateinit var contentView: View
     private lateinit var scanQrcodeButton: Button
     private lateinit var recyclerview1: RecyclerView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -51,7 +56,7 @@ class ListUsersActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         FirebaseApp.initializeApp(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_view_all_users)
+        contentView = setComposeContent(R.layout.activity_view_all_users)
 
         initialize()
         initializeLogic()
@@ -59,44 +64,29 @@ class ListUsersActivity : AppCompatActivity() {
 
     override fun startActivity(intent: Intent) {
         super.startActivity(intent)
-        overridePendingTransition(R.anim.right_in, R.anim.left_out)
+        applyActivityOpenAnimation(R.anim.right_in, R.anim.left_out)
     }
 
     override fun finish() {
         super.finish()
-        overridePendingTransition(R.anim.left_in, R.anim.right_out)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    @Deprecated("Deprecated")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-
-        if (result != null && result.contents != null) {
-            val qrcodeData = result.contents
-            val intent = Intent(this, ConversationActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            intent.putExtra("uid", qrcodeData)
-            startActivity(intent)
-        }
+        applyActivityCloseAnimation(R.anim.left_in, R.anim.right_out)
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initialize() {
         // val appBar = findViewById<AppBarLayout>(R.id.app_bar)
         // val coordinator = findViewById<CoordinatorLayout>(R.id.coordinator)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        val toolbarBackButton = findViewById<Button>(R.id.back_button)
+        val toolbar = contentView.findViewById<Toolbar>(R.id.toolbar)
+        val toolbarBackButton = contentView.findViewById<Button>(R.id.back_button)
 
         toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         setSupportActionBar(toolbar)
 
-        searchView = findViewById(R.id.searchview)
-        noDataAvailableText = findViewById(R.id.no_data_available_text)
-        swipeRefreshLayout = findViewById(R.id.swiperefreshlayout)
-        recyclerview1 = findViewById(R.id.recyclerview1)
-        scanQrcodeButton = findViewById(R.id.scan_qrcode_button)
+        searchView = contentView.findViewById(R.id.searchview)
+        noDataAvailableText = contentView.findViewById(R.id.no_data_available_text)
+        swipeRefreshLayout = contentView.findViewById(R.id.swiperefreshlayout)
+        recyclerview1 = contentView.findViewById(R.id.recyclerview1)
+        scanQrcodeButton = contentView.findViewById(R.id.scan_qrcode_button)
 
         recyclerview1.layoutManager = WrapLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
 
@@ -107,10 +97,14 @@ class ListUsersActivity : AppCompatActivity() {
         }
 
         scanQrcodeButton.setOnClickListener {
-            IntentIntegrator(this).setCaptureActivity(CaptureActivityPortrait::class.java)
-                .setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-                .setPrompt("Scan an QR Code from a Friend").setBeepEnabled(false)
-                .setOrientationLocked(true).initiateScan()
+            val options = ScanOptions().apply {
+                setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+                setPrompt("Scan an QR Code from a Friend")
+                setBeepEnabled(false)
+                setOrientationLocked(true)
+                setCaptureActivity(CaptureActivityPortrait::class.java)
+            }
+            qrScanner.launch(options)
         }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -228,5 +222,14 @@ class ListUsersActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         adapter.stopListening()
+    }
+
+    private val qrScanner = registerForActivityResult(ScanContract()) { result ->
+        val qrcodeData = result.contents ?: return@registerForActivityResult
+        val intent = Intent(this, ConversationActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            putExtra("uid", qrcodeData)
+        }
+        startActivity(intent)
     }
 }
