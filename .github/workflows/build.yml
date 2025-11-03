@@ -63,7 +63,7 @@ jobs:
       - name: Setup google-services.json
         env:
           google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $google_service && echo $google_service > ${{ github.workspace }}/app/google-services.json && ls ${{ github.workspace }}/app/
+        run: echo $google_service > ${{ github.workspace }}/app/google-services.json
 
       - name: Cleaning builds
         run: ./gradlew --no-build-cache clean
