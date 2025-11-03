@@ -1,4 +1,4 @@
-name: Building Release
+name: Building Release (v2)
 
 # Triggers the workflow
 on:
@@ -63,7 +63,7 @@ jobs:
       - name: Setup google-services.json
         env:
           google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $google_service && echo $google_service > ${{ github.workspace }}/app/google-services.json && ls ${{ github.workspace }}/app/
+        run: echo $google_service > ${{ github.workspace }}/app/google-services.json
 
       - name: Cleaning builds
         run: ./gradlew --no-build-cache clean
@@ -99,6 +99,13 @@ jobs:
             echo "apkfile=$apk_file"
             echo "aabfile=$aab_file"
           } >> "$GITHUB_OUTPUT"
+
+          if [ -f "$apk_file" ] && [ -f "$aab_file" ]; then
+            echo ":white_check_mark: Release Builds Finished." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo ":x: Build failed: missing artifact(s)." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
 
       - name: Upload Release Artifacts
         uses: actions/upload-artifact@v4
