@@ -1,49 +1,94 @@
 # UpChat
 
-UpChat is an open source messenger for android.
+UpChat is an open-source, privacy-first messaging application for Android.  
+Modern UI, real-time communication stack, zero-nonsense approach to secure messaging.
 
 [![Latest Build](https://github.com/ARCOOON/UpChat/actions/workflows/build.yml/badge.svg)](https://github.com/ARCOOON/UpChat/actions/workflows/build.yml)
 
-# Development Status for Activities
+---
 
-- [x] Chat
-	- [ ] Send Message
-	- [ ] Send Files
-	- [ ] Send Photos / Videos (Photos supported)
-	- [ ] Send Audio
-	- [ ] Highlight Links
-	- [ ] Message Actions:
- 		- [ ] Delete
-		- [ ] Reply
-  		- [ ] Edit
-	- [ ] Messages Design
+## Key Value
 
-- [ ] Home
-	- [ ] View Chats
-	- [ ] Delete a Conversation
-	- [ ] Home Design
-
-- [ ] Add user
-	- [ ] View all users
-	- [ ] Block users
-	- [ ] View user profile
-	- [ ] Start new Chat
-
-- [ ] Preferences
-	- [ ] Customise message design
-	- [ ] Customise accent color
-	- [ ] Privacy
-		- [ ] Who can message you (everyone / no one)
-		- [ ] Blocked users
-
-- [x] App
-	- [x] Signing Config
- 	- [x] Auto Update (download and install)
+UpChat is built for developers, power users, and security-conscious individuals seeking a transparent and customizable alternative to mainstream messengers.  
+The project focuses on performance, privacy, and modular architecture, enabling long-term maintainability and rapid feature rollout.
 
 ---
 
-**Github**
+## Feature Overview
 
-> - From now on are normal, weekly and daily builds possible.
-> - Another feature are automatic github releases.
-> - And building both apk and bundles.
+### Core Messaging
+| Feature | Status |
+|--------|--------|
+| Real-time chat | ✅ |
+| Send text messages | 🚧 (in development) |
+| File sharing | ❌ |
+| Photo sharing | ✅ Basic |
+| Video sharing | ❌ |
+| Audio messages | ❌ |
+| Link preview & highlighting | ❌ |
+| Reactions, reply, edit, delete | ❌ Planned |
+| End-to-end encryption | ✅ AES-based prototype, evolving |
+
+### App Capabilities
+| Feature | Status |
+|--------|--------|
+| Auto-update (in-app) | ✅ |
+| Release builds: APK + AAB | ✅ |
+| Customizable UI (colors, bubble shape, themes) | 🚧 |
+| Privacy controls (block, allow list) | 🚧 |
+| View all users | 🚧 |
+| User profile views | 🚧 |
+| Conversation deletion | 🚧 |
+| Account management | Planned |
+
+---
+
+## Architecture & Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Platform | Android (Min SDK 28, Target 36) |
+| UI | Jetpack Compose |
+| DI | Hilt |
+| Navigation | Navigation Compose |
+| Backend | Firebase Realtime Database & Firebase Auth |
+| Security | AES encryption + MAC integrity layer |
+| Build | Gradle w/ CI automation |
+| Language | Kotlin |
+
+---
+
+## Project Goals
+
+- Independent open-source communication stack
+- Modern Android design language
+- Strong cryptographic integrity (moving toward fully audited E2E)
+- Fast CI/CD release pipeline
+- Full modularization for maintainability
+- Developer-friendly codebase and documentation
+
+---
+
+## Roadmap (High-Level)
+
+- ✅ Bootstrapped UI and chat core
+- ✅ CI w/ GitHub Actions (APK + AAB)
+- 🚧 Message sending pipeline rewrite
+- 🚧 Fully encrypted messaging lifecycle
+- 🚧 Media sharing pipeline (images, videos, audio)
+- 🚧 Advanced message actions (edit, delete, reply threads)
+- 🚧 Push notifications
+- 🚧 Theming engine + UX polish
+- 📅 Cloud function support for scalable events
+- 📅 Desktop & Web clients (future vision)
+
+---
+
+### _Legend_
+
+| Feature | Status |
+|---------|--------|
+| ✅ | Finished |
+| ❌ | Not finished |
+| 🚧 | In Progress / Working on |
+| 📅 | Planned |
