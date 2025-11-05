@@ -39,7 +39,7 @@ The project focuses on performance, privacy, and modular architecture, enabling 
 | View all users | 🚧 |
 | User profile views | 🚧 |
 | Conversation deletion | 🚧 |
-| Account management | Planned |
+| Account management | 📅 Planned |
 
 ---
 
