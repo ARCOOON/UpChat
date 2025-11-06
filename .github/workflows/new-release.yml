@@ -33,5 +33,4 @@ jobs:
 
       - name: List
         run: |
-          tree --help
-          tree .
+          tree -a ./
