@@ -4,6 +4,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -60,6 +61,6 @@ dependencies {
     // Local cache (if you enable later)
     implementation("androidx.room:room-runtime:2.8.3")
     implementation("androidx.room:room-ktx:2.8.3")
-    kapt("androidx.room:room-compiler:2.8.3")
+    ksp("androidx.room:room-compiler:2.8.3")
     implementation("androidx.datastore:datastore-preferences:1.1.7")
 }
