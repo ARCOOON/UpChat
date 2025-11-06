@@ -4,7 +4,6 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
-    id("com.google.devtools.ksp")
 }
 
 android {
@@ -49,7 +48,6 @@ dependencies {
 
     // Hilt
     implementation("com.google.dagger:hilt-android:2.57.2")
-    implementation("com.google.firebase:firebase-database-ktx:22.0.1")
     kapt("com.google.dagger:hilt-android-compiler:2.57.2")
 
     // Firebase
@@ -62,6 +60,6 @@ dependencies {
     // Local cache (if you enable later)
     implementation("androidx.room:room-runtime:2.8.3")
     implementation("androidx.room:room-ktx:2.8.3")
-    ksp("androidx.room:room-compiler:2.8.3")
+    kapt("androidx.room:room-compiler:2.8.3")
     implementation("androidx.datastore:datastore-preferences:1.1.7")
 }
