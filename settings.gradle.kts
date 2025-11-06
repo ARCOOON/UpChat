@@ -22,4 +22,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "UpChat"
+
 include(":app")
+include(":ui")
+include(":core")
+include(":data")
