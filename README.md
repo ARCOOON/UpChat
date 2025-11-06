@@ -3,7 +3,7 @@
 UpChat is an open-source, privacy-first messaging application for Android.  
 Modern UI, real-time communication stack, zero-nonsense approach to secure messaging.
 
-[![Building Release (v2)](https://github.com/ARCOOON/UpChat/actions/workflows/build.yml/badge.svg)](https://github.com/ARCOOON/UpChat/actions/workflows/build.yml)
+[![Building Release (v2)](https://github.com/ARCOOON/UpChat/actions/workflows/build.yml/badge.svg?branch=v2)](https://github.com/ARCOOON/UpChat/actions/workflows/build.yml)
 
 ---
 
