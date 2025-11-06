@@ -1,3 +1,4 @@
+// data/src/main/java/com/devusercode/data/firebase/FirebaseUserRepository.kt
 package com.devusercode.data.firebase
 
 import com.devusercode.core.domain.user.model.User
