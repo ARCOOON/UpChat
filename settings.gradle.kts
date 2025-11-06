@@ -10,13 +10,6 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-
-    plugins {
-        id("org.jetbrains.kotlin.android") version "2.2.21"
-        id("com.google.devtools.ksp") version "2.2.21-1.0.27"
-        id("com.android.application") version "8.13.0"
-        id("com.android.library") version "8.13.0"
-    }
 }
 
 @Suppress("UnstableApiUsage")
@@ -25,6 +18,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+         gradlePluginPortal()
     }
 }
 
