@@ -7,8 +7,8 @@ jobs:
   new:
     runs-on: ubuntu-latest
     steps:
-      - name: Auto Changelog
-        uses: ardalanamini/auto-changelog@v4.0.1
+      - uses: ardalanamini/auto-changelog@v4.0.1
+        name: Changelog
         id: changelog
         with:
           github-token: ${{ github.token }}
@@ -16,12 +16,22 @@ jobs:
             feat: New Features
             fix: Bug Fixes
             build: Build System & Dependencies
+            perf: Performance Improvements
+            test: Tests
+            refactor: Refactors
+            chore: Chores
+            revert: Reverts
           release-name: v1.0.0-test
           release-name-prefix: ""
           mention-authors: true
-          mention-new-contributors: true
+          mention-new-contributors: false
           include-compare-link: true
           include-pr-links: true
           include-commit-links: true
           semver: true
           use-github-autolink: true
+
+      - name: List
+        run: |
+          sudo apt install tree -y
+          tree .
