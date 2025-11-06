@@ -5,7 +5,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.kotlin.kapt")
-    id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 }
@@ -57,12 +56,12 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":ui"))
 
-    implementation(platform("androidx.compose:compose-bom:2025.10.01"))
+    implementation(platform("androidx.compose:compose-bom:2025.11.00"))
     implementation("androidx.activity:activity-compose:1.11.0")
     implementation("androidx.compose.ui:ui:1.9.4")
     implementation("androidx.compose.ui:ui-tooling-preview:1.9.4")
     implementation("androidx.compose.material3:material3:1.4.0")
-    implementation("androidx.navigation:navigation-compose:2.9.5")
+    implementation("androidx.navigation:navigation-compose:2.9.6")
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
     // Firebase
@@ -78,7 +77,7 @@ dependencies {
     // Room (cache)
     implementation("androidx.room:room-runtime:2.8.3")
     implementation("androidx.room:room-ktx:2.8.3")
-    ksp("androidx.room:room-compiler:2.8.3")
+    kapt("androidx.room:room-compiler:2.8.3")
 
     implementation("com.google.dagger:hilt-android:2.57.2")
     kapt("com.google.dagger:hilt-android-compiler:2.57.2")
