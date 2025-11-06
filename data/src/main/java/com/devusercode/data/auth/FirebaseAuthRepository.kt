@@ -27,7 +27,7 @@ class FirebaseAuthRepository(
     private val KEY_REMEMBER = booleanPreferencesKey("remember_me")
     private val KEY_EMAIL = stringPreferencesKey("saved_email")
 
-    suspend fun signInWithEmail(email: String, password: String) {
+    override suspend fun signInWithEmail(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password).await()
     }
 
