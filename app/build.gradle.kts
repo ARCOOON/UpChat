@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.kotlin.kapt")
+    id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 }
@@ -77,7 +78,7 @@ dependencies {
     // Room (cache)
     implementation("androidx.room:room-runtime:2.8.3")
     implementation("androidx.room:room-ktx:2.8.3")
-    kapt("androidx.room:room-compiler:2.8.3")
+    ksp("androidx.room:room-compiler:2.8.3")
 
     implementation("com.google.dagger:hilt-android:2.57.2")
     kapt("com.google.dagger:hilt-android-compiler:2.57.2")
@@ -88,7 +89,4 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.4")
 
     implementation("androidx.compose.ui:ui-graphics:1.9.4")
-
-    debugImplementation("androidx.compose.ui:ui-tooling:1.9.4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.9.4")
 }
