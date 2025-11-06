@@ -1,0 +1,39 @@
+package com.devusercode.data.firebase
+
+import com.devusercode.core.domain.chat.model.UserPair
+import com.devusercode.core.domain.chat.repo.ChatRepository
+import com.devusercode.core.domain.user.model.User
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.tasks.await
+
+class FirebaseChatRepository(
+    private val db: FirebaseDatabase
+) : ChatRepository {
+
+    override suspend fun listOpenConversations(currentUid: String): List<UserPair> {
+        val convSnap = db.getReference("users").child(currentUid).child("conversations").get().await()
+        val cids = convSnap.children.mapNotNull { it.key }
+        val res = mutableListOf<UserPair>()
+        for (cid in cids) {
+            val parts = db.getReference("conversations").child(cid).child("participants").get().await()
+            val otherUid = parts.children.mapNotNull { it.key }.firstOrNull { it != currentUid } ?: continue
+            val otherSnap = db.getReference("users").child(otherUid).get().await()
+            val user = otherSnap.toUser(otherUid)
+            val last = db.getReference("conversations").child(cid).child("lastMessage").get().await()
+            val text = last.child("text").getValue(String::class.java)
+            val time = last.child("time").getValue(Long::class.java)
+            res += UserPair(user, cid, text, time)
+        }
+        return res
+    }
+
+    private fun DataSnapshot.toUser(uid: String): User {
+        val name = child("info").child("username").getValue(String::class.java)
+            ?: child("username").getValue(String::class.java)
+        val photo = child("photoUrl").getValue(String::class.java)
+        val online = child("online").getValue(String::class.java)?.toBooleanStrictOrNull() ?: false
+        val last = child("lastSeen").getValue(Long::class.java)
+        return User(uid, name, photo, online, last)
+    }
+}
