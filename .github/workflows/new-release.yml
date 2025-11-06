@@ -33,5 +33,5 @@ jobs:
 
       - name: List
         run: |
-          sudo apt install tree -y
+          tree --help
           tree .
