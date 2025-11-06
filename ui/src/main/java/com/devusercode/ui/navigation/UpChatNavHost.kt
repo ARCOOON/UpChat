@@ -25,7 +25,10 @@ fun UpChatNavHost(
             HomeScreen(
                 onOpenChat = { cid -> nav.navigate("chat/$cid") },
                 onProfile = { nav.navigate(Routes.PROFILE) },
-                onSettings = { nav.navigate(Routes.SETTINGS) }
+                onSettings = { nav.navigate(Routes.SETTINGS) },
+                onLoggedOutNavigateToAuth = { route ->
+                    nav.navigate(route) { popUpTo(0) }
+                }
             )
         }
         composable("chat/{cid}") { ChatScreen() }

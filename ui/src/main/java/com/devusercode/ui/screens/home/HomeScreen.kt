@@ -12,9 +12,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.devusercode.core.domain.chat.model.UserPair
+import com.devusercode.ui.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -22,7 +23,9 @@ fun HomeScreen(
     onOpenChat: (String) -> Unit,
     onProfile: () -> Unit,
     onSettings: () -> Unit,
-    vm: HomeViewModel = hiltViewModel()
+    vm: HomeViewModel = hiltViewModel(),
+    // this is used by the nav host to bounce to Auth
+    onLoggedOutNavigateToAuth: ((String) -> Unit)? = null
 ) {
     val state by vm.state.collectAsState()
 
@@ -37,16 +40,22 @@ fun HomeScreen(
                 title = { Text("UpChat") },
                 actions = {
                     IconButton(onClick = { menu = true }) { Icon(Icons.Default.MoreVert, contentDescription = null) }
-
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                         DropdownMenuItem(text = { Text("Profile") }, onClick = { menu = false; onProfile() })
                         DropdownMenuItem(text = { Text("Settings") }, onClick = { menu = false; onSettings() })
+                        DropdownMenuItem(text = { Text("Logout") }, onClick = {
+                            menu = false
+                            vm.doLogout {
+                                // If NavHost passed a navigator, use it; else no-op
+                                onLoggedOutNavigateToAuth?.invoke(Routes.AUTH)
+                            }
+                        })
                     }
                 }
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { /* TODO: user list */ }) {
+            FloatingActionButton(onClick = { /* TODO: open user picker */ }) {
                 Icon(Icons.Default.Add, contentDescription = null)
             }
         }
@@ -74,7 +83,6 @@ private fun ConversationItem(item: UserPair, onOpen: (String) -> Unit) {
         Row(Modifier.padding(12.dp)) {
             AsyncImage(model = item.user.photoUrl, contentDescription = null, modifier = Modifier.size(44.dp))
             Spacer(Modifier.width(12.dp))
-
             Column(Modifier.weight(1f)) {
                 Row {
                     Text(
@@ -95,8 +103,5 @@ private fun ConversationItem(item: UserPair, onOpen: (String) -> Unit) {
 @Composable
 private fun PresenceDot(isOnline: Boolean) {
     val color = if (isOnline) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-
-    Box(Modifier.size(12.dp)) {
-        Surface(color = color, shape = MaterialTheme.shapes.small) { Spacer(Modifier.size(12.dp)) }
-    }
+    Box(Modifier.size(12.dp)) { Surface(color = color, shape = MaterialTheme.shapes.small) { Spacer(Modifier.size(12.dp)) } }
 }
