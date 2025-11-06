@@ -4,7 +4,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
-    id("com.google.devtools.ksp") version "2.2.21-1.0.27"
+    id("com.google.devtools.ksp")
 }
 
 android {
