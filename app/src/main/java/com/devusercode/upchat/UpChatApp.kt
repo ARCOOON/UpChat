@@ -1,4 +1,5 @@
-package com.upchat.app
+package com.devusercode.upchat
+
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
