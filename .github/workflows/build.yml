@@ -1,6 +1,5 @@
-name: Building Release (v2)
+name: Building Release
 
-# Triggers the workflow
 on:
   # Trigger on push in main
   push:
