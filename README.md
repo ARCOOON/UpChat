@@ -1,4 +1,4 @@
-# UpChat
+# UpChat | Development Channel
 
 UpChat is an open-source, privacy-first messaging application for Android.  
 Modern UI, real-time communication stack, zero-nonsense approach to secure messaging.
