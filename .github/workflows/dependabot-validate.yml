@@ -4,11 +4,12 @@ on:
   pull_request:
     branches:
       - main
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - ready_for_review
+      - v2
+#    types:
+#      - opened
+#      - synchronize
+#      - reopened
+#      - ready_for_review
     paths:
       - 'app/**'
       - 'gradle.properties'
