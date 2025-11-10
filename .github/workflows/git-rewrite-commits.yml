@@ -9,5 +9,5 @@ jobs:
     steps:
       - name: Check Commit Quality
         run: |
-          npx git-rewrite-commits --dry-run --language en --max-commits ${{ github.event.pull_request.commits }}
+          npx git-rewrite-commits --dry-run --language en
           # This will show which commits would be improved
