@@ -5,11 +5,6 @@ on:
     branches:
       - main
       - v2
-#    types:
-#      - opened
-#      - synchronize
-#      - reopened
-#      - ready_for_review
     paths:
       - 'app/**'
       - 'gradle.properties'
@@ -28,6 +23,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Write test google-services.json
+        run: |
+          echo "${{ secrets._TEST_GOOGLE_SERVICES_JSON }}" > app/google-services.json
 
       - name: Set up JDK
         uses: actions/setup-java@v4
