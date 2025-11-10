@@ -1,0 +1,13 @@
+name: Rewriting Git Commit Messages
+
+on:
+  workflow_dispatch: { }
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Commit Quality
+        run: |
+          npx git-rewrite-commits --dry-run --language en --max-commits ${{ github.event.pull_request.commits }}
+          # This will show which commits would be improved
