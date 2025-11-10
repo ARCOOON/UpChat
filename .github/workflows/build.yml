@@ -101,7 +101,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Upload Release Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: UpChat-Release
           if-no-files-found: error
@@ -114,7 +114,7 @@ jobs:
         run: cp ${{ github.workspace }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html
 
       - name: Upload Check Results to Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Linting_Result
           path: ./lint-results-debug.html
@@ -124,7 +124,7 @@ jobs:
 
       - name: Upload problem report on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: gradle-problem-report
           path: |
