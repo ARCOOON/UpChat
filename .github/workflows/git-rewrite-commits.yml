@@ -25,4 +25,4 @@ jobs:
       - name: Run git-rewrite-commits dry run on last 100 commits
         run: |
           echo "Running git-rewrite-commits in dry-run mode on branch: ${BRANCH_NAME}"
-          npx git-rewrite-commits --dry-run --max-commits 100 --branch "${BRANCH_NAME}" -no-skip-well-formed --model gpt-5-mini
+          npx git-rewrite-commits --dry-run --max-commits 100 --branch "${BRANCH_NAME}" --no-skip-well-formed --model gpt-5-mini
