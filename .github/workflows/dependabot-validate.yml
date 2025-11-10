@@ -24,10 +24,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup google-services.json
+      - name: Write google-services.json from secret
         env:
-          google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $google_service > ${{ github.workspace }}/app/google-services.json
+          GOOGLE_SERVICES_JSON: ${{ secrets._TEST_GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -z "$GOOGLE_SERVICES_JSON" ]; then
+            echo "Error: _TEST_GOOGLE_SERVICES_JSON is not set or empty."
+            exit 1
+          fi
+          printf '%s' "$GOOGLE_SERVICES_JSON" > app/google-services.json
 
       - name: Set up JDK
         uses: actions/setup-java@v4
