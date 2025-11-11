@@ -30,8 +30,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v5
+      - name: Setup JDK
+        uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'oracle'
@@ -45,7 +45,7 @@ jobs:
 
       # Official Gradle action. Handles wrapper validation and caching of Gradle User Home.
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v4
         with:
           cache-read-only: false
           cache-cleanup: always
@@ -66,13 +66,13 @@ jobs:
         run: echo $google_service > ${{ github.workspace }}/app/google-services.json
 
       - name: Cleaning builds
-        run: ./gradlew --no-build-cache clean
+        run: ./gradlew clean
 
       - name: Run gradle checks
-        run: ./gradlew --no-build-cache --warning-mode summary check
+        run: ./gradlew --warning-mode summary check
 
       - name: Run gradle tests
-        run: ./gradlew --no-build-cache --warning-mode summary test
+        run: ./gradlew --warning-mode summary test
 
       - name: Build Release Artifacts
         id: build_release
