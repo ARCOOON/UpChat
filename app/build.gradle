@@ -126,7 +126,7 @@ dependencies {
     // implementation 'io.github.tashilapathum:please-wait:0.4.0'
 
     // For generating and scanning QR-Code
-    implementation 'com.google.zxing:core:3.5.3'
+    implementation 'com.google.zxing:core:3.5.4'
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
     implementation 'com.google.code.gson:gson:2.13.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
