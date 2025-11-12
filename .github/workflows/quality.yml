@@ -1,0 +1,65 @@
+name: Quality Gate
+
+on:
+  pull_request:
+    branches: [ main, v2 ]
+  push:
+    branches: [ main, v2 ]
+  workflow_dispatch: []
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Code Style and Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Write google-services.json from secret (test only)
+        if: ${{ github.event_name != 'workflow_dispatch' }}
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets._TEST_GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -z "$GOOGLE_SERVICES_JSON" ]; then
+            echo "_TEST_GOOGLE_SERVICES_JSON missing or empty."
+            exit 1
+          fi
+          printf '%s\n' "$GOOGLE_SERVICES_JSON" > app/google-services.json
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Install ktlint (Kotlin style)
+        run: |
+          curl -sSL https://github.com/pinterest/ktlint/releases/latest/download/ktlint_linux_x86_64 -o ktlint
+          chmod +x ktlint
+
+      - name: Kotlin style check (ktlint)
+        run: |
+          ./ktlint --android '**/*.kt' '**/*.kts'
+
+      - name: Assemble Debug
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Android Lint (Debug)
+        run: ./gradlew lintDebug --stacktrace
+
+      - name: Upload Lint Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+        name: android-lint-report
+        path: app/build/reports/lint-results-debug.html
