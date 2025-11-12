@@ -46,7 +46,7 @@ jobs:
 
       - name: Kotlin style check (ktlint)
         run: |
-          ./ktlint --android '**/*.kt' '**/*.kts'
+          ktlint --android '**/*.kt' '**/*.kts'
 
       - name: Assemble Debug
         run: ./gradlew assembleDebug --stacktrace
