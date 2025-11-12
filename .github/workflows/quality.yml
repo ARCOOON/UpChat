@@ -47,7 +47,18 @@ jobs:
 
       - name: Kotlin style check (ktlint)
         run: |
-          ktlint '**/*.kt' '**/*.kts'
+          mkdir -p build/reports
+          ktlint --code-style=ktlint_official \
+            --reporter=plain \
+            --reporter=json,output=build/reports/ktlint-report.json \
+            '**/*.kt' '**/*.kts'
+
+      - name: Upload ktlint report
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ktlint-report
+          path: build/reports/ktlint-report.json
 
       - name: Assemble Debug
         run: ./gradlew assembleDebug --stacktrace
