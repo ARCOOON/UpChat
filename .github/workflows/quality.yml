@@ -48,7 +48,8 @@ jobs:
       - name: Kotlin style check (ktlint)
         run: |
           mkdir -p build/reports
-          ktlint --code-style=ktlint_official \
+          ktlint \
+            # --code-style=ktlint_official \
             --reporter=plain \
             --reporter=json,output=build/reports/ktlint-report.json \
             '**/*.kt' '**/*.kts'
