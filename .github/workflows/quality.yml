@@ -56,7 +56,7 @@ jobs:
 
       - name: Upload ktlint report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ktlint-report
           path: ~/build/reports/ktlint-report.json
@@ -72,7 +72,7 @@ jobs:
 
       - name: Upload Lint Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: android-lint-report
           path: app/build/reports/lint-results-debug.html
