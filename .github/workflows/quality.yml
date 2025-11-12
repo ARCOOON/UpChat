@@ -41,8 +41,9 @@ jobs:
 
       - name: Install ktlint (Kotlin style)
         run: |
-          curl -sSL https://github.com/pinterest/ktlint/releases/latest/download/ktlint_linux_x86_64 -o ktlint
-          chmod +x ktlint
+          curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.7.1/ktlint
+          chmod a+x ktlint
+          sudo mv ktlint /usr/local/bin/
 
       - name: Kotlin style check (ktlint)
         run: |
