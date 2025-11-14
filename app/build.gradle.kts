@@ -76,7 +76,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-messaging")
