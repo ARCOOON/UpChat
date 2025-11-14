@@ -28,13 +28,13 @@ jobs:
       - name: Write google-services.json from secret (test only)
         if: ${{ github.event_name != 'workflow_dispatch' }}
         env:
-          GOOGLE_SERVICES_JSON: ${{ secrets._TEST_GOOGLE_SERVICES_JSON }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
-          if [ -z "$GOOGLE_SERVICES_JSON" ]; then
-            echo "_TEST_GOOGLE_SERVICES_JSON missing or empty."
+          if [ -z "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
+            echo "GOOGLE_SERVICES_JSON missing or empty."
             exit 1
           fi
-          printf '%s\n' "$GOOGLE_SERVICES_JSON" > app/google-services.json
+          printf '%s\n' "${{ secrets.GOOGLE_SERVICES_JSON }}" > app/google-services.json
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
