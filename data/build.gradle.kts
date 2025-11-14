@@ -3,8 +3,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    // Hilt uses kapt
     id("org.jetbrains.kotlin.kapt")
+    id("com.google.dagger.hilt.android")
+    // Room uses KSP
     id("com.google.devtools.ksp")
+    id("androidx.room")
 }
 
 android {
@@ -16,20 +20,9 @@ android {
 
     defaultConfig {
         minSdk = 28
-        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildFeatures { buildConfig = false }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -44,23 +37,31 @@ android {
     }
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
     implementation(project(":core"))
 
-    // Hilt
-    implementation("com.google.dagger:hilt-android:2.57.2")
-    kapt("com.google.dagger:hilt-android-compiler:2.57.2")
+    // Hilt (kapt)
+    val hiltVersion = "2.57.2" // or the version you are using consistently
+    implementation("com.google.dagger:hilt-android:$hiltVersion")
+    kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
 
-    // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    // Room (KSP)
+    val roomVersion = "2.8.3"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+
+    // DataStore, Firebase, etc.
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
+    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
-
-    // Local cache (if you enable later)
-    implementation("androidx.room:room-runtime:2.8.3")
-    implementation("androidx.room:room-ktx:2.8.3")
-    ksp("androidx.room:room-compiler:2.8.3")
-    implementation("androidx.datastore:datastore-preferences:1.1.7")
 }
