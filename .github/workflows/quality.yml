@@ -37,7 +37,7 @@ jobs:
           printf '%s\n' "${{ secrets.GOOGLE_SERVICES_JSON }}" > app/google-services.json
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Install ktlint (Kotlin style)
         run: |
