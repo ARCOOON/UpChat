@@ -6,16 +6,17 @@ import com.devusercode.data.local.db.entity.ConversationEntity
 
 fun ConversationEntity.toDomain(): UserPair =
     UserPair(
-        user = User(
-            uid = otherUserId,
-            displayName = displayName,
-            photoUrl = photoUrl,
-            online = online,
-            lastSeenEpochMs = lastSeenEpochMs
-        ),
+        user =
+            User(
+                uid = otherUserId,
+                displayName = displayName,
+                photoUrl = photoUrl,
+                online = online,
+                lastSeenEpochMs = lastSeenEpochMs,
+            ),
         conversationId = conversationId,
         lastMessageText = lastMessageText,
-        lastMessageTimeEpochMs = lastMessageTimeEpochMs
+        lastMessageTimeEpochMs = lastMessageTimeEpochMs,
     )
 
 fun UserPair.toEntity(): ConversationEntity =
@@ -27,5 +28,5 @@ fun UserPair.toEntity(): ConversationEntity =
         online = user.online,
         lastSeenEpochMs = user.lastSeenEpochMs,
         lastMessageText = lastMessageText,
-        lastMessageTimeEpochMs = lastMessageTimeEpochMs
+        lastMessageTimeEpochMs = lastMessageTimeEpochMs,
     )

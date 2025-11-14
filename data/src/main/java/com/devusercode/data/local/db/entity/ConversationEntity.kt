@@ -12,5 +12,5 @@ data class ConversationEntity(
     val online: Boolean,
     val lastSeenEpochMs: Long?,
     val lastMessageText: String?,
-    val lastMessageTimeEpochMs: Long?
+    val lastMessageTimeEpochMs: Long?,
 )

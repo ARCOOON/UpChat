@@ -23,18 +23,23 @@ class FirebaseAuthRepository(
     private val auth: FirebaseAuth,
     private val db: FirebaseDatabase
 ) : AuthRepository {
-
+    @Suppress("ktlint:standard:property-naming")
     private val KEY_REMEMBER = booleanPreferencesKey("remember_me")
+
+    @Suppress("ktlint:standard:property-naming")
     private val KEY_EMAIL = stringPreferencesKey("saved_email")
 
-    override suspend fun signInWithEmail(email: String, password: String) {
+    override suspend fun signInWithEmail(
+        email: String,
+        password: String,
+    ) {
         auth.signInWithEmailAndPassword(email, password).await()
     }
 
     override suspend fun signUpWithEmail(
         email: String,
         password: String,
-        displayName: String?
+        displayName: String?,
     ): String {
         // 1) Create auth user
         val result = auth.createUserWithEmailAndPassword(email, password).await()
@@ -43,9 +48,11 @@ class FirebaseAuthRepository(
 
         // 2) Optional displayName on the auth profile
         if (!displayName.isNullOrBlank()) {
-            val req = UserProfileChangeRequest.Builder()
-                .setDisplayName(displayName)
-                .build()
+            val req =
+                UserProfileChangeRequest
+                    .Builder()
+                    .setDisplayName(displayName)
+                    .build()
             user.updateProfile(req).await()
         }
 
@@ -56,16 +63,18 @@ class FirebaseAuthRepository(
         //   conversations: { cid: true }    // added later by chat flows
         // }
         val userRef = db.getReference("users").child(uid)
-        val payload = mapOf(
-            "email" to email,
-            "info" to mapOf(
-                "username" to (displayName ?: email.substringBefore("@"))
-            ),
-            "photoUrl" to (user.photoUrl?.toString() ?: ""),
-            "online" to "false",
-            "lastSeen" to ServerValue.TIMESTAMP,
-            "createdAt" to ServerValue.TIMESTAMP
-        )
+        val payload =
+            mapOf(
+                "email" to email,
+                "info" to
+                    mapOf(
+                        "username" to (displayName ?: email.substringBefore("@")),
+                    ),
+                "photoUrl" to (user.photoUrl?.toString() ?: ""),
+                "online" to "false",
+                "lastSeen" to ServerValue.TIMESTAMP,
+                "createdAt" to ServerValue.TIMESTAMP,
+            )
         userRef.updateChildren(payload).await()
 
         return uid
@@ -75,11 +84,9 @@ class FirebaseAuthRepository(
         auth.sendPasswordResetEmail(email).await()
     }
 
-    override fun observeRememberMe(): Flow<Boolean> =
-        ctx.userStore.data.map { it[KEY_REMEMBER] ?: false }
+    override fun observeRememberMe(): Flow<Boolean> = ctx.userStore.data.map { it[KEY_REMEMBER] ?: false }
 
-    override fun observeSavedEmail(): Flow<String?> =
-        ctx.userStore.data.map { it[KEY_EMAIL] }
+    override fun observeSavedEmail(): Flow<String?> = ctx.userStore.data.map { it[KEY_EMAIL] }
 
     override suspend fun setRememberMe(remember: Boolean) {
         ctx.userStore.edit { it[KEY_REMEMBER] = remember }
@@ -93,7 +100,7 @@ class FirebaseAuthRepository(
 
     override suspend fun deleteCurrentUser(
         reAuthEmail: String?,
-        reAuthPassword: String?
+        reAuthPassword: String?,
     ) {
         val current = auth.currentUser ?: return
         val uid = current.uid
@@ -132,7 +139,10 @@ class FirebaseAuthRepository(
         }
     }
 
-    override suspend fun reauthenticate(email: String, password: String) {
+    override suspend fun reauthenticate(
+        email: String,
+        password: String,
+    ) {
         val user = auth.currentUser ?: error("No authenticated user")
         val cred = EmailAuthProvider.getCredential(email, password)
         user.reauthenticate(cred).await()

@@ -22,13 +22,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DataModule {
-
     @Provides @Singleton fun provideAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
     @Provides @Singleton fun provideDb(): FirebaseDatabase = FirebaseDatabase.getInstance()
 
     @Provides @Singleton
     fun provideRoom(@ApplicationContext ctx: Context): AppDatabase =
-        Room.databaseBuilder(ctx, AppDatabase::class.java, "upchat.db")
+        Room
+            .databaseBuilder(ctx, AppDatabase::class.java, "upchat.db")
             .fallbackToDestructiveMigration(false)
             .build()
 
@@ -37,19 +38,19 @@ object DataModule {
     @Provides @Singleton
     fun provideUserRepository(
         auth: FirebaseAuth,
-        db: FirebaseDatabase
+        db: FirebaseDatabase,
     ): UserRepository = FirebaseUserRepository(auth, db)
 
     @Provides @Singleton
     fun provideChatRepository(
         db: FirebaseDatabase,
-        conversationDao: ConversationDao
+        conversationDao: ConversationDao,
     ): ChatRepository = FirebaseChatRepository(db, conversationDao)
 
     @Provides @Singleton
     fun provideAuthRepository(
         @ApplicationContext ctx: Context,
         auth: FirebaseAuth,
-        db: FirebaseDatabase
+        db: FirebaseDatabase,
     ): AuthRepository = FirebaseAuthRepository(ctx, auth, db)
 }

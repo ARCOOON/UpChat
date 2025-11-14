@@ -14,9 +14,8 @@ import kotlinx.coroutines.withContext
 
 class FirebaseChatRepository(
     private val db: FirebaseDatabase,
-    private val conversationDao: ConversationDao
+    private val conversationDao: ConversationDao,
 ) : ChatRepository {
-
     override suspend fun listOpenConversations(currentUid: String): List<UserPair> =
         withContext(Dispatchers.IO) {
             // 1) Try cache first
@@ -38,16 +37,39 @@ class FirebaseChatRepository(
         }
 
     private suspend fun fetchFromNetwork(currentUid: String): List<UserPair> {
-        val convSnap = db.getReference("users").child(currentUid).child("conversations").get().await()
+        val convSnap =
+            db
+                .getReference("users")
+                .child(currentUid)
+                .child("conversations")
+                .get()
+                .await()
         val cids = convSnap.children.mapNotNull { it.key }
         val res = mutableListOf<UserPair>()
 
         for (cid in cids) {
-            val parts = db.getReference("conversations").child(cid).child("participants").get().await()
+            val parts =
+                db
+                    .getReference("conversations")
+                    .child(cid)
+                    .child("participants")
+                    .get()
+                    .await()
             val otherUid = parts.children.mapNotNull { it.key }.firstOrNull { it != currentUid } ?: continue
-            val otherSnap = db.getReference("users").child(otherUid).get().await()
+            val otherSnap =
+                db
+                    .getReference("users")
+                    .child(otherUid)
+                    .get()
+                    .await()
             val user = otherSnap.toUser(otherUid)
-            val last = db.getReference("conversations").child(cid).child("lastMessage").get().await()
+            val last =
+                db
+                    .getReference("conversations")
+                    .child(cid)
+                    .child("lastMessage")
+                    .get()
+                    .await()
             val text = last.child("text").getValue(String::class.java)
             val time = last.child("time").getValue(Long::class.java)
 
@@ -58,8 +80,9 @@ class FirebaseChatRepository(
     }
 
     private fun DataSnapshot.toUser(uid: String): User {
-        val name = child("info").child("username").getValue(String::class.java)
-            ?: child("username").getValue(String::class.java)
+        val name =
+            child("info").child("username").getValue(String::class.java)
+                ?: child("username").getValue(String::class.java)
         val photo = child("photoUrl").getValue(String::class.java)
         val online = child("online").getValue(String::class.java)?.toBooleanStrictOrNull() ?: false
         val last = child("lastSeen").getValue(Long::class.java)
