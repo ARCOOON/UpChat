@@ -10,10 +10,11 @@ import com.devusercode.ui.screens.home.HomeScreen
 import com.devusercode.ui.screens.profile.ProfileScreen
 import com.devusercode.ui.screens.settings.SettingsScreen
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun UpChatNavHost(
     nav: NavHostController,
-    start: String = Routes.HOME
+    start: String = Routes.HOME,
 ) {
     NavHost(navController = nav, startDestination = start) {
         composable(Routes.AUTH) {
@@ -28,7 +29,7 @@ fun UpChatNavHost(
                 onSettings = { nav.navigate(Routes.SETTINGS) },
                 onLoggedOutNavigateToAuth = { route ->
                     nav.navigate(route) { popUpTo(0) }
-                }
+                },
             )
         }
         composable("chat/{cid}") { ChatScreen() }

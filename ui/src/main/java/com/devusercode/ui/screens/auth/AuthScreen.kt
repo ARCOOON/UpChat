@@ -14,29 +14,32 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun AuthScreen(
     onLoggedIn: () -> Unit,
     onNavigateRegister: (() -> Unit)? = null,
-    vm: LoginViewModel = hiltViewModel()
+    vm: LoginViewModel = hiltViewModel(),
 ) {
     val state by vm.state.collectAsState()
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            shape = MaterialTheme.shapes.extraLarge
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+            shape = MaterialTheme.shapes.extraLarge,
         ) {
             Column(
                 modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Text("UpChat", style = MaterialTheme.typography.headlineMedium)
                 Spacer(Modifier.height(4.dp))
@@ -46,11 +49,12 @@ fun AuthScreen(
                     onValueChange = vm::onEmailChange,
                     label = { Text("Email") },
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    ),
-                    modifier = Modifier.fillMaxWidth()
+                    keyboardOptions =
+                        KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
+                            imeAction = ImeAction.Next,
+                        ),
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 var passwordVisible by remember { mutableStateOf(false) }
@@ -60,21 +64,22 @@ fun AuthScreen(
                     label = { Text("Password") },
                     singleLine = true,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
-                    ),
+                    keyboardOptions =
+                        KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done,
+                        ),
                     keyboardActions = KeyboardActions(onDone = { vm.login(onLoggedIn) }),
                     trailingIcon = {
                         val text = if (passwordVisible) "HIDE" else "SHOW"
                         TextButton(onClick = { passwordVisible = !passwordVisible }) { Text(text) }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Checkbox(checked = state.rememberMe, onCheckedChange = { vm.onRememberMeChange(it) })
                     Spacer(Modifier.width(8.dp))
@@ -90,7 +95,7 @@ fun AuthScreen(
                 Button(
                     onClick = { vm.login(onLoggedIn) },
                     enabled = !state.isLoading,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     if (state.isLoading) {
                         CircularProgressIndicator(strokeWidth = 2.dp, modifier = Modifier.size(18.dp))
@@ -103,7 +108,7 @@ fun AuthScreen(
                     OutlinedButton(
                         onClick = onNavigateRegister,
                         enabled = !state.isLoading,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) { Text("Create account") }
                 }
             }
