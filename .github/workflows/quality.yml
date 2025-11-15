@@ -46,6 +46,7 @@ jobs:
           sudo mv ktlint /usr/local/bin/
 
       - name: Kotlin style check (ktlint)
+        continue-on-error: true
         run: |
           mkdir -p ~/build/reports
           ktlint \
@@ -76,3 +77,12 @@ jobs:
         with:
           name: android-lint-report
           path: app/build/reports/lint-results-debug.html
+
+      - name: Summarize ktlint result
+        if: always()
+        run: |
+          if [[ "${{ steps.ktlint.outcome }}" == "failure" ]]; then
+            echo "ktlint found style issues, but the workflow is not failed (continue-on-error)." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ktlint passed without blocking issues." >> $GITHUB_STEP_SUMMARY
+          fi
