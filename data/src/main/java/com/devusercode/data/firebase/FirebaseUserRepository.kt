@@ -11,7 +11,7 @@ import kotlinx.coroutines.tasks.await
 
 class FirebaseUserRepository(
     private val auth: FirebaseAuth,
-    private val db: FirebaseDatabase
+    private val db: FirebaseDatabase,
 ) : UserRepository {
     override suspend fun getCurrentUser(): User {
         val uid = auth.currentUser?.uid ?: error("No authenticated user")
@@ -65,8 +65,9 @@ class FirebaseUserRepository(
     }
 
     private fun DataSnapshot.toUser(uid: String): User {
-        val name = child("info").child("username").getValue(String::class.java)
-            ?: child("username").getValue(String::class.java)
+        val name =
+            child("info").child("username").getValue(String::class.java)
+                ?: child("username").getValue(String::class.java)
         val photo = child("photoUrl").getValue(String::class.java)
         val online = child("online").getValue(String::class.java)?.toBooleanStrictOrNull() ?: false
         val last = child("lastSeen").getValue(Long::class.java)

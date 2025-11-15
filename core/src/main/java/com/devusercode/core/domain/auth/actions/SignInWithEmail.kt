@@ -1,7 +1,11 @@
 package com.devusercode.core.domain.auth.actions
 import com.devusercode.core.domain.auth.repo.AuthRepository
 
-class SignInWithEmail(private val repo: AuthRepository) {
-    suspend operator fun invoke(email: String, password: String) =
-        repo.signInWithEmail(email, password)
+class SignInWithEmail(
+    private val repo: AuthRepository,
+) {
+    suspend operator fun invoke(
+        email: String,
+        password: String,
+    ) = repo.signInWithEmail(email, password)
 }

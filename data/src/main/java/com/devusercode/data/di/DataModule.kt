@@ -22,12 +22,16 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DataModule {
-    @Provides @Singleton fun provideAuth(): FirebaseAuth = FirebaseAuth.getInstance()
-
-    @Provides @Singleton fun provideDb(): FirebaseDatabase = FirebaseDatabase.getInstance()
+    @Provides @Singleton
+    fun provideAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
     @Provides @Singleton
-    fun provideRoom(@ApplicationContext ctx: Context): AppDatabase =
+    fun provideDb(): FirebaseDatabase = FirebaseDatabase.getInstance()
+
+    @Provides @Singleton
+    fun provideRoom(
+        @ApplicationContext ctx: Context,
+    ): AppDatabase =
         Room
             .databaseBuilder(ctx, AppDatabase::class.java, "upchat.db")
             .fallbackToDestructiveMigration(false)

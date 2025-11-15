@@ -21,7 +21,7 @@ private val Context.userStore by preferencesDataStore("auth_prefs")
 class FirebaseAuthRepository(
     private val ctx: Context,
     private val auth: FirebaseAuth,
-    private val db: FirebaseDatabase
+    private val db: FirebaseDatabase,
 ) : AuthRepository {
     @Suppress("ktlint:standard:property-naming")
     private val KEY_REMEMBER = booleanPreferencesKey("remember_me")

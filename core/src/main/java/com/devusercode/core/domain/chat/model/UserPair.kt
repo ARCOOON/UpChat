@@ -6,5 +6,5 @@ data class UserPair(
     val user: User,
     val conversationId: String,
     val lastMessageText: String? = null,
-    val lastMessageTimeEpochMs: Long? = null
+    val lastMessageTimeEpochMs: Long? = null,
 )

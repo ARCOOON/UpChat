@@ -5,5 +5,5 @@ data class User(
     val displayName: String? = null,
     val photoUrl: String? = null,
     val online: Boolean = false,
-    val lastSeenEpochMs: Long? = null
+    val lastSeenEpochMs: Long? = null,
 )
