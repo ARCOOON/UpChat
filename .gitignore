@@ -17,6 +17,7 @@ local.properties
 captures/
 .externalNativeBuild/
 .cxx/
+.run/
 *.apk
 output.json
 
