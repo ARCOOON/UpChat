@@ -13,13 +13,13 @@ on:
   workflow_dispatch:
     inputs:
       runner:
-      description: 'Runner label to use (ubuntu-latest or self-hosted)'
-      required: false
-      default: ubuntu-latest
-      type: choice
-      options:
-        - ubuntu-latest
-        - self-hosted
+        description: 'Runner label to use (ubuntu-latest or self-hosted)'
+        required: false
+        default: ubuntu-latest
+        type: choice
+        options:
+          - ubuntu-latest
+          - self-hosted
 
 jobs:
   build:
