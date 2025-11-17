@@ -4,17 +4,19 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.dagger.hilt.android")
+    kotlin("kapt")
 }
 
 android {
     namespace = "com.devusercode.ui"
+
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
         minSdk = 28
-        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -41,10 +43,6 @@ android {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
@@ -63,6 +61,11 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.57.2")
+    kapt("com.google.dagger:hilt-android-compiler:2.57.2")
+    implementation("javax.inject:javax.inject:1")
 
     implementation("androidx.navigation:navigation-compose:2.9.6")
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
