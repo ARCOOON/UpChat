@@ -63,6 +63,11 @@ android {
     }
 }
 
+// Ensure kapt block is present and correct if using kapt
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
     implementation(project(":core"))
     implementation(project(":data"))
@@ -89,6 +94,7 @@ dependencies {
     // Room (cache)
     implementation("androidx.room:room-runtime:2.8.3")
     implementation("androidx.room:room-ktx:2.8.3")
+    implementation("androidx.lifecycle:lifecycle-process:2.9.4")
     ksp("androidx.room:room-compiler:2.8.3")
 
     implementation("com.google.dagger:hilt-android:2.57.2")
