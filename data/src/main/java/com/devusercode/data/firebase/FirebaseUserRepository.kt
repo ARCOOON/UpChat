@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.devusercode.data.firebase
 
 import com.devusercode.core.domain.user.model.User

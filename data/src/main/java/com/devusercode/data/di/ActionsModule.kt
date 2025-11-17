@@ -16,7 +16,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 object ActionsModule {
-    // user/chat actions
     @Provides fun provideGetCurrentUser(repo: UserRepository) = GetCurrentUser(repo)
 
     @Provides fun provideSetOnlineStatus(repo: UserRepository) = SetOnlineStatus(repo)
