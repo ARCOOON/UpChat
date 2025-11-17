@@ -19,3 +19,12 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep Hilt generated classes
+-keep class dagger.hilt.** { *; }
+-keep class * extends dagger.hilt.android.internal.lifecycle.HiltWrapper_DefaultViewModelFactories_ActivityModule { *; }
+-dontwarn javax.inject.**
+
+# Keep Firebase models
+-keep class com.google.firebase.** { *; }
+-dontwarn com.google.**
