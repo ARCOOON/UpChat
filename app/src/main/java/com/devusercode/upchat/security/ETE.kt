@@ -18,7 +18,10 @@ object ETE {
         return Pair(keyPair.public, keyPair.private)
     }
 
-    fun encrypt(message: String, publicKey: PublicKey): String {
+    fun encrypt(
+        message: String,
+        publicKey: PublicKey,
+    ): String {
         val cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding")
         cipher.init(Cipher.ENCRYPT_MODE, publicKey)
 
@@ -27,7 +30,10 @@ object ETE {
         return Base64.encodeToString(encryptedBytes, Base64.NO_WRAP)
     }
 
-    fun decrypt(encryptedMessage: String, privateKey: PrivateKey): String {
+    fun decrypt(
+        encryptedMessage: String,
+        privateKey: PrivateKey,
+    ): String {
         val cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding")
         cipher.init(Cipher.DECRYPT_MODE, privateKey)
 

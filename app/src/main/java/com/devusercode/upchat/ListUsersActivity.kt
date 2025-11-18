@@ -20,12 +20,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.devusercode.upchat.adapter.UserListAdapter
 import com.devusercode.upchat.adapter.WrapLayoutManager
 import com.devusercode.upchat.models.User
+import com.devusercode.upchat.utils.applyActivityCloseAnimation
+import com.devusercode.upchat.utils.applyActivityOpenAnimation
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.devusercode.upchat.utils.applyActivityCloseAnimation
-import com.devusercode.upchat.utils.applyActivityOpenAnimation
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 
@@ -95,50 +95,61 @@ class ListUsersActivity : AppCompatActivity() {
         }
 
         scanQrcodeButton.setOnClickListener {
-            val options = ScanOptions().apply {
-                setDesiredBarcodeFormats(ScanOptions.QR_CODE)
-                setPrompt("Scan an QR Code from a Friend")
-                setBeepEnabled(false)
-                setOrientationLocked(true)
-                setCaptureActivity(CaptureActivityPortrait::class.java)
-            }
+            val options =
+                ScanOptions().apply {
+                    setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+                    setPrompt("Scan an QR Code from a Friend")
+                    setBeepEnabled(false)
+                    setOrientationLocked(true)
+                    setCaptureActivity(CaptureActivityPortrait::class.java)
+                }
             qrScanner.launch(options)
         }
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                filterUsers(query)
-                return true
-            }
+        searchView.setOnQueryTextListener(
+            object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    filterUsers(query)
+                    return true
+                }
 
-            override fun onQueryTextChange(query: String): Boolean {
-                filterUsers(query)
-                return true
-            }
-        })
+                override fun onQueryTextChange(query: String): Boolean {
+                    filterUsers(query)
+                    return true
+                }
+            },
+        )
 
         loadUsers()
     }
 
     private fun loadUsers() {
-        val options = FirebaseRecyclerOptions.Builder<User>().setQuery(users, User::class.java)
-            .build()
+        val options =
+            FirebaseRecyclerOptions
+                .Builder<User>()
+                .setQuery(users, User::class.java)
+                .build()
 
         adapter = UserListAdapter(this, options)
         recyclerview1.adapter = adapter
 
         adapter.startListening()
-        adapter.registerAdapterDataObserver(object : AdapterDataObserver() {
-            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                if (adapter.itemCount > 1) {
-                    recyclerview1.visibility = View.VISIBLE
-                    noDataAvailableText.visibility = View.GONE
-                } else {
-                    recyclerview1.visibility = View.GONE
-                    noDataAvailableText.visibility = View.VISIBLE
+        adapter.registerAdapterDataObserver(
+            object : AdapterDataObserver() {
+                override fun onItemRangeInserted(
+                    positionStart: Int,
+                    itemCount: Int,
+                ) {
+                    if (adapter.itemCount > 1) {
+                        recyclerview1.visibility = View.VISIBLE
+                        noDataAvailableText.visibility = View.GONE
+                    } else {
+                        recyclerview1.visibility = View.GONE
+                        noDataAvailableText.visibility = View.VISIBLE
+                    }
                 }
-            }
-        })
+            },
+        )
     }
 
     private fun initializeLogic() {
@@ -151,8 +162,12 @@ class ListUsersActivity : AppCompatActivity() {
 
     private fun filterUsers(text: String) {
         val query = users.orderByChild(selectedFilter.toString().lowercase()).startAt(text).endAt(text + "\uf8ff")
-        val options = FirebaseRecyclerOptions.Builder<User>().setQuery(query, User::class.java)
-            .setLifecycleOwner(this).build()
+        val options =
+            FirebaseRecyclerOptions
+                .Builder<User>()
+                .setQuery(query, User::class.java)
+                .setLifecycleOwner(this)
+                .build()
 
         adapter = UserListAdapter(this, options)
         recyclerview1.adapter = adapter
@@ -222,12 +237,14 @@ class ListUsersActivity : AppCompatActivity() {
         adapter.stopListening()
     }
 
-    private val qrScanner = registerForActivityResult(ScanContract()) { result ->
-        val qrcodeData = result.contents ?: return@registerForActivityResult
-        val intent = Intent(this, ConversationActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra("uid", qrcodeData)
+    private val qrScanner =
+        registerForActivityResult(ScanContract()) { result ->
+            val qrcodeData = result.contents ?: return@registerForActivityResult
+            val intent =
+                Intent(this, ConversationActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    putExtra("uid", qrcodeData)
+                }
+            startActivity(intent)
         }
-        startActivity(intent)
-    }
 }

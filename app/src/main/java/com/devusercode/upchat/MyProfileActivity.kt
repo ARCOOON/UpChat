@@ -156,7 +156,9 @@ class MyProfileActivity : AppCompatActivity() {
 
         deleteButton.setOnClickListener {
             if (auth.currentUser != null) {
-                auth.currentUser?.delete()?.addOnCompleteListener(authDeleteUserListener)
+                auth.currentUser
+                    ?.delete()
+                    ?.addOnCompleteListener(authDeleteUserListener)
                     ?.addOnFailureListener { error ->
                         Log.e(TAG, error.message!!)
                     }
@@ -187,53 +189,67 @@ class MyProfileActivity : AppCompatActivity() {
             qrCodeDialog.show()
         }
 
-        val usersChildListener: ChildEventListener = object : ChildEventListener {
-            override fun onChildAdded(dataSnapshot: DataSnapshot, childKey: String?) {
-                currentUser = dataSnapshot.getValue(User::class.java)
+        val usersChildListener: ChildEventListener =
+            object : ChildEventListener {
+                override fun onChildAdded(
+                    dataSnapshot: DataSnapshot,
+                    childKey: String?,
+                ) {
+                    currentUser = dataSnapshot.getValue(User::class.java)
 
-                if (auth.currentUser?.uid == currentUser?.uid) {
-                    username.text = currentUser?.username
-                    email.text = currentUser?.email
-                    uid.text = currentUser?.uid
-                    joined.text = currentUser?.formattedJoined
+                    if (auth.currentUser?.uid == currentUser?.uid) {
+                        username.text = currentUser?.username
+                        email.text = currentUser?.email
+                        uid.text = currentUser?.uid
+                        joined.text = currentUser?.formattedJoined
 
-                    getFCMToken()
+                        getFCMToken()
+                    }
                 }
-            }
 
-            override fun onChildChanged(dataSnapshot: DataSnapshot, childKey: String?) {}
-            override fun onChildMoved(dataSnapshot: DataSnapshot, childKey: String?) {}
-            override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
-            override fun onCancelled(error: DatabaseError) {}
-        }
+                override fun onChildChanged(
+                    dataSnapshot: DataSnapshot,
+                    childKey: String?,
+                ) {}
+
+                override fun onChildMoved(
+                    dataSnapshot: DataSnapshot,
+                    childKey: String?,
+                ) {}
+
+                override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
+
+                override fun onCancelled(error: DatabaseError) {}
+            }
 
         users.addChildEventListener(usersChildListener)
 
-        authDeleteUserListener = OnCompleteListener<Void> { task ->
-            val errorMessage = task.exception?.message ?: ""
+        authDeleteUserListener =
+            OnCompleteListener<Void> { task ->
+                val errorMessage = task.exception?.message ?: ""
 
-            if (task.isSuccessful) {
-                DatabaseUtil.deleteUser { error ->
-                    Log.e(
-                        TAG,
-                        "Failed to delete user: " + error.message
-                    )
-                }
-                DatabaseUtil.deleteProfileImage { error ->
-                    Log.e(
-                        TAG,
-                        "Failed to delete profile image: " + error.message
-                    )
-                }
+                if (task.isSuccessful) {
+                    DatabaseUtil.deleteUser { error ->
+                        Log.e(
+                            TAG,
+                            "Failed to delete user: " + error.message,
+                        )
+                    }
+                    DatabaseUtil.deleteProfileImage { error ->
+                        Log.e(
+                            TAG,
+                            "Failed to delete profile image: " + error.message,
+                        )
+                    }
 
-                intent.setClass(applicationContext, StartActivity::class.java)
-                startActivity(intent)
-                finish()
-            } else {
-                Log.e(TAG, errorMessage)
-                Util.showMessage(applicationContext, errorMessage)
+                    intent.setClass(applicationContext, StartActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Log.e(TAG, errorMessage)
+                    Util.showMessage(applicationContext, errorMessage)
+                }
             }
-        }
     }
 
     private fun initializeLogic() {

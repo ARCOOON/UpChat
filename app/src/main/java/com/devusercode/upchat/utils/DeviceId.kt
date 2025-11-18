@@ -15,19 +15,20 @@ object DeviceId {
         } else {
             getCpuAbi()
         }
-        */
+         */
 
         val cpuABI: Int = getCpuAbi()
 
         val devIdShort =
             "35${Build.BOARD.length % 10}${Build.BRAND.length % 10}${cpuABI}${Build.DEVICE.length % 10}${Build.MANUFACTURER.length % 10}${Build.MODEL.length % 10}${Build.PRODUCT.length % 10}"
 
-        val serial: String? = try {
-            // Build::class.java.getField("SERIAL").get(null)?.toString()
-            Build.getSerial()
-        } catch (exception: Exception) {
-            ""
-        }
+        val serial: String? =
+            try {
+                // Build::class.java.getField("SERIAL").get(null)?.toString()
+                Build.getSerial()
+            } catch (exception: Exception) {
+                ""
+            }
 
         return UUID(devIdShort.hashCode().toLong(), serial.hashCode().toLong()).toString()
     }

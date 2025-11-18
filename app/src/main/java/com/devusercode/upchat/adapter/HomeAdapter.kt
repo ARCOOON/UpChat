@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -19,26 +20,31 @@ import com.devusercode.upchat.models.UserPair
 import com.devusercode.upchat.security.AES
 import com.devusercode.upchat.utils.ConversationUtil
 import com.google.android.material.card.MaterialCardView
-import androidx.core.net.toUri
 
 @RequiresApi(Build.VERSION_CODES.O)
-class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeAdapter.HomeViewHolder>() {
+class HomeAdapter(
+    private var data: List<UserPair>,
+) : RecyclerView.Adapter<HomeAdapter.HomeViewHolder>() {
     private val TAG = "HomeAdapter"
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): HomeViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.item_home_user, parent, false)
         return HomeViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: HomeViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: HomeViewHolder,
+        position: Int,
+    ) {
         val pair = data[position]
         holder.bind(pair)
     }
 
-    override fun getItemCount(): Int {
-        return data.size
-    }
+    override fun getItemCount(): Int = data.size
 
     @SuppressLint("NotifyDataSetChanged")
     fun update(newData: List<UserPair>) {
@@ -46,7 +52,9 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
         notifyDataSetChanged()
     }
 
-    class HomeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class HomeViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
         var username: TextView = view.findViewById(R.id.username)
         private var lastMessageText: TextView = view.findViewById(R.id.last_message_text)
         private var lastMessageTime: TextView = view.findViewById(R.id.last_message_time)
@@ -68,7 +76,8 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
             }
 
             if (user.photoUrl!!.isNotEmpty()) {
-                Glide.with(profileImage.context)
+                Glide
+                    .with(profileImage.context)
                     .load(user.photoUrl?.toUri())
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .placeholder(R.drawable.ic_account_circle_black)
@@ -88,7 +97,6 @@ class HomeAdapter(private var data: List<UserPair>) : RecyclerView.Adapter<HomeA
                 if (lastMsg.senderId.equals("system")) {
                     lastMessageText.visibility = View.GONE
                     lastMessageTime.visibility = View.GONE
-
                 } else if (lastMsg.type == "image") {
                     lastMessageText.text = username.context.getString(R.string.home_last_message_photo)
                     lastMessageTime.text = lastMsg.parsedTime

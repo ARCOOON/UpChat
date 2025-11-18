@@ -11,7 +11,9 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.function.Consumer
 
-enum class ErrorCodes(val message: String) {
+enum class ErrorCodes(
+    val message: String,
+) {
     USER_NOT_FOUND("User not found"),
     SUCCESS("Success"),
     UNKNOWN_ERROR("Unknown error"),
@@ -20,7 +22,6 @@ enum class ErrorCodes(val message: String) {
     NO_PROP_TO_SERIALIZE("No properties to serialize found on class"),
     NO_PROP_TO_SERIALIZE_FOR_FIELD("No properties to serialize for field"),
 }
-
 
 class UserUtils {
     companion object {
@@ -53,7 +54,10 @@ class UserUtils {
                 get() = error == null && user != null && code == ErrorCodes.SUCCESS
         }
 
-        fun getUserByUid(uid: String, onFinish: Consumer<Result>) {
+        fun getUserByUid(
+            uid: String,
+            onFinish: Consumer<Result>,
+        ) {
             val usersRef = FirebaseDatabase.getInstance().getReference(REF).child(uid)
 
             CoroutineScope(Dispatchers.IO).launch {
@@ -88,14 +92,23 @@ class UserUtils {
             }
         }
 
-
-        fun update(field: String?, value: Any?) {
+        fun update(
+            field: String?,
+            value: Any?,
+        ) {
             val user = FirebaseAuth.getInstance().currentUser ?: return
 
             val uid = user.uid
-            val ref = FirebaseDatabase.getInstance().reference.child("users").child(uid)
+            val ref =
+                FirebaseDatabase
+                    .getInstance()
+                    .reference
+                    .child("users")
+                    .child(uid)
 
-            ref.child(field!!).setValue(value)
+            ref
+                .child(field!!)
+                .setValue(value)
                 .addOnFailureListener { error: Exception -> Log.e(TAG, error.message!!) }
         }
     }

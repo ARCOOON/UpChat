@@ -20,18 +20,25 @@ import com.devusercode.upchat.security.MAC
 import com.devusercode.upchat.security.MessageIntegrity
 import com.devusercode.upchat.utils.GetTimeAgo
 
-class ReceivedImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view) {
+class ReceivedImageViewHolder(
+    private var view: View,
+) : RecyclerView.ViewHolder(view) {
     private val TAG = "MessageAdapter@${this.javaClass.simpleName}"
 
     private var messageView: TextView = view.findViewById(R.id.message_content)
     private var imageView: ImageView = view.findViewById(R.id.image_view)
     private var timeView: TextView = view.findViewById(R.id.message_time)
     private var cardView: LinearLayout = view.findViewById(R.id.materialcardview1)
+
     // private var rootLayout: LinearLayout = view.findViewById(R.id.root_layout)
     private var verified: ImageView = view.findViewById(R.id.message_verified)
 
     @RequiresApi(Build.VERSION_CODES.S)
-    fun bind(model: Message, cid: String, sharedSecret: String) {
+    fun bind(
+        model: Message,
+        cid: String,
+        sharedSecret: String,
+    ) {
         val aes = AES(sharedSecret, cid)
         val mac = MAC(sharedSecret, cid)
 
@@ -43,7 +50,7 @@ class ReceivedImageViewHolder(private var view: View) : RecyclerView.ViewHolder(
         if (hasMac) {
             verified.visibility = View.VISIBLE
             verified.setImageResource(
-                if (isVerified) R.drawable.ic_verified_white else R.drawable.ic_round_error_white
+                if (isVerified) R.drawable.ic_verified_white else R.drawable.ic_round_error_white,
             )
         } else {
             verified.visibility = View.GONE
@@ -54,7 +61,8 @@ class ReceivedImageViewHolder(private var view: View) : RecyclerView.ViewHolder(
 
         Log.d(TAG, "Url: ${model.url}")
 
-        Glide.with(view.context)
+        Glide
+            .with(view.context)
             .load(model.url?.toUri())
             .override(700, 900)
             .diskCacheStrategy(DiskCacheStrategy.ALL)

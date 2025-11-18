@@ -34,16 +34,19 @@ class MessagingService : FirebaseMessagingService() {
         Log.d(TAG, "Message Uid: $uid")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = NotificationChannel(
-                CHANNEL_ID,
-                "My Notifications",
-                NotificationManager.IMPORTANCE_HIGH
-            )
+            val notificationChannel =
+                NotificationChannel(
+                    CHANNEL_ID,
+                    "My Notifications",
+                    NotificationManager.IMPORTANCE_HIGH,
+                )
 
-            val mBuilder: NotificationCompat.Builder = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.app_icon)
-                .setContentTitle(notificationTitle)
-                .setContentText(notificationMessage)
+            val mBuilder: NotificationCompat.Builder =
+                NotificationCompat
+                    .Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.app_icon)
+                    .setContentTitle(notificationTitle)
+                    .setContentText(notificationMessage)
 
             notificationManager.createNotificationChannel(notificationChannel)
 

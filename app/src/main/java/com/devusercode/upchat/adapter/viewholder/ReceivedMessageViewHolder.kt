@@ -15,7 +15,9 @@ import com.devusercode.upchat.security.MessageIntegrity
 import com.devusercode.upchat.utils.GetTimeAgo
 
 @RequiresApi(Build.VERSION_CODES.O)
-class ReceivedMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class ReceivedMessageViewHolder(
+    view: View,
+) : RecyclerView.ViewHolder(view) {
     private val TAG = "MessageAdapter@${this.javaClass.simpleName}"
 
     var message: TextView
@@ -32,7 +34,11 @@ class ReceivedMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         verified = view.findViewById(R.id.message_verified)
     }
 
-    fun bind(model: Message, cid: String, sharedSecret: String) {
+    fun bind(
+        model: Message,
+        cid: String,
+        sharedSecret: String,
+    ) {
         val aes = AES(sharedSecret, cid)
         val mac = MAC(sharedSecret, cid)
 
@@ -44,7 +50,7 @@ class ReceivedMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         if (hasMac) {
             verified.visibility = View.VISIBLE
             verified.setImageResource(
-                if (isVerified) R.drawable.ic_verified_white else R.drawable.ic_round_error_white
+                if (isVerified) R.drawable.ic_verified_white else R.drawable.ic_round_error_white,
             )
         } else {
             verified.visibility = View.GONE

@@ -30,9 +30,13 @@ class Application : android.app.Application() {
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
             intent.putExtra("error", Log.getStackTraceString(throwable))
 
-            val pendingIntent = PendingIntent.getActivity(
-                applicationContext, 11111, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
-            )
+            val pendingIntent =
+                PendingIntent.getActivity(
+                    applicationContext,
+                    11111,
+                    intent,
+                    PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE,
+                )
 
             val am = getSystemService(ALARM_SERVICE) as AlarmManager
             am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 1000, pendingIntent)

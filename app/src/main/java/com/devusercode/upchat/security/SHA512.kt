@@ -32,8 +32,9 @@ class SHA512 {
             return hexString.toString()
         }
 
-        fun validate(messageSHA512: String, generatedSHA512: String): Boolean {
-            return messageSHA512 == generatedSHA512
-        }
+        fun validate(
+            messageSHA512: String,
+            generatedSHA512: String,
+        ): Boolean = messageSHA512 == generatedSHA512
     }
 }

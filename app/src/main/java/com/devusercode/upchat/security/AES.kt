@@ -9,18 +9,22 @@ import javax.crypto.IllegalBlockSizeException
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-class AES(private val sharedSecret: String, private val salt: String) {
+class AES(
+    private val sharedSecret: String,
+    private val salt: String,
+) {
     private val algorithm = "AES/CBC/PKCS5Padding"
     private val keySize = 16 // 128-bit key
     private val ivSize = 16 // 128-bit IV
     private val secureRandom = SecureRandom()
     private val derivedKey: SecretKeySpec by lazy {
-        val keyMaterial = Hkdf.derive(
-            sharedSecret.toByteArray(StandardCharsets.UTF_8),
-            salt.toByteArray(StandardCharsets.UTF_8),
-            "UpChat-AES-Key".toByteArray(StandardCharsets.UTF_8),
-            keySize
-        )
+        val keyMaterial =
+            Hkdf.derive(
+                sharedSecret.toByteArray(StandardCharsets.UTF_8),
+                salt.toByteArray(StandardCharsets.UTF_8),
+                "UpChat-AES-Key".toByteArray(StandardCharsets.UTF_8),
+                keySize,
+            )
         SecretKeySpec(keyMaterial, "AES")
     }
 
@@ -39,8 +43,8 @@ class AES(private val sharedSecret: String, private val salt: String) {
         return Base64.encodeToString(ivAndCiphertext, Base64.NO_WRAP)
     }
 
-    fun decrypt(encryptedText: String): String {
-        return try {
+    fun decrypt(encryptedText: String): String =
+        try {
             val ivAndCiphertext = Base64.decode(encryptedText, Base64.DEFAULT)
 
             if (ivAndCiphertext.size < ivSize) {
@@ -63,7 +67,6 @@ class AES(private val sharedSecret: String, private val salt: String) {
                 encryptedText
             }
         }
-    }
 
     companion object {
         fun buildSharedSecret(vararg identifiers: String?): String {

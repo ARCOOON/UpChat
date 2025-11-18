@@ -3,16 +3,20 @@ package com.devusercode.upchat.utils
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.util.Log
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
-import androidx.core.graphics.createBitmap
-import androidx.core.graphics.set
 
 class QRCode {
     companion object {
-        fun create(data: String?, width: Int, height: Int): Bitmap? {
+        fun create(
+            data: String?,
+            width: Int,
+            height: Int,
+        ): Bitmap? {
             val writer = QRCodeWriter()
             var bitmap: Bitmap? = null
 

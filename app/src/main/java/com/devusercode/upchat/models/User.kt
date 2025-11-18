@@ -14,29 +14,31 @@ data class User(
     var uid: String? = null,
     var photoUrl: String? = null,
     var conversations: Map<String, String>? = null,
-    var publicKey: String? = null
+    var publicKey: String? = null,
 ) {
     fun getConversationIds(): List<String> = conversations?.values?.toList() ?: emptyList()
 
     fun getUids(): List<String> = conversations?.keys?.toList() ?: emptyList()
 
     val formattedJoined: String
-        get() = joined.let {
-            val date = Date(it!!.toLong())
-            SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(date)
-        } ?: ""
+        get() =
+            joined.let {
+                val date = Date(it!!.toLong())
+                SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(date)
+            } ?: ""
 
     val info: Map<String, Any?>
-        get() = mapOf(
-            "deviceId" to deviceId,
-            "deviceToken" to deviceToken,
-            "username" to username,
-            "email" to email,
-            "uid" to uid,
-            "photoUrl" to photoUrl,
-            "publicKey" to publicKey,
-            "joined" to joined,
-            "online" to online,
-            "conversations" to conversations
-        )
+        get() =
+            mapOf(
+                "deviceId" to deviceId,
+                "deviceToken" to deviceToken,
+                "username" to username,
+                "email" to email,
+                "uid" to uid,
+                "photoUrl" to photoUrl,
+                "publicKey" to publicKey,
+                "joined" to joined,
+                "online" to online,
+                "conversations" to conversations,
+            )
 }

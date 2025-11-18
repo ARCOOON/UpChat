@@ -1,8 +1,8 @@
 package com.devusercode.upchat
 
 import android.content.Intent
-import android.os.Bundle
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -91,10 +91,12 @@ class HomeActivity : AppCompatActivity() {
 
     private fun loadUser() {
         if (storageController.contains("user")) {
-            user = storageController.getUser("user")
-                .also {
-                    Log.d(TAG, "User from Storage: ${it?.info}")
-                }
+            user =
+                storageController
+                    .getUser("user")
+                    .also {
+                        Log.d(TAG, "User from Storage: ${it?.info}")
+                    }
         } else {
             UserUtils.getUserByUid(auth.currentUser!!.uid) { result ->
                 if (result.code == ErrorCodes.SUCCESS) {
@@ -112,7 +114,9 @@ class HomeActivity : AppCompatActivity() {
         }
 
         if (user != null) {
-            FirebaseDatabase.getInstance().getReference("users")
+            FirebaseDatabase
+                .getInstance()
+                .getReference("users")
                 .child(user?.uid!!)
                 .child(Key.User.ONLINE)
                 .onDisconnect()
@@ -160,24 +164,28 @@ class HomeActivity : AppCompatActivity() {
     private fun setupUserOnlineStatusListener(userId: String) {
         val userRef = FirebaseDatabase.getInstance().getReference("users").child(userId)
 
-        val listener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.child("online").exists()) {
-                    val isOnline =
-                        dataSnapshot.child("online").getValue(String::class.java)?.toBoolean()
-                    isOnline?.let { updateOnlineStatus(userId, it) }
+        val listener =
+            object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.child("online").exists()) {
+                        val isOnline =
+                            dataSnapshot.child("online").getValue(String::class.java)?.toBoolean()
+                        isOnline?.let { updateOnlineStatus(userId, it) }
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.d(TAG, "setupUserOnlineStatusListener -> onCancelled: ${databaseError.message}")
                 }
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.d(TAG, "setupUserOnlineStatusListener -> onCancelled: ${databaseError.message}")
-            }
-        }
         userRef.addValueEventListener(listener)
         userListeners[userId] = listener
     }
 
-    private fun updateOnlineStatus(userId: String, isOnline: Boolean) {
+    private fun updateOnlineStatus(
+        userId: String,
+        isOnline: Boolean,
+    ) {
         openConversations?.forEach { userPair ->
             if (userPair.user.uid == userId) {
                 userPair.user.online = isOnline.toString()

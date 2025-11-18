@@ -64,14 +64,17 @@ class RegisterActivity : AppCompatActivity() {
 
         FirebaseApp.initializeApp(this)
 
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                token = task.result
+        FirebaseMessaging
+            .getInstance()
+            .token
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    token = task.result
+                }
+            }.addOnFailureListener { error ->
+                token = null
+                Log.e(TAG, error.message!!)
             }
-        }.addOnFailureListener { error ->
-            token = null
-            Log.e(TAG, error.message!!)
-        }
 
         /*
          * Activity Logic:
@@ -121,16 +124,21 @@ class RegisterActivity : AppCompatActivity() {
 
         uploadProfileImageButton.setOnClickListener { imagePickerLauncher.launch("image/*") }
 
-        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { result ->
-            if (result != null) {
-                imagePath = result
-                profileImage.setImageURI(result)
+        imagePickerLauncher =
+            registerForActivityResult(ActivityResultContracts.GetContent()) { result ->
+                if (result != null) {
+                    imagePath = result
+                    profileImage.setImageURI(result)
+                }
             }
-        }
 
         registerButton.setOnClickListener {
-            if (usernameEdit.text.toString().isEmpty() || (emailEdit.text.toString()
-                    .isEmpty() || passwordEdit.text.toString().isEmpty())) {
+            if (usernameEdit.text.toString().isEmpty() || (
+                    emailEdit.text
+                        .toString()
+                        .isEmpty() || passwordEdit.text.toString().isEmpty()
+                )
+            ) {
                 return@setOnClickListener
             }
 
@@ -141,7 +149,8 @@ class RegisterActivity : AppCompatActivity() {
 
             progressDialog.show()
 
-            auth.createUserWithEmailAndPassword(emailEdit.text.toString(), passwordEdit.text.toString())
+            auth
+                .createUserWithEmailAndPassword(emailEdit.text.toString(), passwordEdit.text.toString())
                 .addOnCompleteListener {
                     uploadProfileImage()
                 }.addOnFailureListener { error ->
@@ -167,10 +176,14 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun updateUserProfile() {
-        val updates = UserProfileChangeRequest.Builder()
-            .setDisplayName(usernameEdit.text.toString()).build()
+        val updates =
+            UserProfileChangeRequest
+                .Builder()
+                .setDisplayName(usernameEdit.text.toString())
+                .build()
 
-        auth.currentUser?.updateProfile(updates)
+        auth.currentUser
+            ?.updateProfile(updates)
             ?.addOnCompleteListener { task -> run { createUserProfile(task) } }
             ?.addOnFailureListener { error ->
                 progressDialog.dismiss()
