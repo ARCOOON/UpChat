@@ -51,18 +51,18 @@ jobs:
           build-mode: ${{ matrix.build-mode }}
           # queries: security-extended,security-and-quality
 
+      - name: Write google-services.json
+        if: ${{ secrets.GOOGLE_SERVICES_JSON != '' }}
+        shell: bash
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > app/src/debug/google-services.json
+
       # Manual build for compiled languages when build-mode == manual
       - name: Run manual build steps
         if: matrix.build-mode == 'manual'
         shell: bash
         run: |
           set -euxo pipefail
-          # Writing google services file
-          echo ${{ secrets.GOOGLE_SERVICES_JSON }} > ${{ github.workspace }}/app/google-services.json
-          # Setup permissions for gradlew
           chmod +x ./gradlew
-          # Build the Android project so CodeQL can see compiled classes.
-          # Adjust the task if your main CI uses a different one.
           ./gradlew --no-daemon clean assembleDebug
 
       - name: Perform CodeQL Analysis
