@@ -50,8 +50,9 @@ google-services.json
 *.hprof
 
 # Windows batch scripts
-/scripts
+scripts/**
 *.bat
+*.ps1
 
 # All text files
 *.txt
