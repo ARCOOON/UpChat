@@ -53,6 +53,7 @@ google-services.json
 scripts/**
 *.bat
 *.ps1
+scripts/gen-signingkey.ps1
 
 # All text files
 *.txt
