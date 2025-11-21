@@ -17,7 +17,8 @@ local.properties
 captures/
 .externalNativeBuild/
 .cxx/
-.run/
+.run
+.kotlin
 *.apk
 output.json
 
@@ -60,4 +61,3 @@ google-services.json
 
 # Some info files
 firebase-rl-db-rules.json
-/.run/
