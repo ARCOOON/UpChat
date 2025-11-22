@@ -111,7 +111,7 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.11.0'
 
     implementation 'androidx.appcompat:appcompat:1.7.1'
-    implementation 'androidx.lifecycle:lifecycle-process:2.9.4'
+    implementation 'androidx.lifecycle:lifecycle-process:2.10.0'
     implementation 'androidx.security:security-crypto-ktx:1.1.0'
     implementation 'androidx.datastore:datastore-preferences:1.1.7'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
