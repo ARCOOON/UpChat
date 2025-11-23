@@ -51,9 +51,10 @@ jobs:
           build-mode: ${{ matrix.build-mode }}
           # queries: security-extended,security-and-quality
 
-      - name: Write google-services.json
-        shell: bash
-        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > app/src/debug/google-services.json
+      - name: Setup google-services.json
+        env:
+          google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $google_service > ${{ github.workspace }}/app/google-services.json
 
       # Manual build for compiled languages when build-mode == manual
       - name: Run manual build steps
