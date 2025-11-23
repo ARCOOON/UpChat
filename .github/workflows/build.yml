@@ -4,6 +4,7 @@ name: Build App
 on:
   # Trigger on push in main
   push:
+    branches: [ main, v2 ]
     paths:
       - 'app/**'
       - 'gradle.properties'
