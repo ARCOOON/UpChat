@@ -1,0 +1,71 @@
+# CodeQL analysis workflow for UpChat
+# Updated to use manual build for java-kotlin and avoid CodeQL autobuild failures.
+
+name: "CodeQL Advanced"
+
+on:
+  push:
+    branches: [ "main", "v2" ]
+  pull_request:
+    branches: [ "main", "v2" ]
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    # Runner size impacts CodeQL analysis time.
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    permissions:
+      # required for all workflows
+      security-events: write
+
+      # required to fetch internal or private CodeQL packs
+      packages: read
+
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            build-mode: none
+          - language: java-kotlin
+            # autobuild fails for this repo, so we switch to manual and run Gradle ourselves
+            build-mode: manual
+        # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift'
+        # Use `c-cpp` to analyze code written in C, C++ or both
+        # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
+        # Use 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          # queries: security-extended,security-and-quality
+
+      - name: Setup google-services.json
+        env:
+          google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $google_service > ${{ github.workspace }}/app/google-services.json
+
+      # Manual build for compiled languages when build-mode == manual
+      - name: Run manual build steps
+        if: matrix.build-mode == 'manual'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          chmod +x ./gradlew
+          ./gradlew --no-daemon clean assembleDebug
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:${{ matrix.language }}"

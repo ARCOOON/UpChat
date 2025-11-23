@@ -1,0 +1,141 @@
+name: Build App
+
+# Triggers the workflow
+on:
+  # Trigger on push in main
+  push:
+    branches: [ main, v2 ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Runner label to use (ubuntu-latest or self-hosted)'
+        required: false
+        default: ubuntu-latest
+        type: choice
+        options:
+          - ubuntu-latest
+          - self-hosted
+
+jobs:
+  build:
+    runs-on: ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'ubuntu-latest' }}
+
+    permissions:
+      contents: read
+
+    env:
+      JAVA_VERSION: "17"
+      GRADLE_USER_HOME: ~/.gradle
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'oracle'
+          cache: 'gradle'
+
+      - name: Wipe Gradle caches (kill stale Kotlin transforms)
+        run: |
+          rm -rf ~/.gradle/caches/*
+          rm -rf ~/.gradle/caches
+          rm -rf ~/.gradle/configuration-cache
+
+      # Official Gradle action. Handles wrapper validation and caching of Gradle User Home.
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: false
+          cache-cleanup: always
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          # packages: 'platform-tools platforms;android-35 build-tools;35.0.1 extras;google;m2repository extras;android;m2repository'
+          cmdline-tools-version: 12266719 # Command line tools 16.0
+          log-accepted-android-sdk-licenses: false
+
+      - name: Setup google-services.json
+        env:
+          google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $google_service > ${{ github.workspace }}/app/google-services.json
+
+      - name: Cleaning builds
+        run: ./gradlew clean
+
+      - name: Run gradle checks
+        run: ./gradlew --warning-mode summary check
+
+      - name: Run gradle tests
+        run: ./gradlew --warning-mode summary test
+
+      - name: Build Release Artifacts
+        id: build_release
+        run: |
+          set -e
+
+          echo "Building APK..."
+          ./gradlew assembleRelease --stacktrace
+          apk_file=$(find app/build/outputs/apk/release -type f -name "*.apk" -print -quit)
+
+          echo "Building AAB..."
+          ./gradlew bundleRelease --stacktrace
+          aab_file=$(find app/build/outputs/bundle/release -type f -name "*.aab" -print -quit)
+
+          echo "APK:  $apk_file"
+          echo "AAB:  $aab_file"
+
+          {
+            echo "apkfile=$apk_file"
+            echo "aabfile=$aab_file"
+          } >> "$GITHUB_ENV"
+
+          {
+            echo "apkfile=$apk_file"
+            echo "aabfile=$aab_file"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload Release Artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: UpChat-Release
+          if-no-files-found: error
+          compression-level: 0
+          path: |
+            ${{ steps.build_release.outputs.apkfile }}
+            ${{ steps.build_release.outputs.aabfile }}
+
+      - name: Copying Linting Results
+        run: cp ${{ github.workspace }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html
+
+      - name: Upload Check Results to Artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: Linting_Result
+          path: ./lint-results-debug.html
+          if-no-files-found: ignore
+          retention-days: 7
+          compression-level: 0
+
+      - name: Upload problem report on failure
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: gradle-problem-report
+          path: |
+            ${{ github.workspace }}/app/build/reports/problems/problems-report.html
+            ${{ github.workspace }}/app/build/reports/problems/
+          if-no-files-found: ignore
+          retention-days: 7
+          compression-level: 0

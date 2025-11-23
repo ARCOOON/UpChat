@@ -1,0 +1,49 @@
+name: Dependabot Validation
+
+on:
+  pull_request:
+    branches: [ main, v2 ]
+    paths:
+      - 'app/**'
+      - 'gradle.properties'
+      - 'settings.gradle'
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+
+jobs:
+  dependabot-build:
+    name: Validate Dependabot PR
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Write google-services.json
+        run: |
+          if [ -z "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
+            echo "Error: GOOGLE_SERVICES_JSON is not set or empty."
+            exit 1
+          fi
+          printf '%s' "${{ secrets.GOOGLE_SERVICES_JSON }}" > app/google-services.json
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Run lint
+        run: ./gradlew lintDebug --stacktrace
