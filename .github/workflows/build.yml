@@ -5,8 +5,6 @@ on:
   # Trigger on push in main
   push:
     branches: [ main, v2 ]
-    paths:
-      - '!.github/*'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
