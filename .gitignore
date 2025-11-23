@@ -1,4 +1,4 @@
-# === ANDROID / GRADLE ===
+# Gradle
 .gradle/
 build/
 **/build/
@@ -6,26 +6,28 @@ build/
 local.properties
 *.log
 
-# === ANDROID STUDIO ===
+# Android Studio
 .idea/
 !.idea/codeStyles/
 .idea/runConfigurations/
 .idea/runConfigurations/*.xml   # Ignore run configs
-
-# === RUN CONFIGS ===
 *.run.xml
 
-# === SCRIPTS ===
+# Scripts
 scripts/*
-!scripts/*.sh
-!scripts/*.ps1
 
-# === KEYSTORES ===
+# Signing Keystores
 keystores/
+keystores/*
 keystore.properties
 
-# === OTHER ===
+# Google Services
+google-services.json
+**/google-services.json
+
+# MacOS Meta info
 .DS_Store
+Thumbs.db
 
 # Ignore all .md except README.md
 *.md
