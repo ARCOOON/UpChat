@@ -1,69 +1,32 @@
-# Gradle files
+# === ANDROID / GRADLE ===
 .gradle/
 build/
+**/build/
 
-# Gradlew scripts
-gradlew
-gradlew.bat
-
-# Local configuration file (sdk path, etc)
 local.properties
-/local.properties
-
-# Log/OS Files
 *.log
 
-# Android Studio generated files and folders
-captures/
-.externalNativeBuild/
-.cxx/
-.run
-/.run/
-.kotlin
-*.apk
-output.json
-
-# IntelliJ
-*.iml
+# === ANDROID STUDIO ===
 .idea/
-misc.xml
-deploymentTargetDropDown.xml
-render.experimental.xml
+!.idea/codeStyles/
+.idea/runConfigurations/
+.idea/runConfigurations/*.xml   # Ignore run configs
 
-# Keystore files
-*.jks
-*.keystore
+# === RUN CONFIGS ===
+*.run.xml
 
-# Debug Keystore (will be removed in the future)
-debug-keystore.jks
+# === SCRIPTS ===
+scripts/*
+!scripts/*.sh
+!scripts/*.ps1
+
+# === KEYSTORES ===
+keystores/
 keystore.properties
-keystore/
 
-# Json files (Experimental)
-*.json
-
-# Google Services (e.g. APIs or Firebase)
-/app/google-services.json
-google-services.json
-
-# Android Profiling
-*.hprof
-
-# Windows batch scripts
-scripts/**
-*.bat
-*.ps1
-scripts/gen-signingkey.ps1
-
-# All text files
-*.txt
-
-# Ignore all .md files except README.md
-*.md
-!README.md
-
-# macOS Desktop Services Store
+# === OTHER ===
 .DS_Store
 
-/scripts/
-scripts/
+# Ignore all .md except README.md
+*.md
+!README.md
