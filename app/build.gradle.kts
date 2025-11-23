@@ -1,4 +1,14 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileInputStream
+import java.util.Properties
+
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties =
+    Properties().apply {
+        if (keystorePropertiesFile.exists()) {
+            load(FileInputStream(keystorePropertiesFile))
+        }
+    }
 
 plugins {
     id("com.android.application")
@@ -26,13 +36,43 @@ android {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        // Release signing config, only configured if keystore.properties exists
+        create("release") {
+            if (keystoreProperties.isNotEmpty()) {
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            }
+        }
+
+        getByName("debug") {
+            if (keystoreProperties.isNotEmpty()) {
+                storeFile = file(keystoreProperties["debugStoreFile"] as String)
+                storePassword = keystoreProperties["debugStorePassword"] as String
+                keyAlias = keystoreProperties["debugKeyAlias"] as String
+                keyPassword = keystoreProperties["debugKeyPassword"] as String
+            }
+        }
+    }
+
     buildTypes {
-        release {
-            isMinifyEnabled = false
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+        }
+
+        getByName("debug") {
+            isDebuggable = true
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
