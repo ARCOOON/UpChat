@@ -113,7 +113,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":ui"))
 
-    implementation(platform("androidx.compose:compose-bom:2025.11.00"))
+    implementation(platform("androidx.compose:compose-bom:2025.11.01"))
     implementation("androidx.activity:activity-compose:1.11.0")
     implementation("androidx.compose.ui:ui:1.9.4")
     implementation("androidx.compose.ui:ui-tooling-preview:1.9.4")
