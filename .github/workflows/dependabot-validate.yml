@@ -2,9 +2,7 @@ name: Dependabot Validation
 
 on:
   pull_request:
-    branches:
-      - main
-      - v2
+    branches: [ main, v2 ]
     paths:
       - 'app/**'
       - 'gradle.properties'
