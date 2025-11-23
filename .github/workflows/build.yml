@@ -6,9 +6,7 @@ on:
   push:
     branches: [ main, v2 ]
     paths:
-      - 'app/**'
-      - 'gradle.properties'
-      - 'settings.gradle'
+      - '!.github/*'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
