@@ -266,8 +266,7 @@ object Util {
         min: Int,
         max: Int,
     ): Int {
-        val random = Random()
-
+        val random = SecureRandom()
         require(min <= max) { "Invalid range: min should be less than or equal to max" }
         return random.nextInt(max - min + 1) + min
     }
