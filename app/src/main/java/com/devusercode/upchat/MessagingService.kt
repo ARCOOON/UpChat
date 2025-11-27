@@ -13,7 +13,10 @@ import com.google.firebase.messaging.RemoteMessage
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class MessagingService : FirebaseMessagingService() {
+    @Suppress("ktlint:standard:property-naming")
     private val TAG = "FCM"
+
+    @Suppress("ktlint:standard:property-naming")
     private val CHANNEL_ID = "personal_notifications"
 
     override fun onMessageReceived(message: RemoteMessage) {
