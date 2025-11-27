@@ -5,26 +5,26 @@
 
 version: 2
 
-registries:
-  maven-google:
-    type: maven-repository
-    url: "https://dl.google.com/dl/android/maven2/"
-
-  maven-central:
-    type: maven-repository
-    url: "https://repo.maven.apache.org/maven2"
-
-  jitpack:
-    type: maven-repository
-    url: "https://jitpack.io"
+#registries:
+#  maven-google:
+#    type: maven-repository
+#    url: "https://dl.google.com/dl/android/maven2/"
+#
+#  maven-central:
+#    type: maven-repository
+#    url: "https://repo.maven.apache.org/maven2"
+#
+#  jitpack:
+#    type: maven-repository
+#    url: "https://jitpack.io"
 
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
-    registries:
-      - maven-central
-      - maven-google
-      - jitpack
+#    registries:
+#      - maven-central
+#      - maven-google
+#      - jitpack
     schedule:
       interval: "daily"
     commit-message:
