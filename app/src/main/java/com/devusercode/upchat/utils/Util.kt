@@ -31,6 +31,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.Random
+import java.security.SecureRandom
 
 object Util {
     private const val TAG = "Util"
