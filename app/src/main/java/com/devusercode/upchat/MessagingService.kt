@@ -54,12 +54,12 @@ class MessagingService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(notificationChannel)
 
             // Fix: Map clickAction to an explicit Activity class.
-            val targetClass = when (clickAction) {
-                // TODO: Replace these example cases with your app's actual clickAction mapping
-                "OPEN_CHAT" -> ChatActivity::class.java
-                "OPEN_PROFILE" -> ProfileActivity::class.java
-                else -> MainActivity::class.java
-            }
+            val targetClass =
+                when (clickAction) {
+                    "OPEN_CHAT" -> ConversationActivity::class.java
+                    "OPEN_PROFILE" -> UserProfileActivity::class.java
+                    else -> HomeActivity::class.java
+                }
             val intent = Intent(this, targetClass)
             intent.putExtra("uid", uid)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
