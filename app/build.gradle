@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 static def getVersionCode(versionName) {
     def parts = versionName.split(/[-.]/)
     def major = parts[0] as int
@@ -74,7 +76,7 @@ android {
     }
 
     // Configure Kotlin compile tasks to target JVM 21
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    tasks.withType(KotlinCompile).configureEach {
         kotlinOptions {
             jvmTarget = '21'
         }
