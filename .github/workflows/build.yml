@@ -71,6 +71,44 @@ jobs:
           google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo $google_service > ${{ github.workspace }}/app/google-services.json
 
+      - name: Generate Testing keystores
+        run: |
+          mkdir -p keystores
+
+          keytool -genkeypair \
+            -alias upchat_test_release \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 365 \
+            -keystore keystores/release-key.jks \
+            -storepass testpassword \
+            -keypass testpassword \
+            -dname "CN=UpChat Test Release, OU=CI, O=DevUserCode, L=CI, S=CI, C=AT" \
+            -noprompt
+
+          keytool -genkeypair \
+            -alias upchat_test_debug \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 365 \
+            -keystore keystores/debug-key.jks \
+            -storepass testpassword \
+            -keypass testpassword \
+            -dname "CN=UpChat Test Debug, OU=CI, O=DevUserCode, L=CI, S=CI, C=AT" \
+            -noprompt
+
+          cat > keystore.properties << 'EOF'
+          storeFile=keystores/release-key.jks
+          storePassword=testpassword
+          keyAlias=upchat_test_release
+          keyPassword=testpassword
+          debugStoreFile=keystores/debug-key.jks
+          debugStorePassword=testpassword
+          debugKeyAlias=upchat_test_debug
+          debugKeyPassword=testpassword
+          EOF
+        shell: bash
+
       - name: Cleaning builds
         run: ./gradlew clean
 
@@ -85,12 +123,10 @@ jobs:
         run: |
           set -e
 
-          echo "Building APK..."
-          ./gradlew assembleRelease --stacktrace
-          apk_file=$(find app/build/outputs/apk/release -type f -name "*.apk" -print -quit)
+          echo "Building APK and AAB Bundle..."
+          ./gradlew assembleRelease bundleRelease --no-daemon --stacktrace
 
-          echo "Building AAB..."
-          ./gradlew bundleRelease --stacktrace
+          apk_file=$(find app/build/outputs/apk/release -type f -name "*.apk" -print -quit)
           aab_file=$(find app/build/outputs/bundle/release -type f -name "*.aab" -print -quit)
 
           echo "APK:  $apk_file"
