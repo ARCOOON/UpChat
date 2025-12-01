@@ -61,7 +61,7 @@ android {
                 "proguard-rules.pro",
             )
 
-            if (hasKeystore) {
+            if (keystoreProperties.isNotEmpty()) {
                 // Only attach the release signing config if the keystore exists
                 signingConfig = signingConfigs.getByName("release")
             } else {
