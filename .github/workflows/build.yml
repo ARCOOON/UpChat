@@ -106,9 +106,9 @@ jobs:
           debugStorePassword=testpassword
           debugKeyAlias=upchat_test_debug
           debugKeyPassword=testpassword
+          EOF
 
           tree .
-          EOF
         shell: bash
 
       - name: Cleaning builds
