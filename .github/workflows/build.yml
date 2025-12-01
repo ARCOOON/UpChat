@@ -106,6 +106,8 @@ jobs:
           debugStorePassword=testpassword
           debugKeyAlias=upchat_test_debug
           debugKeyPassword=testpassword
+
+          tree .
           EOF
         shell: bash
 
