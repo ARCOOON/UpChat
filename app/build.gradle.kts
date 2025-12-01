@@ -46,33 +46,27 @@ android {
                 keyPassword = keystoreProperties["keyPassword"] as String
             }
         }
-
-        getByName("debug") {
-            if (keystoreProperties.isNotEmpty()) {
-                storeFile = file(keystoreProperties["debugStoreFile"] as String)
-                storePassword = keystoreProperties["debugStorePassword"] as String
-                keyAlias = keystoreProperties["debugKeyAlias"] as String
-                keyPassword = keystoreProperties["debugKeyPassword"] as String
-            }
-        }
     }
 
     buildTypes {
+        getByName("debug") {
+            // normal debug signing via Android default debug keystore
+        }
+
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("release")
-
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-        }
 
-        getByName("debug") {
-            isDebuggable = true
-            isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            if (hasKeystore) {
+                // Only attach the release signing config if the keystore exists
+                signingConfig = signingConfigs.getByName("release")
+            } else {
+                println("[Gradle] No keystore.properties found, release signing is disabled.")
+            }
         }
     }
 
