@@ -1,20 +1,16 @@
-# UpChat | Development Channel
+<div align="center">
 
-UpChat is an open-source, privacy-first messaging application for Android.  
-Modern UI, real-time communication stack, zero-nonsense approach to secure messaging.
-
-[![Building Release (v2)](https://github.com/ARCOOON/UpChat/actions/workflows/build.yml/badge.svg?branch=v2)](https://github.com/ARCOOON/UpChat/actions/workflows/build.yml)
-
----
-
-## Key Value
-
-UpChat is built for developers, power users, and security-conscious individuals seeking a transparent and customizable alternative to mainstream messengers.  
-The project focuses on performance, privacy, and modular architecture, enabling long-term maintainability and rapid feature rollout.
-
----
-
-## Feature Overview
+  # UpChat | Development Channel
+  
+  UpChat is an open-source, privacy-first messaging application for Android.  
+  Modern UI, real-time communication stack, zero-nonsense approach to secure messaging.
+  
+  [![Building Release (v2)](https://github.com/ARCOOON/UpChat/actions/workflows/build.yml/badge.svg?branch=v2)](https://github.com/ARCOOON/UpChat/actions/workflows/build.yml)
+  
+  ---
+  
+  ## Feature Overview
+</div>
 
 ### Core Messaging
 | Feature | Status |
