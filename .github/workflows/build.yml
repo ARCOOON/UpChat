@@ -1,16 +1,15 @@
 name: Build App
 
-# Triggers the workflow
 on:
-  # Trigger on push in main
   push:
-    branches: [ main, v2 ]
+    branches:
+      - main
+      - v2
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
       runner:
-        description: 'Runner label to use (ubuntu-latest or self-hosted)'
+        description: "Runner label to use (ubuntu-latest or self-hosted)"
         required: false
         default: ubuntu-latest
         type: choice
@@ -36,20 +35,27 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Build context
+        run: |
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Ref:        $GITHUB_REF"
+          echo "Commit:     $GITHUB_SHA"
+
       - name: Setup JDK
         uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'oracle'
-          cache: 'gradle'
+          distribution: oracle
+          cache: gradle
 
       - name: Wipe Gradle caches (kill stale Kotlin transforms)
         run: |
+          echo "::group::Wipe Gradle caches"
           rm -rf ~/.gradle/caches/*
           rm -rf ~/.gradle/caches
           rm -rf ~/.gradle/configuration-cache
+          echo "::endgroup::"
 
-      # Official Gradle action. Handles wrapper validation and caching of Gradle User Home.
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
@@ -63,16 +69,17 @@ jobs:
         uses: android-actions/setup-android@v3
         with:
           # packages: 'platform-tools platforms;android-35 build-tools;35.0.1 extras;google;m2repository extras;android;m2repository'
-          cmdline-tools-version: 12266719 # Command line tools 16.0
+          cmdline-tools-version: 12266719
           log-accepted-android-sdk-licenses: false
 
       - name: Setup google-services.json
         env:
           google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $google_service > ${{ github.workspace }}/app/google-services.json
+        run: echo "$google_service" > "${{ github.workspace }}/app/google-services.json"
 
-      - name: Generate Testing keystores
+      - name: Generate testing keystores
         run: |
+          echo "::group::Generate testing keystores"
           mkdir -p keystores
 
           keytool -genkeypair \
@@ -108,25 +115,37 @@ jobs:
           debugKeyPassword=testpassword
           EOF
 
-          tree .
+          echo "Keystore layout:"
+          ls -R
+          echo "::endgroup::"
         shell: bash
 
       - name: Cleaning builds
-        run: ./gradlew clean
+        run: |
+          echo "::group::Gradle clean"
+          ./gradlew clean
+          echo "::endgroup::"
 
       - name: Run gradle checks
-        run: ./gradlew --warning-mode summary check
+        run: |
+          echo "::group::Gradle check"
+          ./gradlew --warning-mode summary check
+          echo "::endgroup::"
 
       - name: Run gradle tests
-        run: ./gradlew --warning-mode summary test
+        run: |
+          echo "::group::Gradle test"
+          ./gradlew --warning-mode summary test
+          echo "::endgroup::"
 
-      - name: Build Release Artifacts
+      - name: Build release artifacts
         id: build_release
         run: |
           set -e
-
+          echo "::group::Gradle assemble release"
           echo "Building APK and AAB Bundle..."
           ./gradlew assembleRelease bundleRelease --no-daemon --stacktrace
+          echo "::endgroup::"
 
           apk_file=$(find app/build/outputs/apk/release -type f -name "*.apk" -print -quit)
           aab_file=$(find app/build/outputs/bundle/release -type f -name "*.aab" -print -quit)
@@ -144,7 +163,7 @@ jobs:
             echo "aabfile=$aab_file"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Upload Release Artifacts
+      - name: Upload release artifacts
         uses: actions/upload-artifact@v5
         with:
           name: UpChat-Release
@@ -154,10 +173,10 @@ jobs:
             ${{ steps.build_release.outputs.apkfile }}
             ${{ steps.build_release.outputs.aabfile }}
 
-      - name: Copying Linting Results
-        run: cp ${{ github.workspace }}/app/build/reports/lint-results-debug.html ./lint-results-debug.html
+      - name: Copy linting results
+        run: cp "${{ github.workspace }}/app/build/reports/lint-results-debug.html" ./lint-results-debug.html
 
-      - name: Upload Check Results to Artifacts
+      - name: Upload check results to artifacts
         uses: actions/upload-artifact@v5
         with:
           name: Linting_Result
@@ -177,3 +196,32 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
           compression-level: 0
+
+      - name: Write build summary
+        if: always()
+        run: |
+          echo "## Android build summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Branch: $GITHUB_REF" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Status: ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "### Artifacts" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${apkfile-}" ]; then
+            echo "- APK: $apkfile (artifact: UpChat-Release)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- APK: not found" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if [ -n "${aabfile-}" ]; then
+            echo "- AAB: $aabfile (artifact: UpChat-Release)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- AAB: not found" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if [ -d "${{ github.workspace }}/app/build/reports" ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "### Reports" >> "$GITHUB_STEP_SUMMARY"
+            find "${{ github.workspace }}/app/build/reports" -maxdepth 3 -type f | sort | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY"
+          fi
