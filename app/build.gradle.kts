@@ -46,28 +46,9 @@ android {
                 keyPassword = keystoreProperties["keyPassword"] as String
             }
         }
-
-        create("debug") {
-            if (keystoreProperties.isNotEmpty()) {
-                storeFile = file(keystoreProperties["debugStoreFile"] as String)
-                storePassword = keystoreProperties["debugStorePassword"] as String
-                keyAlias = keystoreProperties["debugKeyAlias"] as String
-                keyPassword = keystoreProperties["debugKeyPassword"] as String
-            }
-        }
     }
 
     buildTypes {
-        getByName("debug") {
-            // normal debug signing via Android default debug keystore
-            if (keystoreProperties.isNotEmpty()) {
-                // Only attach the debug signing config if the keystore exists
-                signingConfig = signingConfigs.getByName("debug")
-            } else {
-                println("[Gradle] No keystore.properties found, debug signing is disabled.")
-            }
-        }
-
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
