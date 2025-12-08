@@ -49,7 +49,7 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -57,8 +57,8 @@ android {
                 "proguard-rules.pro",
             )
 
+            // Only attach the release signing config if the keystore exists
             if (keystoreProperties.isNotEmpty()) {
-                // Only attach the release signing config if the keystore exists
                 signingConfig = signingConfigs.getByName("release")
             } else {
                 println("[Gradle] No keystore.properties found, release signing is disabled.")
@@ -103,10 +103,10 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":ui"))
 
-    implementation(platform("androidx.compose:compose-bom:2025.11.01"))
-    implementation("androidx.activity:activity-compose:1.12.0")
-    implementation("androidx.compose.ui:ui:1.9.5")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.9.5")
+    implementation(platform("androidx.compose:compose-bom:2025.12.00"))
+    implementation("androidx.activity:activity-compose:1.12.1")
+    implementation("androidx.compose.ui:ui:1.10.0")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.10.0")
     implementation("androidx.compose.material3:material3:1.4.0")
     implementation("androidx.navigation:navigation-compose:2.9.6")
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
@@ -122,10 +122,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
 
     // Room (cache)
-    implementation("androidx.room:room-runtime:2.8.3")
-    implementation("androidx.room:room-ktx:2.8.3")
-    implementation("androidx.lifecycle:lifecycle-process:2.9.4")
-    ksp("androidx.room:room-compiler:2.8.3")
+    implementation("androidx.room:room-runtime:2.8.4")
+    implementation("androidx.room:room-ktx:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-process:2.10.0")
+    ksp("androidx.room:room-compiler:2.8.4")
 
     implementation("com.google.dagger:hilt-android:2.57.2")
     kapt("com.google.dagger:hilt-android-compiler:2.57.2")
@@ -133,7 +133,7 @@ dependencies {
 
     // Other
     implementation("androidx.core:core-ktx:1.17.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.4")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
 
-    implementation("androidx.compose.ui:ui-graphics:1.9.4")
+    implementation("androidx.compose.ui:ui-graphics:1.10.0")
 }
