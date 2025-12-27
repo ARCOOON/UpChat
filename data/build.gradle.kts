@@ -22,7 +22,10 @@ android {
         minSdk = 28
     }
 
-    buildFeatures { buildConfig = false }
+    // Needed so we can switch backend via BuildConfig flag.
+    buildFeatures {
+        buildConfig = true
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -47,6 +50,7 @@ kapt {
 
 dependencies {
     implementation(project(":core"))
+    implementation("io.appwrite:sdk-for-android:11.4.0")
 
     // Hilt (kapt)
     val hiltVersion = "2.57.2" // or the version you are using consistently
@@ -61,7 +65,7 @@ dependencies {
 
     // DataStore, Firebase, etc.
     implementation("androidx.datastore:datastore-preferences:1.2.0")
-    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
 }
