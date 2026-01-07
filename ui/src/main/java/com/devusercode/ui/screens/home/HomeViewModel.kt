@@ -65,14 +65,19 @@ class HomeViewModel
         private fun watchPresence(uids: List<String>) {
             watchers.values.forEach { it.cancel() }
             watchers.clear()
-            uids.forEach { id ->
+            uids.forEachIndexed { index, id ->
                 watchers[id] =
                     viewModelScope.launch {
                         observePresence(id).collect { (online, lastSeen) ->
                             _state.update { st ->
+                                // Optimize: Only update the specific user at the given index
                                 val updated =
-                                    st.conversations.map { p ->
-                                        if (p.user.uid == id) p.copy(user = p.user.copy(online = online, lastSeenEpochMs = lastSeen)) else p
+                                    st.conversations.toMutableList().apply {
+                                        val targetIndex = indexOfFirst { it.user.uid == id }
+                                        if (targetIndex >= 0) {
+                                            val pair = get(targetIndex)
+                                            set(targetIndex, pair.copy(user = pair.user.copy(online = online, lastSeenEpochMs = lastSeen)))
+                                        }
                                     }
                                 st.copy(conversations = updated)
                             }
