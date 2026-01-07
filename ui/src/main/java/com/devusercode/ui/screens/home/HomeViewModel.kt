@@ -65,7 +65,7 @@ class HomeViewModel
         private fun watchPresence(uids: List<String>) {
             watchers.values.forEach { it.cancel() }
             watchers.clear()
-            uids.forEachIndexed { index, id ->
+            uids.forEach { id ->
                 watchers[id] =
                     viewModelScope.launch {
                         observePresence(id).collect { (online, lastSeen) ->

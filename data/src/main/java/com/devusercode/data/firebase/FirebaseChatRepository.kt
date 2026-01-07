@@ -1,5 +1,6 @@
 package com.devusercode.data.firebase
 
+import android.util.Log
 import com.devusercode.core.domain.chat.model.UserPair
 import com.devusercode.core.domain.chat.repo.ChatRepository
 import com.devusercode.core.domain.user.model.User
@@ -18,6 +19,10 @@ class FirebaseChatRepository(
     private val db: FirebaseDatabase,
     private val conversationDao: ConversationDao,
 ) : ChatRepository {
+    companion object {
+        private const val TAG = "FirebaseChatRepository"
+    }
+
     override suspend fun listOpenConversations(currentUid: String): List<UserPair> =
         withContext(Dispatchers.IO) {
             // 1) Try cache first
@@ -89,6 +94,8 @@ class FirebaseChatRepository(
                         val time = last.child("time").getValue(Long::class.java)
 
                         UserPair(user, cid, text, time)
+                    }.onFailure { e ->
+                        Log.e(TAG, "Failed to fetch conversation $cid", e)
                     }.getOrNull()
                 }
             }.awaitAll().filterNotNull()
