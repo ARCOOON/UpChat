@@ -55,7 +55,7 @@ class FirebaseChatRepository(
             val cids = convSnap.children.mapNotNull { it.key }
 
             // Batch all Firebase calls concurrently instead of sequentially
-            cids.mapNotNull { cid ->
+            cids.map { cid ->
                 async {
                     runCatching {
                         val parts =
