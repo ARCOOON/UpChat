@@ -68,10 +68,17 @@ fun HomeScreen(
                 title = { Text("UpChat") },
                 actions = {
                     IconButton(onClick = { menu = true }) { Icon(Icons.Default.MoreVert, contentDescription = null) }
-                    DropdownMenu(expanded = menu, onDismissRequest = { }) {
-                        DropdownMenuItem(text = { Text("Profile") }, onClick = { onProfile() })
-                        DropdownMenuItem(text = { Text("Settings") }, onClick = { onSettings() })
+                    DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                        DropdownMenuItem(text = { Text("Profile") }, onClick = {
+                            menu = false
+                            onProfile()
+                        })
+                        DropdownMenuItem(text = { Text("Settings") }, onClick = {
+                            menu = false
+                            onSettings()
+                        })
                         DropdownMenuItem(text = { Text("Logout") }, onClick = {
+                            menu = false
                             vm.doLogout {
                                 // If NavHost passed a navigator, use it; else no-op
                                 onLoggedOutNavigateToAuth?.invoke(Routes.AUTH)

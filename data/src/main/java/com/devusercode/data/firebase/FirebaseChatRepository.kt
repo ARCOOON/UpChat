@@ -1,5 +1,6 @@
 package com.devusercode.data.firebase
 
+import android.util.Log
 import com.devusercode.core.domain.chat.model.UserPair
 import com.devusercode.core.domain.chat.repo.ChatRepository
 import com.devusercode.core.domain.user.model.User
@@ -9,6 +10,8 @@ import com.devusercode.data.local.mapper.toEntity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
@@ -16,6 +19,10 @@ class FirebaseChatRepository(
     private val db: FirebaseDatabase,
     private val conversationDao: ConversationDao,
 ) : ChatRepository {
+    companion object {
+        private const val TAG = "FirebaseChatRepository"
+    }
+
     override suspend fun listOpenConversations(currentUid: String): List<UserPair> =
         withContext(Dispatchers.IO) {
             // 1) Try cache first
@@ -36,48 +43,63 @@ class FirebaseChatRepository(
             return@withContext fresh
         }
 
-    private suspend fun fetchFromNetwork(currentUid: String): List<UserPair> {
-        val convSnap =
-            db
-                .getReference("users")
-                .child(currentUid)
-                .child("conversations")
-                .get()
-                .await()
-        val cids = convSnap.children.mapNotNull { it.key }
-        val res = mutableListOf<UserPair>()
-
-        for (cid in cids) {
-            val parts =
-                db
-                    .getReference("conversations")
-                    .child(cid)
-                    .child("participants")
-                    .get()
-                    .await()
-            val otherUid = parts.children.mapNotNull { it.key }.firstOrNull { it != currentUid } ?: continue
-            val otherSnap =
+    private suspend fun fetchFromNetwork(currentUid: String): List<UserPair> =
+        withContext(Dispatchers.IO) {
+            val convSnap =
                 db
                     .getReference("users")
-                    .child(otherUid)
+                    .child(currentUid)
+                    .child("conversations")
                     .get()
                     .await()
-            val user = otherSnap.toUser(otherUid)
-            val last =
-                db
-                    .getReference("conversations")
-                    .child(cid)
-                    .child("lastMessage")
-                    .get()
-                    .await()
-            val text = last.child("text").getValue(String::class.java)
-            val time = last.child("time").getValue(Long::class.java)
+            val cids = convSnap.children.mapNotNull { it.key }
 
-            res += UserPair(user, cid, text, time)
+            // Batch all Firebase calls concurrently instead of sequentially
+            cids.map { cid ->
+                async {
+                    runCatching {
+                        val parts =
+                            db
+                                .getReference("conversations")
+                                .child(cid)
+                                .child("participants")
+                                .get()
+                                .await()
+                        val otherUid = parts.children.mapNotNull { it.key }.firstOrNull { it != currentUid } ?: return@async null
+
+                        // Fetch user data and last message in parallel
+                        val otherSnapDeferred =
+                            async {
+                                db
+                                    .getReference("users")
+                                    .child(otherUid)
+                                    .get()
+                                    .await()
+                            }
+                        val lastDeferred =
+                            async {
+                                db
+                                    .getReference("conversations")
+                                    .child(cid)
+                                    .child("lastMessage")
+                                    .get()
+                                    .await()
+                            }
+
+                        val otherSnap = otherSnapDeferred.await()
+                        val last = lastDeferred.await()
+
+                        val user = otherSnap.toUser(otherUid)
+                        val text = last.child("text").getValue(String::class.java)
+                        val time = last.child("time").getValue(Long::class.java)
+
+                        UserPair(user, cid, text, time)
+                    }.onFailure { e ->
+                        Log.e(TAG, "Failed to fetch conversation $cid", e)
+                    }.getOrNull()
+                }
+            }.awaitAll().filterNotNull()
         }
-
-        return res
-    }
 
     private fun DataSnapshot.toUser(uid: String): User {
         val name =
