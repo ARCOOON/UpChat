@@ -35,6 +35,7 @@ import com.devusercode.upchat.utils.ErrorCodes
 import com.devusercode.upchat.utils.StorageController
 import com.devusercode.upchat.utils.UserUtils
 import com.devusercode.upchat.utils.Util
+import com.devusercode.upchat.utils.setComposeContent
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.textfield.TextInputEditText
@@ -70,6 +71,7 @@ class ConversationActivity : AppCompatActivity() {
     private var participant: User? = null
     private var user: User? = null
 
+    private lateinit var contentView: View
     private lateinit var storageController: StorageController
     private lateinit var conversationUtil: ConversationUtil
     private var conversationSecret: String? = null
@@ -88,7 +90,7 @@ class ConversationActivity : AppCompatActivity() {
         FirebaseApp.initializeApp(this)
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_conversation)
+        contentView = setComposeContent(R.layout.activity_conversation)
 
         storageController = StorageController.getInstance(this)!!
 
@@ -148,7 +150,7 @@ class ConversationActivity : AppCompatActivity() {
     private fun initialize() {
         // val coordinator = findViewById<CoordinatorLayout>(R.id._coordinator)
         // val appBar = findViewById<AppBarLayout>(R.id.app_bar)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val toolbar = contentView.findViewById<Toolbar>(R.id.toolbar)
 
         setSupportActionBar(toolbar)
 
@@ -164,10 +166,10 @@ class ConversationActivity : AppCompatActivity() {
         profileImage = toolbar.findViewById(R.id.profile_image)
         statusOnline = toolbar.findViewById(R.id.status_online)
 
-        attachButton = findViewById(R.id.attach_button)
-        messageInput = findViewById(R.id.message_input)
-        sendButton = findViewById(R.id.send_button)
-        recyclerview = findViewById(R.id.chat_recyclerview)
+        attachButton = contentView.findViewById(R.id.attach_button)
+        messageInput = contentView.findViewById(R.id.message_input)
+        sendButton = contentView.findViewById(R.id.send_button)
+        recyclerview = contentView.findViewById(R.id.chat_recyclerview)
 
         attachButton.setOnClickListener { filePickerLauncher.launch("image/*") }
 
@@ -196,19 +198,19 @@ class ConversationActivity : AppCompatActivity() {
             if (!chatExists) {
                 chatExists = true
 
-                ConversationUtil
-                    .newConversation(user!!, participant!!)
+                ConversationUtil.newConversation(user!!, participant!!)
                     .addOnSuccessListener { conversationId ->
                         currentConversationId = conversationId
                         Log.d(TAG, "Conversation ($currentConversationId) created")
                         prepareConversation(currentConversationId)
                         Util.showMessage(this, "Setting up secure channel...")
-                    }.addOnFailureListener { error ->
+                    }
+                    .addOnFailureListener { error ->
                         chatExists = false
                         Log.e(TAG, "Error creating conversation", error)
                         Util.showMessage(
                             this,
-                            error.message ?: getString(R.string.conversation__error_generic),
+                            error.message ?: getString(R.string.conversation__error_generic)
                         )
                     }
                 return@setOnClickListener
@@ -234,14 +236,13 @@ class ConversationActivity : AppCompatActivity() {
             }
 
             if (message.isNotEmpty()) {
-                conversationUtil
-                    .sendMessage(message)
+                conversationUtil.sendMessage(message)
                     .addOnSuccessListener { messageInput.setText("") }
                     .addOnFailureListener { error ->
                         Log.e(TAG, "Failed to send message", error)
                         Util.showMessage(
                             this,
-                            error.message ?: getString(R.string.conversation__error_generic),
+                            error.message ?: getString(R.string.conversation__error_generic)
                         )
                     }
             }
@@ -322,7 +323,7 @@ class ConversationActivity : AppCompatActivity() {
                 conversationSecret = previousSecret
                 previousSecret?.let { adapter?.setConversationSecret(it) }
                 Util.showMessage(this, "Unable to secure the conversation. Please try again.")
-            },
+            }
         )
     }
 
@@ -337,24 +338,18 @@ class ConversationActivity : AppCompatActivity() {
 
         adapter?.stopListening()
 
-        adapter =
-            MessageAdapter(applicationContext, options).apply {
-                setConversationId(cid)
-                setParticipant(participant)
-                conversationSecret?.let { setConversationSecret(it) }
+        adapter = MessageAdapter(applicationContext, options).apply {
+            setConversationId(cid)
+            setParticipant(participant)
+            conversationSecret?.let { setConversationSecret(it) }
 
-                registerAdapterDataObserver(
-                    object : AdapterDataObserver() {
-                        override fun onItemRangeInserted(
-                            positionStart: Int,
-                            itemCount: Int,
-                        ) {
-                            super.onItemRangeInserted(positionStart, itemCount)
-                            recyclerview.smoothScrollToPosition(positionStart)
-                        }
-                    },
-                )
-            }
+            registerAdapterDataObserver(object : AdapterDataObserver() {
+                override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                    super.onItemRangeInserted(positionStart, itemCount)
+                    recyclerview.smoothScrollToPosition(positionStart)
+                }
+            })
+        }
 
         recyclerview.adapter = adapter
         adapter?.startListening()

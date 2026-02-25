@@ -133,11 +133,7 @@ class MessageAdapter(
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
-    override fun onBindViewHolder(
-        holder: RecyclerView.ViewHolder,
-        position: Int,
-        model: Message,
-    ) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, model: Message) {
         val secret = conversationSecret
         if (secret.isNullOrEmpty()) {
             Log.w(TAG, "Conversation secret unavailable; skipping bind")

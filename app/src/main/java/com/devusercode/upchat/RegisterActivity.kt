@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -23,6 +24,7 @@ import com.devusercode.upchat.utils.DeviceId
 import com.devusercode.upchat.utils.Util
 import com.devusercode.upchat.utils.applyActivityCloseAnimation
 import com.devusercode.upchat.utils.applyActivityOpenAnimation
+import com.devusercode.upchat.utils.setComposeContent
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -39,6 +41,7 @@ class RegisterActivity : AppCompatActivity() {
     private val users = FirebaseDatabase.getInstance().getReference("users")
     // private val profileImages = FirebaseStorage.getInstance().getReference("profile_images")
 
+    private lateinit var contentView: View
     private lateinit var linear1: LinearLayout
     private lateinit var usernameEdit: EditText
     private lateinit var emailEdit: EditText
@@ -59,7 +62,7 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        contentView = setComposeContent(R.layout.activity_register)
         initialize()
 
         FirebaseApp.initializeApp(this)
@@ -100,7 +103,7 @@ class RegisterActivity : AppCompatActivity() {
     private fun initialize() {
         // val coordinator = findViewById<CoordinatorLayout>(R.id._coordinator)
         // val appBar = findViewById<AppBarLayout>(R.id.app_bar)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val toolbar = contentView.findViewById<Toolbar>(R.id.toolbar)
 
         setSupportActionBar(toolbar)
         toolbarTitle = toolbar.findViewById(R.id.toolbar_title)
@@ -114,13 +117,13 @@ class RegisterActivity : AppCompatActivity() {
         val progressBar = progressDialog.findViewById<ProgressBar>(R.id.progress)
         progressBar.isIndeterminate = true
 
-        linear1 = findViewById(R.id.linear1)
-        usernameEdit = findViewById(R.id.username_edit)
-        emailEdit = findViewById(R.id.email_edit)
-        passwordEdit = findViewById(R.id.password_edit)
-        registerButton = findViewById(R.id.register_button)
-        uploadProfileImageButton = findViewById(R.id.upload_profile_image_button)
-        profileImage = findViewById(R.id.profile_image)
+        linear1 = contentView.findViewById(R.id.linear1)
+        usernameEdit = contentView.findViewById(R.id.username_edit)
+        emailEdit = contentView.findViewById(R.id.email_edit)
+        passwordEdit = contentView.findViewById(R.id.password_edit)
+        registerButton = contentView.findViewById(R.id.register_button)
+        uploadProfileImageButton = contentView.findViewById(R.id.upload_profile_image_button)
+        profileImage = contentView.findViewById(R.id.profile_image)
 
         uploadProfileImageButton.setOnClickListener { imagePickerLauncher.launch("image/*") }
 

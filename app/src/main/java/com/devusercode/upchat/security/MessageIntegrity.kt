@@ -6,15 +6,13 @@ import com.devusercode.upchat.models.MessageTypes
 
 object MessageIntegrity {
     fun canonicalize(values: Map<String, String?>): String {
-        val sortedEntries =
-            values.entries
-                .filter { it.value != null }
-                .sortedBy { it.key }
+        val sortedEntries = values.entries
+            .filter { it.value != null }
+            .sortedBy { it.key }
 
         val builder = StringBuilder()
         for ((key, value) in sortedEntries) {
-            builder
-                .append(key.length)
+            builder.append(key.length)
                 .append(':')
                 .append(key)
                 .append('=')
@@ -27,10 +25,7 @@ object MessageIntegrity {
         return builder.toString()
     }
 
-    fun canonicalize(
-        message: Message,
-        conversationId: String,
-    ): String {
+    fun canonicalize(message: Message, conversationId: String): String {
         val values = linkedMapOf<String, String?>()
 
         message.message?.let { values[Key.Message.MESSAGE] = it }
@@ -49,10 +44,11 @@ object MessageIntegrity {
         return canonicalize(values)
     }
 
-    private fun normalizeType(type: Any?): String? =
-        when (type) {
+    private fun normalizeType(type: Any?): String? {
+        return when (type) {
             is MessageTypes -> type.name
             is String -> type.uppercase()
             else -> null
         }
+    }
 }

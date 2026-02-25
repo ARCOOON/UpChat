@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -20,6 +21,7 @@ import com.devusercode.upchat.utils.ConversationUtil
 import com.devusercode.upchat.utils.ErrorCodes
 import com.devusercode.upchat.utils.StorageController
 import com.devusercode.upchat.utils.UserUtils
+import com.devusercode.upchat.utils.setComposeContent
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -36,6 +38,7 @@ class HomeActivity : AppCompatActivity() {
     private var openConversations: MutableList<UserPair>? = null
     private val userListeners: MutableMap<String, ValueEventListener> = HashMap()
 
+    private lateinit var contentView: View
     private lateinit var recyclerView: RecyclerView
     private lateinit var storageController: StorageController
 
@@ -64,7 +67,7 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
+        contentView = setComposeContent(R.layout.activity_home)
 
         storageController = StorageController.getInstance(this)!!
 
@@ -74,18 +77,18 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val toolbar = contentView.findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.findViewById<TextView>(R.id.toolbar_profile_name).text =
             getString(R.string.app_name)
     }
 
     private fun setupViews() {
-        findViewById<FloatingActionButton>(R.id.new_conversation_button).setOnClickListener {
+        contentView.findViewById<FloatingActionButton>(R.id.new_conversation_button).setOnClickListener {
             startActivity(Intent(this, ListUsersActivity::class.java))
         }
 
-        recyclerView = findViewById(R.id.recyclerview)
+        recyclerView = contentView.findViewById(R.id.recyclerview)
         recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
