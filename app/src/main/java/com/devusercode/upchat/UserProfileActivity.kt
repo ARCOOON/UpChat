@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.devusercode.upchat.utils.ErrorCodes
 import com.devusercode.upchat.utils.UserUtils
@@ -31,7 +32,7 @@ class UserProfileActivity : AppCompatActivity() {
             val userid = intent.getStringExtra("uid")!!
 
             UserUtils.getUserByUid(userid) { result ->
-                if (result.code == ErrorCodes.SUCCESS) {
+                if (result.code == ErrorCodes.SUCCESS && result.user != null) {
                     val user = result.user!!
 
                     val profileImage = contentView.findViewById<ImageView>(R.id.profile_image)
@@ -41,8 +42,11 @@ class UserProfileActivity : AppCompatActivity() {
                     val joinedView = contentView.findViewById<TextView>(R.id.joined)
 
                     if (user.photoUrl!!.isNotEmpty()) {
-                        Glide.with(this).load(Uri.parse(user.photoUrl))
-                            .placeholder(R.drawable.ic_account_circle_black).circleCrop()
+                        Glide
+                            .with(this)
+                            .load(user.photoUrl!!.toUri())
+                            .placeholder(R.drawable.ic_account_circle_black)
+                            .circleCrop()
                             .into(profileImage)
                     } else {
                         profileImage.setImageResource(R.drawable.ic_account_circle_black)

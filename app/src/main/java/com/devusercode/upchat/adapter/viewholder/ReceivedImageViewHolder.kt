@@ -1,6 +1,5 @@
 package com.devusercode.upchat.adapter.viewholder
 
-import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -8,6 +7,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -20,13 +20,16 @@ import com.devusercode.upchat.security.MAC
 import com.devusercode.upchat.security.MessageIntegrity
 import com.devusercode.upchat.utils.GetTimeAgo
 
-class ReceivedImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view) {
+class ReceivedImageViewHolder(
+    private var view: View,
+) : RecyclerView.ViewHolder(view) {
     private val TAG = "MessageAdapter@${this.javaClass.simpleName}"
 
     private var messageView: TextView = view.findViewById(R.id.message_content)
     private var imageView: ImageView = view.findViewById(R.id.image_view)
     private var timeView: TextView = view.findViewById(R.id.message_time)
     private var cardView: LinearLayout = view.findViewById(R.id.materialcardview1)
+
     // private var rootLayout: LinearLayout = view.findViewById(R.id.root_layout)
     private var verified: ImageView = view.findViewById(R.id.message_verified)
 
@@ -54,8 +57,9 @@ class ReceivedImageViewHolder(private var view: View) : RecyclerView.ViewHolder(
 
         Log.d(TAG, "Url: ${model.url}")
 
-        Glide.with(view.context)
-            .load(Uri.parse(model.url))
+        Glide
+            .with(view.context)
+            .load(model.url?.toUri())
             .override(700, 900)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .fitCenter()

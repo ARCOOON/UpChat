@@ -1,4 +1,6 @@
 name: New Release
+permissions:
+  contents: write
 
 on:
   workflow_dispatch:
@@ -8,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Auto Changelog
-        uses: ardalanamini/auto-changelog@v4.0.1
+        uses: ardalanamini/auto-changelog@v4.0.6
         id: changelog
         with:
           github-token: ${{ github.token }}

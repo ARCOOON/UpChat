@@ -46,17 +46,11 @@ class Conversation {
     private val members: MutableList<String>? = null
     private val messages: Map<String, Message>? = null
 
-    fun getMembers(): List<String>? {
-        return members
-    }
+    fun getMembers(): List<String>? = members
 
-    fun getMessages(): Map<String, Message>? {
-        return messages
-    }
+    fun getMessages(): Map<String, Message>? = messages
 
-    fun getMessageById(mid: String): Message? {
-        return messages!![mid]
-    }
+    fun getMessageById(mid: String): Message? = messages!![mid]
 
     val participantUid: String
         get() {

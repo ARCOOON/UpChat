@@ -13,7 +13,10 @@ import com.google.firebase.messaging.RemoteMessage
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class MessagingService : FirebaseMessagingService() {
+    @Suppress("ktlint:standard:property-naming")
     private val TAG = "FCM"
+
+    @Suppress("ktlint:standard:property-naming")
     private val CHANNEL_ID = "personal_notifications"
 
     override fun onMessageReceived(message: RemoteMessage) {
@@ -34,23 +37,32 @@ class MessagingService : FirebaseMessagingService() {
         Log.d(TAG, "Message Uid: $uid")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = NotificationChannel(
-                CHANNEL_ID,
-                "My Notifications",
-                NotificationManager.IMPORTANCE_HIGH
-            )
+            val notificationChannel =
+                NotificationChannel(
+                    CHANNEL_ID,
+                    "My Notifications",
+                    NotificationManager.IMPORTANCE_HIGH,
+                )
 
-            val mBuilder: NotificationCompat.Builder = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.app_icon)
-                .setContentTitle(notificationTitle)
-                .setContentText(notificationMessage)
+            val mBuilder: NotificationCompat.Builder =
+                NotificationCompat
+                    .Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.app_icon)
+                    .setContentTitle(notificationTitle)
+                    .setContentText(notificationMessage)
 
             notificationManager.createNotificationChannel(notificationChannel)
 
-            val intent = Intent(clickAction)
+            // Fix: Map clickAction to an explicit Activity class.
+            val targetClass =
+                when (clickAction) {
+                    "OPEN_CHAT" -> ConversationActivity::class.java
+                    "OPEN_PROFILE" -> UserProfileActivity::class.java
+                    else -> HomeActivity::class.java
+                }
+            val intent = Intent(this, targetClass)
             intent.putExtra("uid", uid)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
             val pendingIntent =
                 PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
             mBuilder.setContentIntent(pendingIntent)

@@ -1,0 +1,82 @@
+name: Quality Gate
+
+on:
+  pull_request:
+    branches: [ main, v2 ]
+  push:
+    branches: [ main, v2 ]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Code Style and Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup google-services.json
+        env:
+          google_service: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $google_service > ${{ github.workspace }}/app/google-services.json
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Install ktlint (Kotlin style)
+        run: |
+          curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.7.1/ktlint
+          chmod a+x ktlint
+          sudo mv ktlint /usr/local/bin/
+
+      - name: Kotlin style check (ktlint)
+        continue-on-error: true
+        run: |
+          mkdir -p ~/build/reports
+          ktlint \
+            # --code-style=ktlint_official \
+            --reporter=plain \
+            --reporter=json,output=~/build/reports/ktlint-report.json \
+            '**/*.kt' '**/*.kts'
+
+      - name: Upload ktlint report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: ktlint-report
+          path: ~/build/reports/ktlint-report.json
+
+      - name: Assemble Debug
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Android Lint (Debug)
+        run: ./gradlew lintDebug --stacktrace
+
+      - name: Upload Lint Report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: android-lint-report
+          path: app/build/reports/lint-results-debug.html
+
+      - name: Summarize ktlint result
+        if: always()
+        run: |
+          if [[ "${{ steps.ktlint.outcome }}" == "failure" ]]; then
+            echo "ktlint found style issues, but the workflow is not failed (continue-on-error)." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ktlint passed without blocking issues." >> $GITHUB_STEP_SUMMARY
+          fi

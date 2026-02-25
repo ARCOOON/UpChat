@@ -10,7 +10,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 
 class UpdateHelper private constructor(
     private val onUpdateCheckListener: OnUpdateCheckListener,
-    private val context: Context
+    private val context: Context,
 ) {
     companion object {
         const val TAG = "UpdateHelper"
@@ -19,14 +19,20 @@ class UpdateHelper private constructor(
         const val KEY_UPDATE_URL = "app_update_url"
         const val KEY_REPO_URL = "app_repo_url"
 
-        fun with(context: Context): Builder {
-            return Builder(context)
-        }
+        fun with(context: Context): Builder = Builder(context)
     }
 
     interface OnUpdateCheckListener {
-        fun onUpdateAvailable(filename: String, url: String)
-        fun onUpdateRequired(filename: String, url: String)
+        fun onUpdateAvailable(
+            filename: String,
+            url: String,
+        )
+
+        fun onUpdateRequired(
+            filename: String,
+            url: String,
+        )
+
         fun onNoUpdateAvailable()
     }
 
@@ -47,7 +53,7 @@ class UpdateHelper private constructor(
                 val newUpdateUrl = "$appRepo/releases/download/$appVersion/$baseFilename-$appVersion.apk"
                 val filename = "$baseFilename-$appVersion.apk"
 
-                Log.d(TAG, "installed version: $installedVersion")
+                Log.d(TAG, "local version: $installedVersion")
                 Log.d(TAG, "server version: $appVersion")
                 // Log.d(TAG, "update url: $newUpdateUrl")
 
@@ -71,29 +77,31 @@ class UpdateHelper private constructor(
         }
     }
 
+    private fun compareVersions(
+        installedVersion: String,
+        appVersion: String,
+    ): Boolean = installedVersion.split("-")[0] == appVersion.split("-")[0]
 
-    private fun compareVersions(installedVersion: String, appVersion: String): Boolean {
-        return installedVersion.split("-")[0] == appVersion.split("-")[0]
-    }
-
-    private fun getAppVersion(context: Context): String? {
-        return try {
-            val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                context.packageManager.getPackageInfo(
-                    context.packageName,
-                    PackageManager.GET_SIGNING_CERTIFICATES
-                )
-            } else {
-                context.packageManager.getPackageInfo(context.packageName, 0)
-            }
+    private fun getAppVersion(context: Context): String? =
+        try {
+            val packageInfo =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    context.packageManager.getPackageInfo(
+                        context.packageName,
+                        PackageManager.GET_SIGNING_CERTIFICATES,
+                    )
+                } else {
+                    context.packageManager.getPackageInfo(context.packageName, 0)
+                }
             packageInfo.versionName
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
             null
         }
-    }
 
-    class Builder internal constructor(private val context: Context) {
+    class Builder internal constructor(
+        private val context: Context,
+    ) {
         private var onUpdateCheckListener: OnUpdateCheckListener? = null
 
         fun onUpdateCheck(onUpdateCheckListener: OnUpdateCheckListener): Builder {
@@ -101,9 +109,7 @@ class UpdateHelper private constructor(
             return this
         }
 
-        fun build(): UpdateHelper {
-            return UpdateHelper(requireNotNull(onUpdateCheckListener), context)
-        }
+        fun build(): UpdateHelper = UpdateHelper(requireNotNull(onUpdateCheckListener), context)
 
         fun check(): UpdateHelper {
             val updateHelper = build()

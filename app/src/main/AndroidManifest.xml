@@ -30,7 +30,8 @@
         android:roundIcon="@drawable/app_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Light"
-        tools:targetApi="33">
+        tools:targetApi="33"
+        android:usesCleartextTraffic="false">
         <activity
             android:name=".UserProfileActivity"
             android:exported="false" />
@@ -108,5 +109,6 @@
                 android:value="com.google.firebase.components.ComponentRegistrar" />
         </service>
     </application>
+
 
 </manifest>

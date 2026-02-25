@@ -8,21 +8,23 @@ import android.view.LayoutInflater
 import android.widget.TextView
 
 class DebugActivity : Activity() {
-    private val exceptionTypes = arrayOf(
-        "StringIndexOutOfBoundsException",
-        "IndexOutOfBoundsException",
-        "ArithmeticException",
-        "NumberFormatException",
-        "ActivityNotFoundException"
-    )
+    private val exceptionTypes =
+        arrayOf(
+            "StringIndexOutOfBoundsException",
+            "IndexOutOfBoundsException",
+            "ArithmeticException",
+            "NumberFormatException",
+            "ActivityNotFoundException",
+        )
 
-    private val exceptionMessages = arrayOf(
-        "Invalid string operation\n",
-        "Invalid list operation\n",
-        "Invalid arithmetical operation\n",
-        "Invalid toNumber block operation\n",
-        "Invalid intent operation"
-    )
+    private val exceptionMessages =
+        arrayOf(
+            "Invalid string operation\n",
+            "Invalid list operation\n",
+            "Invalid arithmetical operation\n",
+            "Invalid toNumber block operation\n",
+            "Invalid intent operation",
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,13 +63,14 @@ class DebugActivity : Activity() {
         dialogMessage.text = madeErrorMessage
         dialogMessage.setTextIsSelectable(true)
 
-        val dialog = AlertDialog.Builder(this)
-            .setTitle("An error occurred")
-            .setView(dialogView)
-            .setPositiveButton("End Application") { _, _ -> finish() }
-            .create()
+        val dialog =
+            AlertDialog
+                .Builder(this)
+                .setTitle("An error occurred")
+                .setView(dialogView)
+                .setPositiveButton("End Application") { _, _ -> finish() }
+                .create()
 
         dialog.show()
-
     }
 }

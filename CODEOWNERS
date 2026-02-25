@@ -1,0 +1,14 @@
+# CODEOWNERS file for UpChat
+# Automatically assigns code review ownership
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything in the repository
+* @ARCOOON
+
+# Optional: Explicit ownership for critical areas
+# Android app source
+/app/ @ARCOOON
+# Gradle configuration
+*.gradle @ARCOOON
+# Workflow automation
+.github/workflows/ @ARCOOON

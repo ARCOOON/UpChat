@@ -13,6 +13,11 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.devusercode.upchat.models.User
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.security.GeneralSecurityException
@@ -113,7 +118,6 @@ class StorageController private constructor(context: Context) {
         } catch (e: GeneralSecurityException) {
             throw IllegalStateException("Failed to encrypt value", e)
         }
-    }
 
     private fun decrypt(encrypted: String): String {
         return try {

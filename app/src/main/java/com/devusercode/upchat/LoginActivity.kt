@@ -16,6 +16,8 @@ import com.devusercode.upchat.utils.applyActivityCloseAnimation
 import com.devusercode.upchat.utils.applyActivityOpenAnimation
 import com.devusercode.upchat.utils.setComposeContent
 import com.devusercode.upchat.utils.Util
+import com.devusercode.upchat.utils.applyActivityCloseAnimation
+import com.devusercode.upchat.utils.applyActivityOpenAnimation
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.AuthResult
@@ -86,7 +88,8 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            auth.sendPasswordResetEmail(emailEdit.text.toString())
+            auth
+                .sendPasswordResetEmail(emailEdit.text.toString())
                 .addOnCompleteListener(authResetPasswordListener)
         }
 
@@ -95,7 +98,8 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            auth.signInWithEmailAndPassword(emailEdit.text.toString(), passwordEdit.text.toString())
+            auth
+                .signInWithEmailAndPassword(emailEdit.text.toString(), passwordEdit.text.toString())
                 .addOnCompleteListener(authSignInListener)
         }
 
@@ -104,7 +108,7 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        /* *** LISTENERS *** */
+        // *** LISTENERS ***
 
         /*
         authEmailVerificationSentListener = OnCompleteListener { task ->
@@ -117,43 +121,45 @@ class LoginActivity : AppCompatActivity() {
         }
          */
 
-        authSignInListener = OnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val saveLoginInfo = saveLoginInfoCheckbox.isChecked
-                storageController["save_login_info"] = saveLoginInfo
+        authSignInListener =
+            OnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val saveLoginInfo = saveLoginInfoCheckbox.isChecked
+                    storageController["save_login_info"] = saveLoginInfo
 
-                if (saveLoginInfo) {
-                    storageController["email"] = emailEdit.text.toString()
-                    storageController["password"] = passwordEdit.text.toString()
+                    if (saveLoginInfo) {
+                        storageController["email"] = emailEdit.text.toString()
+                        storageController["password"] = passwordEdit.text.toString()
+                    }
+
+                    intent.setClass(applicationContext, HomeActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    if (task.exception is FirebaseAuthInvalidUserException) {
+                        Util.showMessage(applicationContext, "User not found!")
+                    }
+
+                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                        Util.showMessage(applicationContext, "Invalid credentials!")
+                    }
+
+                    Log.e(TAG, task.exception?.javaClass?.name ?: "")
+                    Log.e(TAG, task.exception?.message ?: "")
                 }
-
-                intent.setClass(applicationContext, HomeActivity::class.java)
-                startActivity(intent)
-                finish()
-            } else {
-                if (task.exception is FirebaseAuthInvalidUserException) {
-                    Util.showMessage(applicationContext, "User not found!")
-                }
-
-                if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                    Util.showMessage(applicationContext, "Invalid credentials!")
-                }
-
-                Log.e(TAG, task.exception?.javaClass?.name ?: "")
-                Log.e(TAG, task.exception?.message ?: "")
             }
-        }
 
-        authResetPasswordListener = OnCompleteListener { task ->
-            val success = task.isSuccessful
+        authResetPasswordListener =
+            OnCompleteListener { task ->
+                val success = task.isSuccessful
 
-            if (success) {
-                Util.showMessage(applicationContext, "Password reset email sent")
-            } else {
-                Log.e(TAG, task.exception?.message ?: "")
-                Util.showMessage(applicationContext, task.exception?.message ?: "")
+                if (success) {
+                    Util.showMessage(applicationContext, "Password reset email sent")
+                } else {
+                    Log.e(TAG, task.exception?.message ?: "")
+                    Util.showMessage(applicationContext, task.exception?.message ?: "")
+                }
             }
-        }
     }
 
     private fun initializeLogic() {
@@ -165,7 +171,8 @@ class LoginActivity : AppCompatActivity() {
 
             if (email != null && password != null) {
                 Log.d(TAG, "login by saved info")
-                auth.signInWithEmailAndPassword(email, password)
+                auth
+                    .signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(authSignInListener)
             } else {
                 Log.d(TAG, "email or password is not set!")

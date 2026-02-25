@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.net.toUri
 import androidx.core.view.size
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,7 +46,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
-import androidx.core.net.toUri
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ConversationActivity : AppCompatActivity() {
@@ -55,13 +55,13 @@ class ConversationActivity : AppCompatActivity() {
     private val conversations = firebaseDatabase.getReference("conversations")
     private val users = firebaseDatabase.getReference("users")
 
-    /* Toolbar */
+    // Toolbar
     private lateinit var backButton: Button
     private lateinit var participantName: TextView
     private lateinit var profileImage: ImageView
     private lateinit var statusOnline: TextView
 
-    /* Content */
+    // Content
     private var adapter: MessageAdapter? = null
     private lateinit var recyclerview: RecyclerView
     private lateinit var attachButton: Button
@@ -108,7 +108,6 @@ class ConversationActivity : AppCompatActivity() {
 
                         initialize()
                     } else {
-
                         UserUtils.getUserByUid(auth.currentUser!!.uid) { result2 ->
                             if (result2.code == ErrorCodes.SUCCESS) {
                                 user = result2.user
@@ -186,8 +185,9 @@ class ConversationActivity : AppCompatActivity() {
             if (bottom < oldBottom) {
                 recyclerview.scrollBy(0, oldBottom - bottom)
             }
-            if (bottom > oldBottom)
+            if (bottom > oldBottom) {
                 recyclerview.scrollBy(0, bottom - oldBottom)
+            }
         }
 
         // recyclerview.smoothScrollToPosition(recyclerview.adapter!!.itemCount - 1);
@@ -251,7 +251,8 @@ class ConversationActivity : AppCompatActivity() {
         participantName.text = participant!!.username
 
         if (participant?.photoUrl!!.isNotEmpty()) {
-            Glide.with(applicationContext)
+            Glide
+                .with(applicationContext)
                 .load(participant!!.photoUrl!!.toUri())
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .placeholder(R.drawable.ic_account_circle_white)
@@ -263,22 +264,24 @@ class ConversationActivity : AppCompatActivity() {
 
         val onlineRef = users.child(participant?.uid!!).child("online")
 
-        onlineRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val online = snapshot.value.toString().toBoolean()
+        onlineRef.addValueEventListener(
+            object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val online = snapshot.value.toString().toBoolean()
 
-                if (online) {
-                    statusOnline.visibility = View.VISIBLE
-                    statusOnline.text = getString(R.string.conversation__status_online)
-                } else {
-                    statusOnline.visibility = View.GONE
+                    if (online) {
+                        statusOnline.visibility = View.VISIBLE
+                        statusOnline.text = getString(R.string.conversation__status_online)
+                    } else {
+                        statusOnline.visibility = View.GONE
+                    }
                 }
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, "Error reading 'online' value: ${error.message}")
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e(TAG, "Error reading 'online' value: ${error.message}")
+                }
+            },
+        )
 
         chatExists = ConversationUtil.conversationExists(user!!, participant!!)
 
@@ -328,7 +331,9 @@ class ConversationActivity : AppCompatActivity() {
         val messages: Query = conversations.child(cid).child(Key.Conversation.MESSAGES)
 
         val options =
-            FirebaseRecyclerOptions.Builder<Message>().setQuery(messages, Message::class.java)
+            FirebaseRecyclerOptions
+                .Builder<Message>()
+                .setQuery(messages, Message::class.java)
                 .build()
 
         adapter?.stopListening()

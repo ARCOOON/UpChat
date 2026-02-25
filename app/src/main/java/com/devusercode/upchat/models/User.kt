@@ -21,10 +21,11 @@ data class User(
     fun getUids(): List<String> = conversations?.keys?.toList() ?: emptyList()
 
     val formattedJoined: String
-        get() = joined?.let {
-            val date = Date(it.toLong())
-            SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(date)
-        } ?: ""
+        get() =
+            joined.let {
+                val date = Date(it!!.toLong())
+                SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(date)
+            } ?: ""
 
     val info: Map<String, Any?>
         get() = mapOf(

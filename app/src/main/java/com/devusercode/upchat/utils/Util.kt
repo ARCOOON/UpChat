@@ -20,6 +20,8 @@ import android.webkit.MimeTypeMap
 import android.widget.FrameLayout
 import android.widget.ListView
 import android.widget.Toast
+import androidx.core.graphics.toColorInt
+import androidx.core.util.size
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -29,13 +31,16 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.Random
-
+import java.security.SecureRandom
 
 object Util {
     private const val TAG = "Util"
 
     @JvmStatic
-    fun formatTime(joined: String, format: String): String {
+    fun formatTime(
+        joined: String,
+        format: String,
+    ): String {
         val date = Date(joined.toLong())
         return SimpleDateFormat(format, Locale.getDefault()).format(date)
     }
@@ -47,28 +52,35 @@ object Util {
         return SimpleDateFormat("HH:mm", Locale.getDefault()).format(cal.time)
     }
 
-    fun parseTime(joined: String): String {
-        return formatTime(joined, "dd/MM/yyyy HH:mm")
-    }
+    fun parseTime(joined: String): String = formatTime(joined, "dd/MM/yyyy HH:mm")
 
-    fun setCornerRadius(view: View, cornerRadius: Float) {
-        view.outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(view: View, outline: Outline) {
-                outline.setRoundRect(0, 0, view.width, view.height, cornerRadius)
+    fun setCornerRadius(
+        view: View,
+        cornerRadius: Float,
+    ) {
+        view.outlineProvider =
+            object : ViewOutlineProvider() {
+                override fun getOutline(
+                    view: View,
+                    outline: Outline,
+                ) {
+                    outline.setRoundRect(0, 0, view.width, view.height, cornerRadius)
+                }
             }
-        }
         view.clipToOutline = true
     }
 
     fun createOverlay(context: Context): View {
         // Create a semi-transparent view with black background color
         val overlay = View(context)
-        overlay.setBackgroundColor(Color.parseColor("#80000000")) // 50% opacity
+        overlay.setBackgroundColor("#80000000".toColorInt()) // 50% opacity
 
         // Set the layout parameters to match the parent's size
-        overlay.layoutParams = FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
-        )
+        overlay.layoutParams =
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+            )
 
         return overlay
     }
@@ -84,7 +96,12 @@ object Util {
         Runtime.getRuntime().exit(0)
     }
 
-    fun alert(context: Context, title: String, message: String, onClick: (() -> Unit)?) {
+    fun alert(
+        context: Context,
+        title: String,
+        message: String,
+        onClick: (() -> Unit)?,
+    ) {
         AlertDialog.Builder(context).apply {
             setTitle(title)
             setMessage(message)
@@ -100,34 +117,41 @@ object Util {
     }
 
     /*
-    * >>> Sketchware code <<<
-    * */
+     * >>> Sketchware code <<<
+     * */
 
     fun isValidMimeType(mimeType: String): Boolean {
         // Define a list of valid MIME types or file extensions
-        val validMimeTypes = arrayOf(
-            "image/jpeg",
-            "image/png",
-            "application/pdf",
-            "text/plain",
-            "application/zip",
-            "application/x-zip-compressed",
-            "application/x-rar-compressed",
-            "application/x-tar",
-            "application/x-gzip"
-            // Add more valid MIME types or file extensions here
-        )
+        val validMimeTypes =
+            arrayOf(
+                "image/jpeg",
+                "image/png",
+                "application/pdf",
+                "text/plain",
+                "application/zip",
+                "application/x-zip-compressed",
+                "application/x-rar-compressed",
+                "application/x-tar",
+                "application/x-gzip",
+                // Add more valid MIME types or file extensions here
+            )
         return validMimeTypes.contains(mimeType)
     }
 
-    fun getFileExtension(context: Context, uri: Uri): String? {
+    fun getFileExtension(
+        context: Context,
+        uri: Uri,
+    ): String? {
         val contentResolver = context.contentResolver
         val mime = MimeTypeMap.getSingleton()
         return mime.getExtensionFromMimeType(contentResolver.getType(uri))
     }
 
     fun sortListMap(
-        listMap: ArrayList<HashMap<String, Any>>, key: String, isNumber: Boolean, ascending: Boolean
+        listMap: ArrayList<HashMap<String, Any>>,
+        key: String,
+        isNumber: Boolean,
+        ascending: Boolean,
     ) {
         listMap.sortWith { compareMap1, compareMap2 ->
             val value1 = compareMap1[key]
@@ -145,7 +169,10 @@ object Util {
         }
     }
 
-    fun cropImage(activity: Activity, path: String) {
+    fun cropImage(
+        activity: Activity,
+        path: String,
+    ) {
         try {
             val cropIntent = Intent("com.android.camera.action.CROP")
 
@@ -162,9 +189,12 @@ object Util {
 
             activity.startActivityForResult(cropIntent, 1)
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(
-                activity, "Your device doesn't support the crop action!", Toast.LENGTH_SHORT
-            ).show()
+            Toast
+                .makeText(
+                    activity,
+                    "Your device doesn't support the crop action!",
+                    Toast.LENGTH_SHORT,
+                ).show()
         }
     }
 
@@ -174,9 +204,13 @@ object Util {
         val networkCapabilities =
             connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
 
-        return networkCapabilities != null && (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || networkCapabilities.hasTransport(
-            NetworkCapabilities.TRANSPORT_CELLULAR
-        ) || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))
+        return networkCapabilities != null &&
+            (
+                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                    networkCapabilities.hasTransport(
+                        NetworkCapabilities.TRANSPORT_CELLULAR,
+                    ) || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+            )
     }
 
     fun copyFromInputStream(inputStream: InputStream): String {
@@ -212,7 +246,10 @@ object Util {
         }
     }
 
-    fun showMessage(context: Context, message: String) {
+    fun showMessage(
+        context: Context,
+        message: String,
+    ) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
@@ -223,9 +260,11 @@ object Util {
         return Point(location[0], location[1])
     }
 
-    fun getRandom(min: Int, max: Int): Int {
-        val random = Random()
-
+    fun getRandom(
+        min: Int,
+        max: Int,
+    ): Int {
+        val random = SecureRandom()
         require(min <= max) { "Invalid range: min should be less than or equal to max" }
         return random.nextInt(max - min + 1) + min
     }
@@ -234,7 +273,7 @@ object Util {
         val result = ArrayList<Double>()
         val checkedPositions = listView.checkedItemPositions
 
-        for (i in 0 until checkedPositions.size()) {
+        for (i in 0 until checkedPositions.size) {
             val position = checkedPositions.keyAt(i)
             if (checkedPositions.valueAt(i)) {
                 result.add(position.toDouble())
@@ -244,11 +283,15 @@ object Util {
         return result
     }
 
-    fun dpToPixels(context: Context, dp: Float): Float {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics
+    fun dpToPixels(
+        context: Context,
+        dp: Float,
+    ): Float =
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            context.resources.displayMetrics,
         )
-    }
 
     fun getDisplayWidthPixels(context: Context): Int {
         val displayMetrics = context.resources.displayMetrics
@@ -260,7 +303,10 @@ object Util {
         return displayMetrics.heightPixels
     }
 
-    fun getAllKeysFromMap(map: Map<String, Any>?, output: ArrayList<String>?) {
+    fun getAllKeysFromMap(
+        map: Map<String, Any>?,
+        output: ArrayList<String>?,
+    ) {
         output?.clear()
         map?.keys?.let { output?.addAll(it) }
     }

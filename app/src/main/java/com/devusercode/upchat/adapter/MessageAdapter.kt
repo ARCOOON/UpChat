@@ -13,6 +13,8 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.annotation.RequiresApi
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.RecyclerView
 import com.devusercode.upchat.R
 import com.devusercode.upchat.adapter.viewholder.ReceivedMessageViewHolder
@@ -32,9 +34,9 @@ import com.google.firebase.database.FirebaseDatabase
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MessageAdapter(
-    private val currentContext: Context, options: FirebaseRecyclerOptions<Message?>
+    private val currentContext: Context,
+    options: FirebaseRecyclerOptions<Message?>,
 ) : FirebaseRecyclerAdapter<Message, RecyclerView.ViewHolder>(options) {
-
     private var participant: User? = null
     private var conversationId: String? = null
     private var conversationSecret: String? = null
@@ -69,7 +71,9 @@ class MessageAdapter(
         val message = snapshots[position]
 
         return when (message.senderId) {
-            "system" -> MessageSender.SYSTEM_MESSAGE
+            "system" -> {
+                MessageSender.SYSTEM_MESSAGE
+            }
 
             firebase_user!!.uid -> {
                 if (MessageTypes.parse(message.type) == MessageTypes.IMAGE) {
@@ -79,7 +83,9 @@ class MessageAdapter(
                 }
             }
 
-            participant!!.uid -> MessageSender.MESSAGE_RECEIVED_TEXT
+            participant!!.uid -> {
+                MessageSender.MESSAGE_RECEIVED_TEXT
+            }
 
             else -> {
                 Log.e(TAG, "Unknown view type")
@@ -88,7 +94,10 @@ class MessageAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): RecyclerView.ViewHolder {
         val view: View
         // val model = snapshots[viewType]
 
@@ -155,22 +164,26 @@ class MessageAdapter(
         private val firebase_user = FirebaseAuth.getInstance().currentUser
         var conversationId: String? = null
 
-        fun showTooltipOverlay(anchorView: View, model: Message) {
+        fun showTooltipOverlay(
+            anchorView: View,
+            model: Message,
+        ) {
             if (model.senderId != firebase_user?.uid) return
 
             val inflater = LayoutInflater.from(anchorView.context)
             val tooltipView = inflater.inflate(R.layout.item_conversation_popup, null)
 
             // Create a PopupWindow with WRAP_CONTENT size
-            val popupWindow = PopupWindow(
-                tooltipView,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                true
-            )
+            val popupWindow =
+                PopupWindow(
+                    tooltipView,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    true,
+                )
 
             // Darken the background by setting a semi-transparent black color
-            val darkBackground = ColorDrawable(Color.parseColor("#50000000"))
+            val darkBackground = "#50000000".toColorInt().toDrawable()
             popupWindow.setBackgroundDrawable(darkBackground)
 
             // Set animation style
@@ -202,28 +215,30 @@ class MessageAdapter(
                     .setPositiveButton("Close") { dialog, _ ->
                         dialog.dismiss()
                         popupWindow.dismiss()
-                    }
-                    .show()
+                    }.show()
             }
 
             deleteButton.setOnClickListener {
                 conversationId?.let { cid ->
                     model.messageId?.let { messageId ->
-                        val messageRef = FirebaseDatabase.getInstance().reference
-                            .child("conversations")
-                            .child(cid)
-                            .child("messages")
-                            .child(messageId)
+                        val messageRef =
+                            FirebaseDatabase
+                                .getInstance()
+                                .reference
+                                .child("conversations")
+                                .child(cid)
+                                .child("messages")
+                                .child(messageId)
 
-                        messageRef.removeValue()
+                        messageRef
+                            .removeValue()
                             .addOnCompleteListener { result ->
                                 if (result.isSuccessful) {
                                     popupWindow.dismiss()
                                 } else {
                                     Log.e(TAG, "Delete unsuccessful")
                                 }
-                            }
-                            .addOnFailureListener { error ->
+                            }.addOnFailureListener { error ->
                                 Log.e(TAG, error.message ?: "Delete failed")
                             }
                     }
@@ -235,6 +250,5 @@ class MessageAdapter(
                 popupWindow.dismiss()
             }
         }
-
     }
 }

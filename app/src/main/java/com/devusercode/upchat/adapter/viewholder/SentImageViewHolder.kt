@@ -20,13 +20,16 @@ import com.devusercode.upchat.security.MAC
 import com.devusercode.upchat.security.MessageIntegrity
 import com.devusercode.upchat.utils.GetTimeAgo
 
-class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view) {
+class SentImageViewHolder(
+    private var view: View,
+) : RecyclerView.ViewHolder(view) {
     private val TAG = "MessageAdapter@${this.javaClass.simpleName}"
 
     private var messageView: TextView = view.findViewById(R.id.message_content)
     private var imageView: ImageView = view.findViewById(R.id.image_view)
     private var timeView: TextView = view.findViewById(R.id.message_time)
     private var cardView: LinearLayout = view.findViewById(R.id.materialcardview1)
+
     // private var rootLayout: LinearLayout = view.findViewById(R.id.root_layout)
     private var verified: ImageView = view.findViewById(R.id.message_verified)
 
@@ -54,7 +57,8 @@ class SentImageViewHolder(private var view: View) : RecyclerView.ViewHolder(view
 
         Log.d(TAG, "Url: ${model.url}")
 
-        Glide.with(view.context)
+        Glide
+            .with(view.context)
             .load(Uri.parse(model.url))
             .override(700, 900)
             .diskCacheStrategy(DiskCacheStrategy.ALL)

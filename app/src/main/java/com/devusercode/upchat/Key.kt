@@ -10,6 +10,7 @@ object Key {
         const val CONVERSATIONS = "conversations"
         const val CONVERSATION_ID = "conversationId"
         const val MESSAGES = "messages"
+
         // For group chat
         const val MEMBERS = "members"
     }
@@ -21,9 +22,11 @@ object Key {
         const val TIMESTAMP = "timestamp"
         const val MAC = "mac"
         const val SEEN = "seen"
+
         // Message type: File, Text, Image, Audio
         const val TYPE = "type"
         const val MIME = "mimetype"
+
         // For file transfer
         const val URL = "url"
         const val CHECKSUM = "checksum"

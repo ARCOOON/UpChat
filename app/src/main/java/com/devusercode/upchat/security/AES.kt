@@ -63,6 +63,15 @@ class AES(private val sharedSecret: String, private val salt: String) {
                 encryptedText
             }
         }
+
+    companion object {
+        fun buildSharedSecret(vararg identifiers: String?): String {
+            val nonNullIdentifiers = identifiers.filterNotNull()
+
+            require(nonNullIdentifiers.isNotEmpty()) { "At least one identifier is required" }
+
+            return nonNullIdentifiers.sorted().joinToString(":")
+        }
     }
 
     companion object {

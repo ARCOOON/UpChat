@@ -9,33 +9,31 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import java.io.File
 
 @RequiresApi(Build.VERSION_CODES.O)
-class UpdateInstaller(private val context: Context) {
+class UpdateInstaller(
+    private val context: Context,
+) {
     fun install(filePath: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (context.packageManager.canRequestPackageInstalls()) {
-                // Permissions are granted, proceed with installation
-                performInstall(filePath)
-            } else {
-                // Request install permissions
-                requestInstallPermissions().run { performInstall(filePath) }
-                // -> Install permissions granted
-                // -> Perform installation
-            }
-        } else {
-            // Continue with the installation on older Android versions
+        if (context.packageManager.canRequestPackageInstalls()) {
+            // Permissions are granted, proceed with installation
             performInstall(filePath)
+        } else {
+            // Request install permissions
+            requestInstallPermissions().run { performInstall(filePath) }
+            // -> Install permissions granted
+            // -> Perform installation
         }
     }
 
     private fun requestInstallPermissions() {
         val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
         val packageName = String.format("package:%s", context.packageName)
-        val packageURI = Uri.parse(packageName)
+        val packageURI = packageName.toUri()
 
-        intent.setData(packageURI)
+        intent.data = packageURI
 
         context.startActivity(intent)
     }
@@ -44,7 +42,7 @@ class UpdateInstaller(private val context: Context) {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(
             uriFromFile(filePath),
-            "application/vnd.android.package-archive"
+            "application/vnd.android.package-archive",
         )
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -59,9 +57,8 @@ class UpdateInstaller(private val context: Context) {
         }
     }
 
-    private fun uriFromFile(filePath: String): Uri? {
-        return context.let {
+    private fun uriFromFile(filePath: String): Uri? =
+        context.let {
             FileProvider.getUriForFile(it, it.packageName + ".provider", File(filePath))
         }
-    }
 }

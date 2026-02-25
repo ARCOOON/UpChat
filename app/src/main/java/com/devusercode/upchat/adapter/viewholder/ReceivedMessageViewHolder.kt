@@ -15,7 +15,9 @@ import com.devusercode.upchat.security.MessageIntegrity
 import com.devusercode.upchat.utils.GetTimeAgo
 
 @RequiresApi(Build.VERSION_CODES.O)
-class ReceivedMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class ReceivedMessageViewHolder(
+    view: View,
+) : RecyclerView.ViewHolder(view) {
     private val TAG = "MessageAdapter@${this.javaClass.simpleName}"
 
     var message: TextView

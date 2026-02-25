@@ -2,6 +2,7 @@
 <resources>
     <string name="view_all_users__no_user_available">Kein Benutzer verfügbar</string>
     <string name="conversation__status_online">online</string>
+    <string name="conversation__error_generic">Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.</string>
     <string name="my_profile__toolbar_title">Mein Profil</string>
     <string name="my_profile__app_version">v%1$s</string>
     <string name="my_profile__unknown_version">Unbekannte Version</string>
@@ -49,4 +50,7 @@
     <string name="layout_item_user__email">Email</string>
     <string name="home_last_message_photo">Bild</string>
     <string name="layout_item_conversation_popup__message_info">Info</string>
+    <string name="start__update_dialog_title">Neue App-Version</string>
+    <string name="start__update_downloading">Update wird heruntergeladen…</string>
+    <string name="start__update_download_progress">Update wird heruntergeladen… %1$d%%</string>
 </resources>

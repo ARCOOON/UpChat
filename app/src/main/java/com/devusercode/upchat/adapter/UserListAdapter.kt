@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.devusercode.upchat.ConversationActivity
@@ -23,15 +24,21 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 
-class UserListAdapter(app: AppCompatActivity, options: FirebaseRecyclerOptions<User?>) :
-    FirebaseRecyclerAdapter<User, UserListAdapter.UserViewHolder>(options) {
+class UserListAdapter(
+    app: AppCompatActivity,
+    options: FirebaseRecyclerOptions<User?>,
+) : FirebaseRecyclerAdapter<User, UserListAdapter.UserViewHolder>(options) {
     private val TAG = this.javaClass.simpleName
 
     private val firebaseUser = FirebaseAuth.getInstance().currentUser
     private val context = app.applicationContext
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onBindViewHolder(holder: UserViewHolder, position: Int, user: User) {
+    override fun onBindViewHolder(
+        holder: UserViewHolder,
+        position: Int,
+        user: User,
+    ) {
         // Exclude yourself from the list
         if (firebaseUser != null && user.uid == firebaseUser.uid) {
             holder.root.visibility = View.GONE
@@ -43,16 +50,16 @@ class UserListAdapter(app: AppCompatActivity, options: FirebaseRecyclerOptions<U
         holder.email.text = user.email
 
         // Load a profile picture into the view holder
-        if (!user.photoUrl.isNullOrBlank()) {
-            Glide.with(context)
-                .load(Uri.parse(user.photoUrl))
+        if (user.photoUrl!!.isNotBlank()) {
+            Glide
+                .with(context)
+                .load(user.photoUrl?.toUri())
                 .placeholder(R.drawable.ic_account_circle_black)
                 .circleCrop()
                 .into(holder.profileImage)
         } else {
             holder.profileImage.setImageResource(R.drawable.ic_account_circle_black)
         }
-
 
         // Handle add user button click
         holder.addUserButton.setOnClickListener {
@@ -70,27 +77,23 @@ class UserListAdapter(app: AppCompatActivity, options: FirebaseRecyclerOptions<U
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): UserViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.item_user, parent, false)
         return UserViewHolder(view)
     }
 
-    class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var username: TextView
-        var email: TextView
-        var profileImage: ImageView
-        var root: LinearLayout
-        var materialCardView: MaterialCardView
-        var addUserButton: Button
-
-        init {
-            root = view.findViewById(R.id.linear1)
-            materialCardView = view.findViewById(R.id.materialcardview1)
-            profileImage = view.findViewById(R.id.profile_image)
-            username = view.findViewById(R.id.username)
-            email = view.findViewById(R.id.email)
-            addUserButton = view.findViewById(R.id.add_user_button)
-        }
+    class UserViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
+        var username: TextView = view.findViewById(R.id.username)
+        var email: TextView = view.findViewById(R.id.email)
+        var profileImage: ImageView = view.findViewById(R.id.profile_image)
+        var root: LinearLayout = view.findViewById(R.id.linear1)
+        var materialCardView: MaterialCardView = view.findViewById(R.id.materialcardview1)
+        var addUserButton: Button = view.findViewById(R.id.add_user_button)
     }
 }

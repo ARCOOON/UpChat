@@ -30,11 +30,25 @@ object GetTimeAgo : Application() {
         val diff = now - time
 
         return when {
-            diff < MINUTE_MILLIS -> "now"
-            diff < HOUR_MILLIS -> "${diff / MINUTE_MILLIS}m"
-            diff < DAY_MILLIS -> "${diff / HOUR_MILLIS}h"
-            diff < WEEK_MILLIS -> "${diff / DAY_MILLIS}d"
-            diff < MONTH_MILLIS -> "${diff / WEEK_MILLIS}w"
+            diff < MINUTE_MILLIS -> {
+                "now"
+            }
+
+            diff < HOUR_MILLIS -> {
+                "${diff / MINUTE_MILLIS}m"
+            }
+
+            diff < DAY_MILLIS -> {
+                "${diff / HOUR_MILLIS}h"
+            }
+
+            diff < WEEK_MILLIS -> {
+                "${diff / DAY_MILLIS}d"
+            }
+
+            diff < MONTH_MILLIS -> {
+                "${diff / WEEK_MILLIS}w"
+            }
 
             else -> {
                 // Display date and time if more than 1 month
@@ -44,7 +58,5 @@ object GetTimeAgo : Application() {
         }
     }
 
-    fun parse(time: String): String? {
-        return getTimeAgo(time.toLong())
-    }
+    fun parse(time: String): String? = getTimeAgo(time.toLong())
 }
