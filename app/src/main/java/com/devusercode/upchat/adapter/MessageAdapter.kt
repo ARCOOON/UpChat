@@ -136,10 +136,14 @@ class MessageAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, model: Message) {
         val secret = conversationSecret
         if (secret.isNullOrEmpty()) {
-            Log.w(TAG, "Conversation secret unavailable; skipping bind")
+            Log.w(TAG, "Conversation secret unavailable; applying placeholder state")
+            // Ensure recycled view holders don't show stale content while secret is unavailable
+            holder.itemView.alpha = 0f
             return
         }
 
+        // Restore normal visibility/state now that the secret is available
+        holder.itemView.alpha = 1f
         when (holder) {
             is SentMessageViewHolder -> {
                 holder.bind(model, conversationId!!, secret)
