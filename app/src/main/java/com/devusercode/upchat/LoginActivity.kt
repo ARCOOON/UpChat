@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -11,6 +12,9 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.devusercode.upchat.utils.StorageController
+import com.devusercode.upchat.utils.applyActivityCloseAnimation
+import com.devusercode.upchat.utils.applyActivityOpenAnimation
+import com.devusercode.upchat.utils.setComposeContent
 import com.devusercode.upchat.utils.Util
 import com.devusercode.upchat.utils.applyActivityCloseAnimation
 import com.devusercode.upchat.utils.applyActivityOpenAnimation
@@ -26,6 +30,7 @@ class LoginActivity : AppCompatActivity() {
     private val TAG = this.javaClass.simpleName
     private val auth = FirebaseAuth.getInstance()
 
+    private lateinit var contentView: View
     private lateinit var emailEdit: EditText
     private lateinit var passwordEdit: EditText
     private lateinit var saveLoginInfoCheckbox: CheckBox
@@ -47,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        contentView = setComposeContent(R.layout.activity_login)
 
         storageController = StorageController.getInstance(this)!!
 
@@ -67,13 +72,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun initialize() {
-        emailEdit = findViewById(R.id.email_edit)
-        passwordEdit = findViewById(R.id.password_edit)
-        saveLoginInfoCheckbox = findViewById(R.id.save_login_info_checkbox)
-        forgotPasswordText = findViewById(R.id.forgot_password_text)
+        emailEdit = contentView.findViewById(R.id.email_edit)
+        passwordEdit = contentView.findViewById(R.id.password_edit)
+        saveLoginInfoCheckbox = contentView.findViewById(R.id.save_login_info_checkbox)
+        forgotPasswordText = contentView.findViewById(R.id.forgot_password_text)
 
-        val loginButton: Button = findViewById(R.id.login_button)
-        val registerButton: Button = findViewById(R.id.register_button)
+        val loginButton: Button = contentView.findViewById(R.id.login_button)
+        val registerButton: Button = contentView.findViewById(R.id.register_button)
 
         saveLoginInfoCheckbox.isChecked = storageController.getBool("save_login_info")
 

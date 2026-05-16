@@ -9,20 +9,16 @@ import javax.crypto.spec.SecretKeySpec
 /**
  * Provides HMAC-SHA256 signing with keys derived from a shared secret using HKDF.
  */
-class MAC(
-    private val sharedSecret: String,
-    private val salt: String,
-) {
+class MAC(private val sharedSecret: String, private val salt: String) {
     private val macAlgorithm = "HmacSHA256"
     private val keySize = 32
     private val derivedKey: SecretKeySpec by lazy {
-        val keyMaterial =
-            Hkdf.derive(
-                sharedSecret.toByteArray(StandardCharsets.UTF_8),
-                salt.toByteArray(StandardCharsets.UTF_8),
-                "UpChat-MAC-Key".toByteArray(StandardCharsets.UTF_8),
-                keySize,
-            )
+        val keyMaterial = Hkdf.derive(
+            sharedSecret.toByteArray(StandardCharsets.UTF_8),
+            salt.toByteArray(StandardCharsets.UTF_8),
+            "UpChat-MAC-Key".toByteArray(StandardCharsets.UTF_8),
+            keySize
+        )
         SecretKeySpec(keyMaterial, macAlgorithm)
     }
 
@@ -31,22 +27,18 @@ class MAC(
         return Base64.encodeToString(macBytes, Base64.NO_WRAP)
     }
 
-    fun verify(
-        payload: String,
-        receivedMAC: String?,
-    ): Boolean {
+    fun verify(payload: String, receivedMAC: String?): Boolean {
         if (receivedMAC.isNullOrEmpty()) {
             return false
         }
 
         val expected = signToBytes(payload)
 
-        val received =
-            try {
-                Base64.decode(receivedMAC, Base64.DEFAULT)
-            } catch (e: IllegalArgumentException) {
-                return false
-            }
+        val received = try {
+            Base64.decode(receivedMAC, Base64.DEFAULT)
+        } catch (e: IllegalArgumentException) {
+            return false
+        }
 
         return MessageDigest.isEqual(received, expected)
     }

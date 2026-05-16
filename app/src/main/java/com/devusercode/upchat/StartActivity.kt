@@ -15,7 +15,9 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.net.toUri
+import com.devusercode.upchat.utils.setComposeContent
+import com.devusercode.upchat.utils.applyActivityCloseAnimation
+import com.devusercode.upchat.utils.applyActivityOpenAnimation
 import com.devusercode.upchat.utils.UpdateHelper
 import com.devusercode.upchat.utils.UpdateInstaller
 import com.devusercode.upchat.utils.UserUtils
@@ -38,7 +40,7 @@ class StartActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_start)
+        setComposeContent(R.layout.activity_start)
 
         FirebaseApp.initializeApp(this)
         UserUtils.update("online", true.toString())
@@ -137,29 +139,26 @@ class StartActivity :
                 Log.e(TAG, errorMessage.toString())
                 Util.alert(this, "Error downloading update!", errorMessage.toString(), null)
                 throw error
-            }.success { file ->
+            }
+            .success { file ->
                 progressUi.dismiss()
                 val updateInstaller = UpdateInstaller(this)
                 updateInstaller.install(file.path)
             }
     }
 
-    private class DownloadProgressDialog(
-        activity: StartActivity,
-    ) {
+    private class DownloadProgressDialog(activity: StartActivity) {
         private val dialogView = activity.layoutInflater.inflate(R.layout.dialog_download_progress, null)
         private val progressIndicator: com.google.android.material.progressindicator.LinearProgressIndicator =
             dialogView.findViewById(R.id.download_progress_indicator)
         private val progressMessage: android.widget.TextView =
             dialogView.findViewById(R.id.download_progress_message)
 
-        private val dialog =
-            com.google.android.material.dialog
-                .MaterialAlertDialogBuilder(activity)
-                .setTitle(R.string.start__update_dialog_title)
-                .setView(dialogView)
-                .setCancelable(false)
-                .create()
+        private val dialog = com.google.android.material.dialog.MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.start__update_dialog_title)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
 
         fun show() {
             dialog.show()
@@ -169,10 +168,7 @@ class StartActivity :
             dialog.dismiss()
         }
 
-        fun update(
-            downloaded: Long,
-            total: Long,
-        ) {
+        fun update(downloaded: Long, total: Long) {
             val messageRes = R.string.start__update_downloading
             if (total <= 0) {
                 progressIndicator.isIndeterminate = true
@@ -183,11 +179,10 @@ class StartActivity :
             val progress = ((downloaded.toDouble() / total.toDouble()) * 100).toInt().coerceIn(0, 100)
             progressIndicator.isIndeterminate = false
             progressIndicator.setProgressCompat(progress, true)
-            progressMessage.text =
-                dialog.context.getString(
-                    R.string.start__update_download_progress,
-                    progress,
-                )
+            progressMessage.text = dialog.context.getString(
+                R.string.start__update_download_progress,
+                progress
+            )
         }
     }
 

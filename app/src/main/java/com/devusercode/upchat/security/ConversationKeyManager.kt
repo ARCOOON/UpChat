@@ -24,7 +24,7 @@ object ConversationKeyManager {
     data class KeyMaterial(
         val publicKey: PublicKey,
         val privateKey: PrivateKey,
-        val encodedPublicKey: String,
+        val encodedPublicKey: String
     )
 
     fun getCachedSecret(conversationId: String): String? = secretCache[conversationId]
@@ -35,7 +35,7 @@ object ConversationKeyManager {
         currentUser: User,
         participant: User,
         onSuccess: (String) -> Unit,
-        onError: (Exception) -> Unit,
+        onError: (Exception) -> Unit
     ) {
         val cached = secretCache[conversationId]
         if (!cached.isNullOrBlank()) {
@@ -44,7 +44,6 @@ object ConversationKeyManager {
         }
 
         val storage = StorageController.getInstance(context)
-        @Suppress("SENSELESS_COMPARISON")
         if (storage == null) {
             onError(IllegalStateException("Secure storage unavailable"))
             return
@@ -57,24 +56,18 @@ object ConversationKeyManager {
             return
         }
 
-        val keyMaterial =
-            ensureUserKeyPair(storage, currentUser) { error ->
-                onError(error)
-            } ?: return
+        val keyMaterial = ensureUserKeyPair(storage, currentUser) { error ->
+            onError(error)
+        } ?: return
 
         currentUser.publicKey = keyMaterial.encodedPublicKey
 
-        val secretsRef =
-            FirebaseDatabase
-                .getInstance()
-                .reference
-                .child("conversations")
-                .child(conversationId)
-                .child("secrets")
+        val secretsRef = FirebaseDatabase.getInstance().reference
+            .child("conversations")
+            .child(conversationId)
+            .child("secrets")
 
-        secretsRef
-            .child(currentUid)
-            .get()
+        secretsRef.child(currentUid).get()
             .addOnSuccessListener { snapshot ->
                 val encryptedSecret = snapshot.getValue(String::class.java)
 
@@ -89,7 +82,7 @@ object ConversationKeyManager {
                             Log.w(
                                 TAG,
                                 "Failed to decrypt conversation secret for $conversationId; regenerating",
-                                error,
+                                error
                             )
                         } else {
                             Log.e(TAG, "Unexpected error decrypting conversation secret", error)
@@ -109,18 +102,17 @@ object ConversationKeyManager {
                             val encryptedForCurrent = ETE.encrypt(secret, keyMaterial.publicKey)
                             val encryptedForParticipant = ETE.encrypt(secret, participantPublicKey)
 
-                            val updates =
-                                hashMapOf<String, Any>(
-                                    currentUid to encryptedForCurrent,
-                                    participantUid to encryptedForParticipant,
-                                )
+                            val updates = hashMapOf<String, Any>(
+                                currentUid to encryptedForCurrent,
+                                participantUid to encryptedForParticipant
+                            )
 
-                            secretsRef
-                                .updateChildren(updates)
+                            secretsRef.updateChildren(updates)
                                 .addOnSuccessListener {
                                     secretCache[conversationId] = secret
                                     onSuccess(secret)
-                                }.addOnFailureListener { error ->
+                                }
+                                .addOnFailureListener { error ->
                                     onError(error)
                                 }
                         } catch (error: Exception) {
@@ -129,9 +121,10 @@ object ConversationKeyManager {
                     },
                     onError = { error ->
                         onError(error)
-                    },
+                    }
                 )
-            }.addOnFailureListener { error ->
+            }
+            .addOnFailureListener { error ->
                 onError(error)
             }
     }
@@ -140,16 +133,14 @@ object ConversationKeyManager {
         participantUid: String,
         cachedValue: String?,
         onSuccess: (String) -> Unit,
-        onError: (Exception) -> Unit,
+        onError: (Exception) -> Unit
     ) {
         if (!cachedValue.isNullOrBlank()) {
             onSuccess(cachedValue)
             return
         }
 
-        FirebaseDatabase
-            .getInstance()
-            .reference
+        FirebaseDatabase.getInstance().reference
             .child("users")
             .child(participantUid)
             .child("publicKey")
@@ -161,7 +152,8 @@ object ConversationKeyManager {
                 } else {
                     onError(IllegalStateException("Participant public key not available"))
                 }
-            }.addOnFailureListener { error ->
+            }
+            .addOnFailureListener { error ->
                 onError(error)
             }
     }
@@ -169,7 +161,7 @@ object ConversationKeyManager {
     private fun ensureUserKeyPair(
         storage: StorageController,
         user: User,
-        onError: (Exception) -> Unit,
+        onError: (Exception) -> Unit
     ): KeyMaterial? {
         val storedPublic = storage.getString(STORAGE_PUBLIC_KEY)
         val storedPrivate = storage.getString(STORAGE_PRIVATE_KEY)
@@ -202,17 +194,12 @@ object ConversationKeyManager {
         }
     }
 
-    private fun ensureRemotePublicKey(
-        uid: String?,
-        encodedPublicKey: String,
-    ) {
+    private fun ensureRemotePublicKey(uid: String?, encodedPublicKey: String) {
         if (uid.isNullOrBlank()) {
             return
         }
 
-        FirebaseDatabase
-            .getInstance()
-            .reference
+        FirebaseDatabase.getInstance().reference
             .child("users")
             .child(uid)
             .child("publicKey")
@@ -227,4 +214,5 @@ object ConversationKeyManager {
         secureRandom.nextBytes(secretBytes)
         return Base64.encodeToString(secretBytes, Base64.NO_WRAP)
     }
+
 }

@@ -232,10 +232,7 @@ object Util {
         return ""
     }
 
-    fun toggleKeyboard(
-        context: Context,
-        show: Boolean,
-    ) {
+    fun toggleKeyboard(context: Context, show: Boolean) {
         val activity = context as? Activity ?: return
         val inputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         val targetView = activity.currentFocus ?: activity.window?.decorView

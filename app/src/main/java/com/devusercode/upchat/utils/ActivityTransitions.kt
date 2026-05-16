@@ -7,7 +7,7 @@ import androidx.annotation.AnimRes
 private fun Activity.overrideTransition(
     transitionType: Int,
     @AnimRes enterAnim: Int,
-    @AnimRes exitAnim: Int,
+    @AnimRes exitAnim: Int
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         overrideActivityTransition(transitionType, enterAnim, exitAnim)
@@ -17,16 +17,10 @@ private fun Activity.overrideTransition(
     }
 }
 
-fun Activity.applyActivityOpenAnimation(
-    @AnimRes enterAnim: Int,
-    @AnimRes exitAnim: Int,
-) {
+fun Activity.applyActivityOpenAnimation(@AnimRes enterAnim: Int, @AnimRes exitAnim: Int) {
     overrideTransition(Activity.OVERRIDE_TRANSITION_OPEN, enterAnim, exitAnim)
 }
 
-fun Activity.applyActivityCloseAnimation(
-    @AnimRes enterAnim: Int,
-    @AnimRes exitAnim: Int,
-) {
+fun Activity.applyActivityCloseAnimation(@AnimRes enterAnim: Int, @AnimRes exitAnim: Int) {
     overrideTransition(Activity.OVERRIDE_TRANSITION_CLOSE, enterAnim, exitAnim)
 }
