@@ -28,6 +28,7 @@ import com.devusercode.upchat.utils.UserUtils
 import com.devusercode.upchat.utils.Util
 import com.devusercode.upchat.utils.applyActivityCloseAnimation
 import com.devusercode.upchat.utils.applyActivityOpenAnimation
+import com.devusercode.upchat.utils.setComposeContent
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.FirebaseApp
@@ -48,6 +49,7 @@ class MyProfileActivity : AppCompatActivity() {
     private val db = FirebaseDatabase.getInstance()
     private val profileImages = FirebaseStorage.getInstance().getReference("profile_images")
 
+    private lateinit var contentView: View
     private lateinit var linear1: LinearLayout
     private lateinit var username: TextView
     private lateinit var email: TextView
@@ -66,7 +68,7 @@ class MyProfileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_my_profile)
+        contentView = setComposeContent(R.layout.activity_my_profile)
 
         storageController = StorageController.getInstance(this)!!
 
@@ -88,19 +90,19 @@ class MyProfileActivity : AppCompatActivity() {
     private fun initialize(savedInstanceState: Bundle?) {
         // val coordinator: CoordinatorLayout = findViewById(R.id._coordinator)
         // val appBar: AppBarLayout = findViewById(R.id.app_bar)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        val toolbar: Toolbar = contentView.findViewById(R.id.toolbar)
 
         setSupportActionBar(toolbar)
         toolbar.findViewById<TextView>(R.id.toolbar_title).text = getString(R.string.my_profile__toolbar_title)
 
-        linear1 = findViewById(R.id.linear1)
-        linear3 = findViewById(R.id.linear3)
+        linear1 = contentView.findViewById(R.id.linear1)
+        linear3 = contentView.findViewById(R.id.linear3)
 
-        username = findViewById(R.id.textview1)
-        email = findViewById(R.id.textview2)
-        uid = findViewById(R.id.textview3)
-        joined = findViewById(R.id.textview4)
-        appVersionText = findViewById(R.id.app_version_text)
+        username = contentView.findViewById(R.id.textview1)
+        email = contentView.findViewById(R.id.textview2)
+        uid = contentView.findViewById(R.id.textview3)
+        joined = contentView.findViewById(R.id.textview4)
+        appVersionText = contentView.findViewById(R.id.app_version_text)
 
         try {
             val appVersion = packageManager.getPackageInfo(packageName, 0).versionName
@@ -130,12 +132,12 @@ class MyProfileActivity : AppCompatActivity() {
             false
         }
 
-        val chatsButton: Button = findViewById(R.id.chats_button)
-        val logoutButton: Button = findViewById(R.id.logout_button)
-        val deleteButton: Button = findViewById(R.id.delete_button)
-        val shareQrcodeButton: Button = findViewById(R.id.share_qrcode_button)
+        val chatsButton: Button = contentView.findViewById(R.id.chats_button)
+        val logoutButton: Button = contentView.findViewById(R.id.logout_button)
+        val deleteButton: Button = contentView.findViewById(R.id.delete_button)
+        val shareQrcodeButton: Button = contentView.findViewById(R.id.share_qrcode_button)
 
-        val viewUsersButton: FloatingActionButton = findViewById(R.id.view_users_button)
+        val viewUsersButton: FloatingActionButton = contentView.findViewById(R.id.view_users_button)
 
         logoutButton.setOnClickListener {
             auth.signOut()

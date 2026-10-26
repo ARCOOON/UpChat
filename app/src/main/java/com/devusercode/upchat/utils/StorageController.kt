@@ -26,17 +26,20 @@ import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
-class StorageController private constructor(
-    context: Context,
-) {
+class StorageController private constructor(context: Context) {
+
     private val appContext = context.applicationContext
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val dataStore: DataStore<Preferences> =
-        PreferenceDataStoreFactory.create(
-            scope = scope,
-            produceFile = { appContext.preferencesDataStoreFile(DATA_STORE_FILE_NAME) },
-        )
+    private val dataStore: DataStore<Preferences> = PreferenceDataStoreFactory.create(
+        scope = scope,
+        produceFile = { appContext.preferencesDataStoreFile(DATA_STORE_FILE_NAME) }
+    )
     private val gson = Gson()
     private val keyStore: KeyStore
     private val masterKeyAlias: String
@@ -63,10 +66,11 @@ class StorageController private constructor(
         @Volatile
         private var instance: StorageController? = null
 
-        fun getInstance(context: Context): StorageController =
-            instance ?: synchronized(this) {
+        fun getInstance(context: Context): StorageController {
+            return instance ?: synchronized(this) {
                 instance ?: StorageController(context.applicationContext).also { instance = it }
             }
+        }
     }
 
     private fun ensureMasterKey() {
@@ -79,27 +83,29 @@ class StorageController private constructor(
         }
 
         val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
-        val parameterSpec =
-            KeyGenParameterSpec
-                .Builder(
-                    masterKeyAlias,
-                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
-                ).setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                .setKeySize(256)
-                .build()
+        val parameterSpec = KeyGenParameterSpec.Builder(
+            masterKeyAlias,
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+        )
+            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+            .setKeySize(256)
+            .build()
         keyGenerator.init(parameterSpec)
         keyGenerator.generateKey()
     }
 
-    private fun getSecretKey(): SecretKey =
-        (keyStore.getEntry(masterKeyAlias, null) as? KeyStore.SecretKeyEntry)?.secretKey
+    private fun getSecretKey(): SecretKey {
+        return (keyStore.getEntry(masterKeyAlias, null) as? KeyStore.SecretKeyEntry)?.secretKey
             ?: throw IllegalStateException("Master key entry missing for alias: $masterKeyAlias")
+    }
 
-    private fun buildMasterKeyAlias(context: Context): String = "${context.packageName}.secure.datastore.masterkey"
+    private fun buildMasterKeyAlias(context: Context): String {
+        return "${context.packageName}.secure.datastore.masterkey"
+    }
 
-    private fun encrypt(plainText: String): String =
-        try {
+    private fun encrypt(plainText: String): String {
+        return try {
             val cipher = Cipher.getInstance(AES_GCM)
             cipher.init(Cipher.ENCRYPT_MODE, getSecretKey())
             val iv = cipher.iv
@@ -113,8 +119,8 @@ class StorageController private constructor(
             throw IllegalStateException("Failed to encrypt value", e)
         }
 
-    private fun decrypt(encrypted: String): String =
-        try {
+    private fun decrypt(encrypted: String): String {
+        return try {
             val payload = ByteBuffer.wrap(Base64.decode(encrypted, Base64.NO_WRAP))
             val ivLength = payload.int
             val iv = ByteArray(ivLength)
@@ -129,11 +135,9 @@ class StorageController private constructor(
             Log.e(LOG_TAG, "Failed to decrypt value", e)
             throw IllegalStateException("Failed to decrypt value", e)
         }
+    }
 
-    private suspend fun writeRaw(
-        key: String,
-        rawValue: String?,
-    ) {
+    private suspend fun writeRaw(key: String, rawValue: String?) {
         val prefKey = stringPreferencesKey(key)
         dataStore.edit { preferences ->
             if (rawValue == null) {
@@ -156,10 +160,7 @@ class StorageController private constructor(
             }
     }
 
-    operator fun set(
-        key: String,
-        data: Any?,
-    ) {
+    operator fun set(key: String, data: Any?) {
         runBlocking(Dispatchers.IO) {
             when (data) {
                 null -> writeRaw(key, null)
@@ -174,15 +175,11 @@ class StorageController private constructor(
         }
     }
 
-    fun getString(
-        key: String,
-        defaultValue: String? = null,
-    ): String? = runBlocking(Dispatchers.IO) { readRaw(key) } ?: defaultValue
+    fun getString(key: String, defaultValue: String? = null): String? {
+        return runBlocking(Dispatchers.IO) { readRaw(key) } ?: defaultValue
+    }
 
-    fun getBool(
-        key: String,
-        defaultValue: Boolean = false,
-    ): Boolean {
+    fun getBool(key: String, defaultValue: Boolean = false): Boolean {
         val raw = runBlocking(Dispatchers.IO) { readRaw(key) } ?: return defaultValue
         return when (raw.lowercase()) {
             "true" -> true
@@ -191,10 +188,7 @@ class StorageController private constructor(
         }
     }
 
-    fun getInt(
-        key: String,
-        defaultValue: Int = 0,
-    ): Int {
+    fun getInt(key: String, defaultValue: Int = 0): Int {
         val raw = runBlocking(Dispatchers.IO) { readRaw(key) } ?: return defaultValue
         return raw.toIntOrNull() ?: defaultValue
     }
